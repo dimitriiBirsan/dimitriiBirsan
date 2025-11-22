@@ -1,62 +1,136 @@
-# Astro Starter Kit: Blog
+# Dumitru Birsan - Portfolio & Blog
 
-```sh
-npm create astro@latest -- --template blog
-```
+A modern, performant personal portfolio and blog built with Astro, 
+## Features
 
-> 🧑‍🚀 **Seasoned astronaut?** Delete this file. Have fun!
+-  **Dark/Light Mode** - Seamless theme toggling with persistent preferences
+-  **Lightning Fast** - Built with Astro for optimal performance
+-  **Fully Responsive** - Mobile-first design that works beautifully on all devices
+-  **SEO Optimized** - Canonical URLs, OpenGraph data, and sitemap support
+-  **Blog with MDX** - Write posts in Markdown/MDX with full component support
+-  **Type-Safe** - Content collections with TypeScript validation
+-  **Skills Showcase** - Visual representation of technical expertise
+-  **Smooth Animations** - Polished interactions and transitions
+-  **RSS Feed** - Automatic feed generation for blog posts
 
-Features:
+## Tech Stack
 
-- ✅ Minimal styling (make it your own!)
-- ✅ 100/100 Lighthouse performance
-- ✅ SEO-friendly with canonical URLs and OpenGraph data
-- ✅ Sitemap support
-- ✅ RSS Feed support
-- ✅ Markdown & MDX support
+- **Framework**: [Astro](https://astro.build)
+- **Styling**: Vanilla CSS with CSS Variables
+- **Content**: MDX with Content Collections
+- **TypeScript**: Full type safety
+- **Analytics**: Umami integration
 
-## 🚀 Project Structure
-
-Inside of your Astro project, you'll see the following folders and files:
+## Project Structure
 
 ```text
-├── public/
+├── public/              # Static assets
 ├── src/
-│   ├── components/
-│   ├── content/
-│   ├── layouts/
-│   └── pages/
-├── astro.config.mjs
-├── README.md
+│   ├── assets/         # Images and media files
+│   ├── components/     # Reusable Astro components
+│   │   ├── Footer.astro
+│   │   ├── Header.astro
+│   │   ├── Navigation.astro
+│   │   ├── NavLink.astro
+│   │   └── ThemeSwitcher.astro
+│   ├── content/        # Blog posts and content collections
+│   │   └── blog/       # MDX blog posts
+│   ├── data/           # Static data (e.g., skills)
+│   ├── layouts/        # Page layouts
+│   ├── pages/          # File-based routing
+│   │   ├── index.astro      # Home page
+│   │   ├── about.astro      # About page
+│   │   ├── blog/            # Blog section
+│   │   └── skills.astro     # Skills showcase
+│   ├── styles/         # Global styles
+│   │   ├── globals/    # Design system variables
+│   │   └── elements/   # Page-specific styles
+│   ├── types/          # TypeScript type definitions
+│   └── utils/          # Helper functions
+├── astro.config.mjs    # Astro configuration
 ├── package.json
 └── tsconfig.json
 ```
 
-Astro looks for `.astro` or `.md` files in the `src/pages/` directory. Each page is exposed as a route based on its file name.
+## Commands
 
-There's nothing special about `src/components/`, but that's where we like to put any Astro/React/Vue/Svelte/Preact components.
-
-The `src/content/` directory contains "collections" of related Markdown and MDX documents. Use `getCollection()` to retrieve posts from `src/content/blog/`, and type-check your frontmatter using an optional schema. See [Astro's Content Collections docs](https://docs.astro.build/en/guides/content-collections/) to learn more.
-
-Any static assets, like images, can be placed in the `public/` directory.
-
-## 🧞 Commands
-
-All commands are run from the root of the project, from a terminal:
+All commands are run from the root of the project:
 
 | Command                   | Action                                           |
 | :------------------------ | :----------------------------------------------- |
-| `npm install`             | Installs dependencies                            |
-| `npm run dev`             | Starts local dev server at `localhost:4321`      |
-| `npm run build`           | Build your production site to `./dist/`          |
-| `npm run preview`         | Preview your build locally, before deploying     |
+| `npm install`             | Install dependencies                             |
+| `npm run dev`             | Start local dev server at `localhost:4321`       |
+| `npm run build`           | Build production site to `./dist/`               |
+| `npm run preview`         | Preview build locally before deploying           |
 | `npm run astro ...`       | Run CLI commands like `astro add`, `astro check` |
 | `npm run astro -- --help` | Get help using the Astro CLI                     |
 
-## 👀 Want to learn more?
+## � Getting Started
 
-Check out [our documentation](https://docs.astro.build) or jump into our [Discord server](https://astro.build/chat).
+1. **Clone the repository**
+   ```bash
+   git clone git@github.com:dimitriiBirsan/dimitriiBirsan.git
+   cd blog
+   ```
 
-## Credit
+2. **Install dependencies**
+   ```bash
+   npm install
+   ```
 
-This theme is based off of the lovely [Bear Blog](https://github.com/HermanMartinus/bearblog/).
+3. **Start development server**
+   ```bash
+   npm run dev
+   ```
+
+4. **Open your browser**
+   Navigate to `http://localhost:4321`
+
+##  Customization
+
+### Colors
+Edit `src/styles/globals/index.css` to customize the color scheme. The design system uses CSS variables for easy theming:
+
+```css
+:root {
+  --accent-primary: #7F00FF;    /* Vibrant Violet */
+  --accent-secondary: #e040fb;  /* Bright pink/violet */
+  --bg-primary: #0a090f;        /* Dark background */
+  /* ... more variables */
+}
+```
+
+### Content
+- Add blog posts in `src/content/blog/` as `.md` or `.mdx` files
+- Update personal information in page components
+- Modify skills in `src/data/skills.ts`
+
+## 📝 Blog Posts
+
+Create new blog posts by adding MDX files to `src/content/blog/`:
+
+```mdx
+---
+title: 'Post Title'
+description: 'Brief description'
+pubDate: 'Jan 01 2025'
+heroImage: '/path/to/image.jpg'
+---
+
+Your content here...
+```
+
+## License
+
+This project is open source and available under the MIT License.
+
+## Author
+
+**Dumitru Birsan**
+- GitHub: [@dimitriiBirsan](https://github.com/dimitriiBirsan)
+- LinkedIn: [Dumitru Birsan](https://www.linkedin.com/in/dumitru-birsan-6b58771bb/)
+- StackOverflow: [Dumitru Birsan](https://stackoverflow.com/users/13526174/dumitru-birsan)
+
+---
+
+Built with ♥ using [Astro](https://astro.build)
