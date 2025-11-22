@@ -1,0 +1,103 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import Header from "../components/Header.astro";
+import Footer from "../components/Footer.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import { skills } from "../data/skills";
+import "../styles/elements/skills.css";
+
+const { frontendSkills, backendSkills, infrastructureSkills } = skills;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead
+            title={`Skills | ${SITE_TITLE}`}
+            description="My technical skills and expertise."
+        />
+    </head>
+    <body>
+        <Header />
+        <main class="container skills-page">
+            <section class="skills-intro">
+                <h1>Technical Expertise</h1>
+                <p>
+                    A comprehensive overview of my technical toolkit.
+                    specialized in scalable frontend architectures, robust
+                    backend systems, and automated infrastructure.
+                </p>
+            </section>
+
+            <!-- Frontend Skills -->
+            <section class="skills-category">
+                <h2 class="category-title">Frontend Development</h2>
+                <div class="skills-grid">
+                    {
+                        frontendSkills.map((skill) => (
+                            <div class="skill-card">
+                                <div class="skill-name">{skill.name}</div>
+                                {skill.children && (
+                                    <div class="skill-children">
+                                        {skill.children.map((child) => (
+                                            <span class="skill-tag">
+                                                {child.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            </section>
+
+            <!-- Backend Skills -->
+            <section class="skills-category">
+                <h2 class="category-title">Backend Development</h2>
+                <div class="skills-grid">
+                    {
+                        backendSkills.map((skill) => (
+                            <div class="skill-card">
+                                <div class="skill-name">{skill.name}</div>
+                                {skill.children && (
+                                    <div class="skill-children">
+                                        {skill.children.map((child) => (
+                                            <span class="skill-tag">
+                                                {child.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            </section>
+
+            <!-- Infrastructure Skills -->
+            <section class="skills-category">
+                <h2 class="category-title">Infrastructure & DevOps</h2>
+                <div class="skills-grid">
+                    {
+                        infrastructureSkills.map((skill) => (
+                            <div class="skill-card">
+                                <div class="skill-name">{skill.name}</div>
+                                {skill.children && (
+                                    <div class="skill-children">
+                                        {skill.children.map((child) => (
+                                            <span class="skill-tag">
+                                                {child.name}
+                                            </span>
+                                        ))}
+                                    </div>
+                                )}
+                            </div>
+                        ))
+                    }
+                </div>
+            </section>
+        </main>
+        <Footer />
+    </body>
+</html>

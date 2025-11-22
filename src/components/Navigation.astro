@@ -1,0 +1,109 @@
+---
+import NavLink from "./NavLink.astro";
+import { getLocalizedPathname } from "../utils/i18n";
+import type { SupportedLanguage } from "../types/i18n";
+
+interface NavigationTranslations {
+  home: string;
+  about: string;
+  blog: string;
+  skills: string;
+  contact: string;
+}
+
+const navigationTranslations: Record<
+  SupportedLanguage,
+  NavigationTranslations
+> = {
+  en: {
+    home: "HOME",
+    about: "ABOUT",
+    blog: "BLOG",
+    skills: "SKILLS",
+    contact: "CONTACT",
+  },
+  it: {
+    home: "HOME",
+    about: "CHI SONO",
+    blog: "BLOG",
+    skills: "SKILLS",
+    contact: "CONTATTI",
+  },
+};
+
+function getNavigationTranslations(
+  language: SupportedLanguage,
+): NavigationTranslations {
+  return navigationTranslations[language];
+}
+
+interface Props {
+  language: SupportedLanguage;
+}
+
+const { language = "en" } = Astro.props;
+
+const currentUrl = Astro.request.url;
+
+// Base routes (always in English format)
+const BASE_ROUTES = ["/", "/blog", "/skills", "/about"] as const;
+
+// Get translations for labels
+const t = getNavigationTranslations(language);
+// Create route-to-label mapping
+const routeLabelMap = new Map([
+  ["/", t.home],
+  ["/blog", t.blog],
+  ["/skills", t.skills],
+  ["/about", t.about],
+]);
+
+// Create route mapping with href and label
+const routeMap = BASE_ROUTES.map((route) => ({
+  href: getLocalizedPathname(route, language),
+  label: routeLabelMap.get(route) || route.slice(1).toUpperCase(),
+}));
+---
+
+<nav class="nav">
+  {
+    routeMap.map((route) => (
+      <NavLink href={route.href} label={route.label} currentUrl={currentUrl} />
+    ))
+  }
+</nav>
+
+<style>
+  .nav {
+    display: flex;
+    align-items: center;
+    gap: 0.25rem;
+    padding: 0.5rem;
+    border-radius: var(--border-radius);
+    background: color-mix(in srgb, var(--bg-secondary) 60%, transparent);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .nav:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 4px 20px
+      color-mix(in srgb, var(--accent-primary) 15%, transparent);
+  }
+
+  @media (max-width: 636px) {
+    .nav {
+      gap: 0.125rem;
+      padding: 0.25rem;
+      flex-wrap: wrap;
+      justify-content: center;
+    }
+  }
+
+  @media (max-width: 480px) {
+    .nav {
+      display: none;
+    }
+  }
+</style>

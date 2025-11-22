@@ -1,0 +1,64 @@
+---
+
+---
+
+<button class="hamburger" aria-label="Menu">
+    <div class="line"></div>
+    <div class="line"></div>
+    <div class="line"></div>
+</button>
+
+<style>
+    .hamburger {
+        display: none;
+        padding: 0;
+        border: none;
+        background: transparent;
+        cursor: pointer;
+        width: 24px;
+        height: 24px;
+        flex-direction: column;
+        justify-content: space-around;
+        z-index: 200;
+    }
+
+    @media (max-width: 636px) {
+        /* Hardcoded from --breakpoint-tablet */
+        .hamburger {
+            display: flex;
+        }
+
+    }
+
+    .line {
+        height: 2px;
+        background-color: var(--text-primary);
+        transition: all 0.3s ease;
+        width: 100%;
+    }
+
+    .hamburger.expanded .line:first-child {
+        transform: translateY(8px) rotate(45deg);
+    }
+
+    .hamburger.expanded .line:nth-child(2) {
+        opacity: 0;
+    }
+
+    .hamburger.expanded .line:last-child {
+        transform: translateY(-8px) rotate(-45deg);
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', () => {
+        const hamburger = document.querySelector('.hamburger');
+        const nav = document.querySelector('.nav');
+
+        hamburger?.addEventListener('click', () => {
+            console.log(nav)
+            nav?.classList.toggle('expanded');
+            hamburger?.classList.toggle('expanded');
+        });
+    });
+</script>

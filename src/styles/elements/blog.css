@@ -1,0 +1,185 @@
+/* =========================================
+   Block: Blog Grid
+   ========================================= */
+
+.blog-grid {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 2rem;
+    list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+/* =========================================
+   Block: Blog Card
+   ========================================= */
+
+/* Using shared card-base pattern from home.css */
+.blog-card {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+    transition: all 0.3s ease;
+    height: 100%;
+    position: relative;
+}
+
+.blog-card:hover {
+    transform: translateY(-6px);
+    box-shadow: 0 20px 40px var(--accent-primary);
+    opacity: 0.95;
+    border-color: var(--accent-primary);
+}
+
+.blog-card a {
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: row;
+    height: 100%;
+    align-items: stretch;
+}
+
+/* Element: Image Container */
+.card-image {
+    width: 320px;
+    flex-shrink: 0;
+    overflow: hidden;
+    background-color: var(--bg-primary);
+    position: relative;
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    transition: transform 0.5s ease;
+}
+
+.blog-card:hover .card-image img {
+    transform: scale(1.05);
+}
+
+/* Element: Content Container */
+.card-content {
+    padding: 2rem;
+    display: flex;
+    flex-direction: column;
+    flex-grow: 1;
+    justify-content: center;
+}
+
+/* Element: Title */
+.blog-card .title {
+    margin: 0 0 0.75rem 0;
+    color: var(--heading-color);
+    line-height: 1.3;
+    font-size: 1.5rem;
+    font-weight: 700;
+    transition: color 0.2s ease;
+}
+
+.blog-card:hover .title {
+    color: var(--accent-primary);
+}
+
+/* Element: Description */
+.blog-card .description {
+    margin: 0 0 1.5rem 0;
+    color: var(--text-secondary);
+    font-size: 1rem;
+    line-height: 1.6;
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+    flex-grow: 0;
+}
+
+/* Element: Date */
+.blog-card .date {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 0.85rem;
+    font-weight: 500;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    opacity: 0.8;
+    margin-top: auto;
+}
+
+/* Bottom accent line - using shared pattern from home.css */
+.blog-card::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.blog-card:hover::after {
+    opacity: 1;
+}
+
+/* =========================================
+   Responsive Modifiers
+   ========================================= */
+
+@media (max-width: 768px) {
+    .blog-card a {
+        flex-direction: column;
+    }
+
+    .card-image {
+        width: 100%;
+        height: 200px;
+    }
+
+    .card-content {
+        padding: 1.5rem;
+    }
+
+    .blog-card .title {
+        font-size: 1.25rem;
+    }
+}
+
+/* =========================================
+   Modifier: Featured Grid (Homepage)
+   ========================================= */
+
+.blog-grid.featured {
+    grid-template-columns: repeat(3, 1fr);
+}
+
+.blog-grid.featured .blog-card a {
+    flex-direction: column;
+}
+
+.blog-grid.featured .card-image {
+    width: 100%;
+    height: 200px;
+}
+
+@media (max-width: 1024px) {
+    .blog-grid.featured {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 768px) {
+    .blog-grid.featured {
+        grid-template-columns: 1fr;
+    }
+}

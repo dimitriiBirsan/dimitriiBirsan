@@ -1,0 +1,134 @@
+---
+import { isNavigationItemActive } from "../utils/navigation";
+
+interface Props {
+    href: string;
+    label: string;
+    currentUrl: string;
+}
+
+const { href, label, currentUrl } = Astro.props;
+---
+
+<a
+    href={href}
+    class:list={[
+        "nav-link",
+        { active: isNavigationItemActive(currentUrl, href) },
+    ]}
+>
+    {label}
+</a>
+
+<style>
+    .nav-link {
+        position: relative;
+        display: inline-block;
+        padding: 0.625rem 1rem;
+        font-size: 0.875rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        color: var(--text-primary);
+        text-decoration: none;
+        border-radius: var(--border-radius-sm);
+        transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+        overflow: hidden;
+    }
+
+    /* Hover gradient background */
+    .nav-link::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+            135deg,
+            var(--accent-primary),
+            var(--accent-secondary)
+        );
+        opacity: 0;
+        transition: opacity 0.3s ease;
+        z-index: -1;
+    }
+
+    .nav-link:hover {
+        color: var(--heading-color);
+        transform: translateY(-2px);
+        text-decoration: none;
+    }
+
+    .nav-link:hover::before {
+        opacity: 0.15;
+    }
+
+    /* Active state with gradient underline */
+    .nav-link.active {
+        color: var(--heading-color);
+        font-weight: 600;
+    }
+
+    .nav-link.active::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 2px;
+        background: linear-gradient(
+            90deg,
+            var(--accent-primary),
+            var(--accent-secondary)
+        );
+        box-shadow: 0 2px 10px
+            color-mix(in srgb, var(--accent-primary) 50%, transparent);
+        animation: slideIn 0.3s ease;
+    }
+
+    @keyframes slideIn {
+        from {
+            transform: scaleX(0);
+        }
+        to {
+            transform: scaleX(1);
+        }
+    }
+
+    /* Light mode improvements */
+    [data-theme="light"] .nav-link {
+        color: var(--text-primary);
+    }
+
+    [data-theme="light"] .nav-link:hover {
+        color: var(--accent-primary);
+        background: color-mix(in srgb, var(--accent-primary) 8%, transparent);
+    }
+
+    [data-theme="light"] .nav-link:hover::before {
+        opacity: 0;
+    }
+
+    [data-theme="light"] .nav-link.active {
+        color: var(--accent-primary);
+        background: color-mix(in srgb, var(--accent-primary) 5%, transparent);
+    }
+
+    [data-theme="light"] .nav-link.active::after {
+        height: 3px;
+        box-shadow: 0 2px 8px
+            color-mix(in srgb, var(--accent-primary) 30%, transparent);
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 636px) {
+        .nav-link {
+            padding: 0.5rem 0.75rem;
+            font-size: 0.8125rem;
+        }
+    }
+
+    @media (max-width: 480px) {
+        .nav-link {
+            padding: 0.375rem 0.5rem;
+            font-size: 0.75rem;
+        }
+    }
+</style>

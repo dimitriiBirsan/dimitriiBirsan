@@ -1,0 +1,185 @@
+/* =========================================
+   Block: Skills Page
+   ========================================= */
+
+.skills-page {
+    /* Modern spacing using clamp for fluid responsiveness */
+    padding-top: clamp(3rem, 5vw, 6rem);
+    padding-bottom: clamp(4rem, 8vw, 8rem);
+    position: relative;
+}
+
+/* Element: Intro Section */
+.skills-intro {
+    text-align: center;
+    margin-bottom: 4rem;
+    max-width: 70ch;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+}
+
+/* Using shared gradient title from home.css */
+.skills-intro h1 {
+    font-size: clamp(2rem, 4vw, 3rem);
+    margin-bottom: 1rem;
+    color: var(--heading-color);
+    letter-spacing: -0.02em;
+    background: linear-gradient(135deg, var(--heading-color) 0%, var(--accent-primary) 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    display: inline-block;
+}
+
+.skills-intro p {
+    color: var(--text-secondary);
+    font-size: 1.125rem;
+    line-height: 1.6;
+}
+
+/* =========================================
+   Block: Skills Category
+   ========================================= */
+
+.skills-category {
+    margin-bottom: 5rem;
+}
+
+.category-title {
+    font-size: 1.5rem;
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+    display: flex;
+    align-items: center;
+    gap: 1rem;
+}
+
+/* Decorative line after title - unique to skills page */
+.category-title::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, var(--border-color) 0%, transparent 100%);
+    display: block;
+}
+
+.skills-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 1.5rem;
+}
+
+/* =========================================
+   Block: Skill Card
+   ========================================= */
+
+/* Using shared card-base styles from home.css */
+.skill-card {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: 16px;
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    position: relative;
+    transition: all 0.3s ease;
+    overflow: hidden;
+}
+
+/* Top accent line - shared pattern from home.css */
+.skill-card::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg, var(--accent-primary), var(--accent-secondary));
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.skill-card:hover {
+    transform: translateY(-6px);
+    border-color: var(--accent-primary);
+    box-shadow: 0 20px 40px var(--accent-primary);
+    opacity: 0.95;
+}
+
+.skill-card:hover::before {
+    opacity: 1;
+}
+
+/* Element: Card Name (Header) */
+.skill-name {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    margin-bottom: 1.25rem;
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+/* Tech status indicator */
+.skill-name::before {
+    content: '';
+    display: block;
+    width: 6px;
+    height: 6px;
+    background-color: var(--accent-secondary);
+    border-radius: 50%;
+    box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 0 3px var(--border-color);
+    transition: background-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+.skill-card:hover .skill-name::before {
+    background-color: var(--accent-primary);
+    box-shadow: 0 0 0 2px var(--bg-secondary), 0 0 8px var(--accent-primary);
+}
+
+/* Element: Children Container */
+.skill-children {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: auto;
+}
+
+/* Element: Tag - using shared tag styles from home.css */
+.skill-tag {
+    padding: 0.5rem 1rem;
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: 20px;
+    font-size: 0.85rem;
+    color: var(--text-primary);
+    transition: all 0.3s ease;
+    font-family: 'Menlo', 'Monaco', 'Courier New', monospace;
+    cursor: default;
+}
+
+.skill-tag:hover {
+    background: var(--accent-primary);
+    border-color: var(--accent-primary);
+    transform: translateY(-2px);
+    color: white;
+}
+
+/* =========================================
+   Responsive Modifiers
+   ========================================= */
+
+@media (max-width: 768px) {
+    .skills-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .skills-page {
+        padding-top: var(--space-lg);
+    }
+}
