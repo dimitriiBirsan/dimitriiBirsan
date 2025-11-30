@@ -1,0 +1,173 @@
+---
+import { getCollection } from "astro:content";
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import { SITE_TITLE } from "../../consts";
+import "../../styles/elements/blog.css";
+
+const posts = await getCollection("blog");
+
+// Get all unique tags with post counts
+const tagCounts = posts.reduce(
+    (acc, post) => {
+        if (post.data.tags) {
+            post.data.tags.forEach((tag) => {
+                acc[tag] = (acc[tag] || 0) + 1;
+            });
+        }
+        return acc;
+    },
+    {} as Record<string, number>,
+);
+
+const tags = Object.entries(tagCounts)
+    .map(([tag, count]) => ({ tag, count }))
+    .sort((a, b) => b.count - a.count);
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead
+            title={`Tags - ${SITE_TITLE}`}
+            description="Browse blog posts by tags"
+        />
+    </head>
+    <body>
+        <Header />
+        <main class="container">
+            <section>
+                <div class="page-header">
+                    <h1>Browse by Tag</h1>
+                    <p class="subtitle">Explore articles organized by topic</p>
+                </div>
+
+                <ul class="blog-grid tags-layout">
+                    {
+                        tags.map(({ tag, count }) => (
+                            <li class="blog-card tag-card">
+                                <a href={`/tags/${tag.toLowerCase()}/`}>
+                                    <div class="card-content">
+                                        <span class="tag-badge">{count}</span>
+                                        <h3 class="title">{tag}</h3>
+                                        <p class="description">
+                                            {count}{" "}
+                                            {count === 1 ? "post" : "posts"}
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+            </section>
+        </main>
+        <Footer />
+
+        <style>
+            /* Custom styles for tags layout using existing design system */
+            .page-header {
+                margin-bottom: 3rem;
+                text-align: center;
+            }
+
+            .page-header h1 {
+                font-size: 2.5rem;
+                margin: 0 0 1rem 0;
+                background: linear-gradient(
+                    135deg,
+                    var(--accent-primary),
+                    var(--accent-secondary)
+                );
+                -webkit-background-clip: text;
+                -webkit-text-fill-color: transparent;
+                background-clip: text;
+            }
+
+            .subtitle {
+                color: var(--text-secondary);
+                font-size: 1.125rem;
+                margin: 0;
+            }
+
+            /* Modify blog-grid for tag cards */
+            .blog-grid.tags-layout {
+                grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+                gap: 1.5rem;
+            }
+
+            /* Customize blog-card for tags */
+            .tag-card a {
+                flex-direction: column !important;
+                align-items: center;
+                justify-content: center;
+                text-align: center;
+                min-height: 200px;
+                padding: 2rem;
+            }
+
+            .tag-card .card-content {
+                padding: 0;
+                align-items: center;
+            }
+
+            .tag-badge {
+                display: inline-flex;
+                align-items: center;
+                justify-content: center;
+                width: 4rem;
+                height: 4rem;
+                background: linear-gradient(
+                    135deg,
+                    var(--accent-primary),
+                    var(--accent-secondary)
+                );
+                border-radius: 50%;
+                color: white;
+                font-size: 1.5rem;
+                font-weight: 700;
+                margin-bottom: 1rem;
+                box-shadow: 0 4px 12px rgba(127, 0, 255, 0.3);
+                transition:
+                    transform 0.3s ease,
+                    box-shadow 0.3s ease;
+            }
+
+            .tag-card:hover .tag-badge {
+                transform: scale(1.1);
+                box-shadow: 0 6px 20px rgba(127, 0, 255, 0.5);
+            }
+
+            .tag-card .title {
+                margin: 0 0 0.5rem 0;
+                font-size: 1.25rem;
+            }
+
+            .tag-card .description {
+                margin: 0;
+                font-size: 0.9rem;
+                opacity: 0.7;
+            }
+
+            @media (max-width: 768px) {
+                .blog-grid.tags-layout {
+                    grid-template-columns: repeat(
+                        auto-fill,
+                        minmax(240px, 1fr)
+                    );
+                    gap: 1rem;
+                }
+
+                .tag-card a {
+                    min-height: 160px;
+                    padding: 1.5rem;
+                }
+
+                .page-header h1 {
+                    font-size: 2rem;
+                }
+            }
+        </style>
+    </body>
+</html>

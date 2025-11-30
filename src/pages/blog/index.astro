@@ -48,6 +48,19 @@ const posts = (await getCollection("blog")).sort(
 											</p>
 										)}
 
+										{post.data.tags &&
+											post.data.tags.length > 0 && (
+												<div class="tag-list">
+													{post.data.tags.map(
+														(tag) => (
+															<span class="tag-badge">
+																{tag}
+															</span>
+														),
+													)}
+												</div>
+											)}
+
 										<p class="date">
 											<FormattedDate
 												date={post.data.pubDate}
