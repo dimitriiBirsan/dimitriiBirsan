@@ -1,0 +1,179 @@
+body {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: var(--space-md);
+}
+
+.join-container {
+    background: var(--bg-secondary);
+    backdrop-filter: blur(10px);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius-lg);
+    padding: var(--space-xl);
+    max-width: 500px;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 20px 60px rgba(127, 0, 255, 0.2);
+    animation: fadeIn 0.5s ease-out;
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.join-container::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 3px;
+    background: linear-gradient(90deg,
+            var(--accent-primary),
+            var(--accent-secondary));
+}
+
+.join-container h1 {
+    text-align: center;
+    margin: 0 0 var(--space-xl) 0;
+    color: var(--heading-color);
+    font-size: var(--font-size-xl);
+    font-weight: var(--font-weight-bold);
+}
+
+.room-id-section {
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    padding: var(--space-md);
+    margin-bottom: var(--space-xl);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.room-id-section:hover {
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 20px rgba(127, 0, 255, 0.2);
+}
+
+.room-id-label {
+    color: var(--text-secondary);
+    font-size: var(--font-size-sm);
+    margin-bottom: var(--space-xs);
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.room-id {
+    color: var(--accent-primary);
+    font-family: "Courier New", monospace;
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    word-break: break-all;
+}
+
+.form-group {
+    margin-bottom: var(--space-lg);
+}
+
+.form-group label {
+    display: block;
+    color: var(--text-primary);
+    font-size: var(--font-size-sm);
+    font-weight: var(--font-weight-bold);
+    margin-bottom: var(--space-xs);
+}
+
+.form-group input {
+    width: 100%;
+    padding: var(--space-md);
+    background: var(--bg-primary);
+    border: 1px solid var(--border-color);
+    border-radius: var(--border-radius);
+    color: var(--text-primary);
+    font-size: var(--font-size-md);
+    font-family: var(--font-family);
+    transition: all 0.3s ease;
+}
+
+.form-group input:focus {
+    outline: none;
+    border-color: var(--accent-primary);
+    box-shadow: 0 0 0 3px rgba(127, 0, 255, 0.1);
+}
+
+.form-group input::placeholder {
+    color: var(--text-secondary);
+    opacity: 0.7;
+}
+
+.error-message {
+    color: var(--accent-secondary);
+    font-size: var(--font-size-sm);
+    margin-top: var(--space-xs);
+    opacity: 0;
+    max-height: 0;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.error-message.show {
+    opacity: 1;
+    max-height: 50px;
+    margin-top: var(--space-sm);
+}
+
+.join-button {
+    width: 100%;
+    padding: var(--space-md) var(--space-lg);
+    background: linear-gradient(135deg,
+            var(--accent-primary),
+            var(--accent-hover));
+    color: white;
+    border: none;
+    border-radius: var(--border-radius);
+    font-size: var(--font-size-md);
+    font-weight: var(--font-weight-bold);
+    cursor: pointer;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(127, 0, 255, 0.3);
+}
+
+.join-button:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 8px 25px rgba(127, 0, 255, 0.5);
+}
+
+.join-button:active:not(:disabled) {
+    transform: translateY(0);
+}
+
+.join-button:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+}
+
+@media (max-width: 768px) {
+    .join-container {
+        padding: var(--space-lg);
+    }
+
+    .join-container h1 {
+        font-size: var(--font-size-lg);
+    }
+
+    .room-id {
+        font-size: var(--font-size-sm);
+    }
+}

@@ -1,0 +1,221 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import "../styles/elements/room.css";
+import "../styles/elements/room-quiz-admin.css";
+import "../styles/globals/index.css";
+
+const roomId = Astro.url.searchParams.get("id");
+const username = Astro.url.searchParams.get("username");
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <div class="room-container">
+            <div class="room-header">
+                <h1>Room</h1>
+                <div class="room-id-display" id="roomIdDisplay"></div>
+                <div class="user-count">
+                    <span class="user-count-number" id="userCount">0</span> user(s)
+                    in room
+                </div>
+            </div>
+
+            <div id="usersContainer">
+                <div class="loading">Loading users...</div>
+            </div>
+
+            <!-- Quiz Admin Controls -->
+            <div
+                class="quiz-admin-section"
+                id="quizAdminSection"
+                style="display: none;"
+            >
+                <div class="admin-badge">Quiz Master</div>
+
+                <div class="quiz-selector">
+                    <label for="quizSelect">Select Quiz:</label>
+                    <select id="quizSelect" class="quiz-select">
+                        <option value="general-knowledge"
+                            >General Knowledge</option
+                        >
+                        <option value="programming"
+                            >Programming Fundamentals</option
+                        >
+                        <option value="science">Science & Nature</option>
+                    </select>
+                </div>
+
+                <button class="start-quiz-button" id="startQuizButton">
+                    <span class="button-icon">▶</span>
+                    Start Quiz
+                </button>
+            </div>
+
+            <button class="leave-button" id="leaveButton">Leave Room</button>
+        </div>
+
+        <script>
+            import { getWebSocket } from "../lib/ws-client";
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get("id");
+            const currentUsername = urlParams.get("username");
+
+            const roomIdDisplay = document.getElementById("roomIdDisplay");
+            if (roomIdDisplay) roomIdDisplay.textContent = roomId;
+
+            // Show quiz admin controls if current user is quiz-admin
+            const quizAdminSection =
+                document.getElementById("quizAdminSection");
+            if (currentUsername === "quiz-admin" && quizAdminSection) {
+                quizAdminSection.style.display = "block";
+            }
+
+            // WebSocket connection
+            const ws = getWebSocket();
+            let isConnecting = false;
+
+            async function connectWebSocket() {
+                if (isConnecting) return;
+                isConnecting = true;
+
+                try {
+                    await ws.connect(roomId!, currentUsername!);
+                    console.log("Connected to WebSocket");
+
+                    // Listen for user updates
+                    ws.on("users_updated", (data) => {
+                        displayUsers(data.users);
+                    });
+
+                    // Listen for quiz started event
+                    ws.on("quiz_started", (data) => {
+                        console.log("Quiz started:", data);
+                        window.location.href = `/quiz?id=${roomId}&username=${currentUsername}`;
+                    });
+
+                    // Listen for errors
+                    ws.on("error", (data) => {
+                        console.error("WebSocket error:", data);
+                        alert(data.message || "An error occurred");
+                    });
+                } catch (error) {
+                    console.error("Failed to connect to WebSocket:", error);
+                    alert(
+                        "Failed to connect to server. Please refresh the page.",
+                    );
+                }
+
+                isConnecting = false;
+            }
+
+            function displayUsers(users: any[]) {
+                const container = document.getElementById("usersContainer");
+                const userCountEl = document.getElementById("userCount");
+
+                if (!container || !userCountEl) return;
+
+                userCountEl.textContent = users.length.toString();
+
+                if (users.length === 0) {
+                    container.innerHTML =
+                        '<div class="empty-state">No users in room yet...</div>';
+                    return;
+                }
+
+                const usersGrid = document.createElement("div");
+                usersGrid.className = "users-grid";
+
+                users.forEach((user) => {
+                    const userCard = document.createElement("div");
+                    userCard.className = "user-card";
+
+                    const username =
+                        typeof user === "string" ? user : user.username;
+
+                    if (username === currentUsername) {
+                        userCard.classList.add("current-user");
+                    }
+
+                    // Get first letter of username for avatar
+                    const initial = username.charAt(0).toUpperCase();
+
+                    userCard.innerHTML = `
+                    <div class="user-avatar">${initial}</div>
+                    <div class="user-name">${escapeHtml(username)}</div>
+                    ${username === currentUsername ? '<div class="current-user-badge">YOU</div>' : ""}
+                `;
+
+                    usersGrid.appendChild(userCard);
+                });
+
+                container.innerHTML = "";
+                container.appendChild(usersGrid);
+            }
+
+            function escapeHtml(text) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            async function leaveRoom() {
+                ws.send({
+                    type: "leave_room",
+                });
+                ws.close();
+                window.location.href = "/qr-room";
+            }
+
+            // Leave room button
+            const leaveButton = document.getElementById("leaveButton");
+            if (leaveButton) {
+                leaveButton.addEventListener("click", leaveRoom);
+            }
+
+            // Start quiz button
+            const startQuizButton = document.getElementById("startQuizButton");
+            const quizSelect = document.getElementById(
+                "quizSelect",
+            ) as HTMLSelectElement;
+
+            if (startQuizButton) {
+                startQuizButton.addEventListener("click", async () => {
+                    const selectedQuiz =
+                        quizSelect?.value || "general-knowledge";
+
+                    (startQuizButton as HTMLButtonElement).disabled = true;
+                    startQuizButton.textContent = "Starting Quiz...";
+
+                    try {
+                        ws.send({
+                            type: "start_quiz",
+                            quizId: selectedQuiz,
+                        });
+                    } catch (error) {
+                        console.error("Error starting quiz:", error);
+                        alert("Failed to start quiz. Please try again.");
+                        (startQuizButton as HTMLButtonElement).disabled = false;
+                        startQuizButton.innerHTML =
+                            '<span class="button-icon">▶</span> Start Quiz';
+                    }
+                });
+            }
+
+            // Leave room on page unload
+            window.addEventListener("beforeunload", () => {
+                ws.send({
+                    type: "leave_room",
+                });
+            });
+
+            // Initialize WebSocket connection
+            connectWebSocket();
+        </script>
+    </body>
+</html>

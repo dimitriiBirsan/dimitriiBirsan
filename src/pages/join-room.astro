@@ -1,0 +1,114 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import "../styles/elements/join-room.css";
+
+// Generate UUID on the server side
+function generateUUID() {
+    return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(
+        /[xy]/g,
+        function (c) {
+            const r = (Math.random() * 16) | 0;
+            const v = c === "x" ? r : (r & 0x3) | 0x8;
+            return v.toString(16);
+        },
+    );
+}
+
+const roomId = generateUUID();
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title="Join Room" description="Join a room" />
+    </head>
+    <body>
+        <div class="join-container">
+            <h1>Welcome!</h1>
+
+            <div class="room-id-section">
+                <div class="room-id-label">Room ID</div>
+                <div class="room-id" id="roomId">{roomId}</div>
+            </div>
+
+            <form id="joinForm">
+                <div class="form-group">
+                    <label for="username">Your Username</label>
+                    <input
+                        type="text"
+                        id="username"
+                        name="username"
+                        placeholder="Enter your name..."
+                        required
+                        autocomplete="off"
+                        maxlength="30"
+                    />
+                    <div class="error-message" id="errorMessage"></div>
+                </div>
+
+                <button type="submit" class="join-button" id="joinButton">
+                    Join Room
+                </button>
+            </form>
+        </div>
+
+        <script>
+            const form = document.getElementById("joinForm");
+            const usernameInput = document.getElementById("username");
+            const joinButton = document.getElementById("joinButton");
+            const errorMessage = document.getElementById("errorMessage");
+            const roomId = document.getElementById("roomId")?.textContent;
+            form.addEventListener("submit", async (e) => {
+                e.preventDefault();
+
+                const username = usernameInput.value.trim();
+
+                if (!username) {
+                    showError("Please enter a username");
+                    return;
+                }
+
+                // Disable button during submission
+                joinButton.disabled = true;
+                joinButton.textContent = "Joining...";
+                errorMessage.classList.remove("show");
+
+                try {
+                    const response = await fetch("/api/room/join", {
+                        method: "POST",
+                        headers: {
+                            "Content-Type": "application/json",
+                        },
+                        body: JSON.stringify({
+                            roomId: "standard-123",
+                            username: username,
+                        }),
+                    });
+
+                    if (response.ok) {
+                        console.log("Joined room successfully");
+                        // Redirect to room page
+                        window.location.href = `/room?id=standard-123&username=${encodeURIComponent(username)}`;
+                    } else {
+                        const error = await response.json();
+                        showError(error.message || "Failed to join room");
+                        joinButton.disabled = false;
+                        joinButton.textContent = "Join Room";
+                    }
+                } catch (error) {
+                    showError("Network error. Please try again.");
+                    joinButton.disabled = false;
+                    joinButton.textContent = "Join Room";
+                }
+            });
+
+            function showError(message) {
+                errorMessage.textContent = message;
+                errorMessage.classList.add("show");
+            }
+
+            // Focus username input on load
+            usernameInput.focus();
+        </script>
+    </body>
+</html>

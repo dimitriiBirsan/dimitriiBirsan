@@ -17,4 +17,21 @@ const blog = defineCollection({
 		}),
 });
 
-export const collections = { blog };
+const quiz = defineCollection({
+	// Load MDX files in the `src/content/quiz/` directory.
+	loader: glob({ base: './src/content/quiz', pattern: '**/*.mdx' }),
+	// Type-check frontmatter using a schema
+	schema: z.object({
+		title: z.string(),
+		description: z.string(),
+		timePerQuestion: z.number().default(30), // seconds
+		questions: z.array(z.object({
+			question: z.string(),
+			options: z.array(z.string()),
+			correctAnswer: z.number(),
+			points: z.number().default(100)
+		}))
+	}),
+});
+
+export const collections = { blog, quiz };

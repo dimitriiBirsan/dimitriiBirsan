@@ -1,0 +1,122 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import "../../styles/elements/leaderboard.css";
+import "../../styles/globals/index.css";
+
+const roomId = Astro.url.searchParams.get("id");
+const username = Astro.url.searchParams.get("username");
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <div class="leaderboard-container">
+            <h1>🎉 Quiz Complete! 🎉</h1>
+
+            <div class="final-results-header">
+                <p>Great job everyone! Here are the final results:</p>
+            </div>
+
+            <div class="podium" id="podium">
+                <!-- Top 3 will be displayed here -->
+            </div>
+
+            <div class="leaderboard-table" id="leaderboardTable">
+                <!-- Full rankings will be displayed here -->
+            </div>
+
+            <button class="return-button" id="returnButton"
+                >Return to Room</button
+            >
+        </div>
+
+        <script>
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get("id");
+            const currentUsername = urlParams.get("username");
+
+            async function fetchFinalResults() {
+                try {
+                    const response = await fetch(
+                        `/api/quiz/get-leaderboard?roomId=${roomId}`,
+                    );
+                    if (response.ok) {
+                        const data = await response.json();
+                        displayFinalResults(data);
+                    }
+                } catch (error) {
+                    console.error("Error fetching final results:", error);
+                }
+            }
+
+            function displayFinalResults(data: any) {
+                // Display podium (top 3)
+                const podium = document.getElementById("podium");
+                if (podium && data.leaderboard.length > 0) {
+                    const top3 = data.leaderboard.slice(0, 3);
+                    podium.innerHTML = "";
+
+                    const positions = [1, 0, 2];
+                    const heights = ["120px", "160px", "100px"];
+                    const medals = ["🥈", "🥇", "🥉"];
+
+                    positions.forEach((index, displayIndex) => {
+                        if (top3[index]) {
+                            const user = top3[index];
+                            const podiumSpot = document.createElement("div");
+                            podiumSpot.className = `podium-spot ${user.username === currentUsername ? "current-user" : ""}`;
+                            podiumSpot.style.height = heights[displayIndex];
+                            podiumSpot.innerHTML = `
+                                <div class="medal">${medals[index]}</div>
+                                <div class="podium-name">${escapeHtml(user.username)}</div>
+                                <div class="podium-score">${user.totalScore} pts</div>
+                            `;
+                            podium.appendChild(podiumSpot);
+                        }
+                    });
+                }
+
+                // Display full leaderboard table
+                const table = document.getElementById("leaderboardTable");
+                if (table) {
+                    table.innerHTML = "";
+                    data.leaderboard.forEach((user: any, index: number) => {
+                        const row = document.createElement("div");
+                        row.className = `leaderboard-row ${user.username === currentUsername ? "current-user" : ""}`;
+                        row.innerHTML = `
+                            <div class="rank">#${index + 1}</div>
+                            <div class="player-info">
+                                <span class="player-name">${escapeHtml(user.username)}</span>
+                            </div>
+                            <div class="score-info">
+                                <span class="total-score">${user.totalScore} pts</span>
+                            </div>
+                        `;
+                        table.appendChild(row);
+                    });
+                }
+            }
+
+            function escapeHtml(text: string) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Return to room
+            const returnButton = document.getElementById("returnButton");
+            if (returnButton) {
+                returnButton.addEventListener("click", () => {
+                    window.location.href = `/room?id=${roomId}&username=${currentUsername}`;
+                });
+            }
+
+            // Initialize
+            fetchFinalResults();
+        </script>
+    </body>
+</html>

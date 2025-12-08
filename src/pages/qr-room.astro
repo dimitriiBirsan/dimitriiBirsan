@@ -1,0 +1,40 @@
+---
+import BaseHead from "../components/BaseHead.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../consts";
+import "../styles/elements/qr-room.css";
+const baseUrl = Astro.url.origin;
+const joinUrl = `${baseUrl}/join-room`;
+// Using qrserver.com API for QR code generation
+const qrCodeUrl = `https://api.qrserver.com/v1/create-qr-code/?size=300x300&data=${encodeURIComponent(joinUrl)}`;
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+        <style></style>
+    </head>
+    <body>
+        <div class="qr-container">
+            <h1>🚪 Join the Room</h1>
+            <p class="instruction">Scan this QR code with your phone to join</p>
+
+            <div class="qr-wrapper">
+                <img
+                    src={qrCodeUrl}
+                    alt="QR Code to join room"
+                    class="qr-code"
+                />
+            </div>
+
+            <div class="divider"></div>
+
+            <p class="instruction">Or visit this link:</p>
+            <div class="url-display">{joinUrl}</div>
+
+            <div class="manual-link">
+                <a href="/join-room">Open Join Page Manually →</a>
+            </div>
+        </div>
+    </body>
+</html>

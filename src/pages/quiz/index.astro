@@ -1,0 +1,291 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import "../../styles/elements/quiz.css";
+import "../../styles/globals/index.css";
+
+const roomId = Astro.url.searchParams.get("id");
+const username = Astro.url.searchParams.get("username");
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <div class="quiz-container">
+            <div class="quiz-header">
+                <h1 id="quizTitle">Quiz</h1>
+                <div class="quiz-progress">
+                    <span id="questionNumber">1</span> / <span
+                        id="totalQuestions">5</span
+                    >
+                </div>
+            </div>
+
+            <div class="timer-container">
+                <svg class="timer-ring" viewBox="0 0 100 100">
+                    <circle class="timer-ring-background" cx="50" cy="50" r="45"
+                    ></circle>
+                    <circle
+                        class="timer-ring-progress"
+                        id="timerProgress"
+                        cx="50"
+                        cy="50"
+                        r="45"></circle>
+                </svg>
+                <div class="timer-value" id="timerValue">30</div>
+            </div>
+
+            <div class="question-card">
+                <h2 class="question-text" id="questionText">
+                    Loading question...
+                </h2>
+                <div class="answer-grid" id="answerGrid"></div>
+            </div>
+
+            <div class="users-status">
+                <h3>Participants</h3>
+                <div class="users-grid" id="usersStatus"></div>
+            </div>
+        </div>
+
+        <script>
+            import { getWebSocket } from "../../lib/ws-client";
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get("id");
+            const currentUsername = urlParams.get("username");
+
+            let timeRemaining = 30;
+            let timerInterval: ReturnType<typeof setInterval>;
+            let hasAnswered = false;
+            let selectedAnswer: number | null = null;
+            let questionStartTime: Date;
+
+            const ws = getWebSocket();
+
+            async function connectWebSocket() {
+                try {
+                    if (!ws.isConnected()) {
+                        await ws.connect(roomId!, currentUsername!);
+                    }
+
+                    // Request current state when connected
+                    ws.on("connected", () => {
+                        console.log(
+                            "Connected to WebSocket, requesting current state",
+                        );
+                        ws.send({
+                            type: "get_current_state",
+                        });
+                    });
+
+                    // Listen for question updates
+                    ws.on("question_update", (data) => {
+                        console.log("Question update:", data);
+                        displayQuestion(data);
+                        startTimer(data.questionEndTime);
+                    });
+
+                    // Listen for user answered events
+                    ws.on("user_answered", (data) => {
+                        console.log("User answered:", data);
+                        updateUsersStatus(data.answeredUsers);
+                    });
+
+                    // Listen for leaderboard event
+                    ws.on("show_leaderboard", (data) => {
+                        console.log("Show leaderboard");
+                        stopTimer();
+
+                        // Cache leaderboard data in sessionStorage for instant display
+                        sessionStorage.setItem(
+                            "leaderboard_data",
+                            JSON.stringify(data),
+                        );
+
+                        window.location.href = `/quiz/leaderboard?id=${roomId}&username=${currentUsername}`;
+                    });
+
+                    // Listen for errors
+                    ws.on("error", (data) => {
+                        console.error("WebSocket error:", data);
+                        alert(data.message || "An error occurred");
+                    });
+                } catch (error) {
+                    console.error("Failed to connect to WebSocket:", error);
+                    alert(
+                        "Failed to connect to server. Please refresh the page.",
+                    );
+                }
+            }
+
+            function displayQuestion(data: any) {
+                const questionText = document.getElementById("questionText");
+                const answerGrid = document.getElementById("answerGrid");
+                const questionNumber =
+                    document.getElementById("questionNumber");
+                const totalQuestions =
+                    document.getElementById("totalQuestions");
+                const quizTitle = document.getElementById("quizTitle");
+
+                if (questionText)
+                    questionText.textContent = data.question.question;
+                if (questionNumber)
+                    questionNumber.textContent = (
+                        data.questionIndex + 1
+                    ).toString();
+                if (totalQuestions)
+                    totalQuestions.textContent = data.totalQuestions.toString();
+
+                // Display answers
+                if (answerGrid && !hasAnswered) {
+                    answerGrid.innerHTML = "";
+                    data.question.options.forEach(
+                        (option: string, index: number) => {
+                            const button = document.createElement("button");
+                            button.className = "answer-button";
+                            button.textContent = `${String.fromCharCode(65 + index)}. ${option}`;
+                            button.addEventListener("click", () =>
+                                selectAnswer(index),
+                            );
+                            answerGrid.appendChild(button);
+                        },
+                    );
+                }
+
+                // Update users status
+                updateUsersStatus(data.answeredUsers || []);
+
+                // Store question start time
+                questionStartTime = new Date(data.questionStartTime);
+            }
+
+            function updateUsersStatus(answeredUsers: string[]) {
+                const usersStatus = document.getElementById("usersStatus");
+                if (!usersStatus) return;
+
+                usersStatus.innerHTML = "";
+                answeredUsers.forEach((user: string) => {
+                    const userCard = document.createElement("div");
+                    userCard.className = "user-status-card answered";
+                    userCard.innerHTML = `
+                        <span class="user-status-name">${escapeHtml(user)}</span>
+                        <span class="checkmark">✓</span>
+                    `;
+                    usersStatus.appendChild(userCard);
+                });
+            }
+
+            async function selectAnswer(answer: number) {
+                if (hasAnswered) return;
+
+                selectedAnswer = answer;
+                hasAnswered = true;
+
+                // Visual feedback
+                const buttons = document.querySelectorAll(".answer-button");
+                buttons.forEach((btn, index) => {
+                    if (index === answer) {
+                        btn.classList.add("selected");
+                    }
+                    (btn as HTMLButtonElement).disabled = true;
+                });
+
+                // Stop timer
+                stopTimer();
+
+                // Submit answer via WebSocket
+                try {
+                    ws.send({
+                        type: "submit_answer",
+                        answer: answer,
+                    });
+                } catch (error) {
+                    console.error("Error submitting answer:", error);
+                }
+            }
+
+            function startTimer(questionEndTime?: string) {
+                // Reset timer state
+                hasAnswered = false;
+                selectedAnswer = null;
+
+                const timerValue = document.getElementById("timerValue");
+                const timerProgress = document.getElementById("timerProgress");
+                const radius = 45;
+                const circumference = 2 * Math.PI * radius;
+                const maxTime = 30; // Maximum time for a question
+
+                if (timerProgress) {
+                    timerProgress.style.strokeDasharray = `${circumference}`;
+                    timerProgress.style.strokeDashoffset = "0";
+                }
+
+                // Calculate initial time remaining based on end time
+                if (questionEndTime) {
+                    const endTime = new Date(questionEndTime).getTime();
+                    const now = Date.now();
+                    timeRemaining = Math.max(
+                        0,
+                        Math.floor((endTime - now) / 1000),
+                    );
+                } else {
+                    timeRemaining = maxTime;
+                }
+
+                if (timerValue)
+                    timerValue.textContent = timeRemaining.toString();
+
+                timerInterval = setInterval(() => {
+                    timeRemaining--;
+                    if (timerValue)
+                        timerValue.textContent = timeRemaining.toString();
+
+                    // Update progress ring
+                    if (timerProgress) {
+                        const progress = timeRemaining / maxTime;
+                        const offset = circumference * (1 - progress);
+                        timerProgress.style.strokeDashoffset =
+                            offset.toString();
+                    }
+
+                    // Add pulsing animation when < 10 seconds
+                    if (timeRemaining < 10) {
+                        timerValue?.classList.add("urgent");
+                    }
+
+                    if (timeRemaining <= 0) {
+                        stopTimer();
+                        if (!hasAnswered) {
+                            // Auto-submit with -1 (no answer)
+                            selectAnswer(-1);
+                        }
+                    }
+                }, 1000);
+            }
+
+            function stopTimer() {
+                if (timerInterval) {
+                    clearInterval(timerInterval);
+                }
+            }
+
+            function escapeHtml(text: string) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Initialize
+            connectWebSocket();
+
+            // Cleanup on page unload
+            window.addEventListener("beforeunload", () => {
+                stopTimer();
+            });
+        </script>
+    </body>
+</html>

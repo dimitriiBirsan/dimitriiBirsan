@@ -1,0 +1,219 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import { SITE_TITLE, SITE_DESCRIPTION } from "../../consts";
+import "../../styles/elements/leaderboard.css";
+import "../../styles/globals/index.css";
+
+const roomId = Astro.url.searchParams.get("id");
+const username = Astro.url.searchParams.get("username");
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead title={SITE_TITLE} description={SITE_DESCRIPTION} />
+    </head>
+    <body>
+        <div class="leaderboard-container">
+            <div class="correct-answer-section" id="correctAnswerSection">
+                <!-- Will be populated by JavaScript -->
+            </div>
+
+            <div class="countdown-badge" id="countdownBadge">
+                Next question in <span id="countdown">10</span>s
+            </div>
+
+            <h1>Leaderboard</h1>
+
+            <div class="podium" id="podium">
+                <!-- Top 3 will be displayed here -->
+            </div>
+
+            <div class="leaderboard-table" id="leaderboardTable">
+                <!-- Full rankings will be displayed here -->
+            </div>
+        </div>
+
+        <script>
+            import { getWebSocket } from "../../lib/ws-client";
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const roomId = urlParams.get("id");
+            const currentUsername = urlParams.get("username");
+
+            let countdown = 10;
+            let countdownInterval: ReturnType<typeof setInterval>;
+            const ws = getWebSocket();
+
+            async function connectWebSocket() {
+                try {
+                    // Check for cached leaderboard data first
+                    const cachedData =
+                        sessionStorage.getItem("leaderboard_data");
+                    if (cachedData) {
+                        const data = JSON.parse(cachedData);
+                        console.log("Using cached leaderboard data:", data);
+                        displayLeaderboard(data);
+                        // Clear it so it's not reused on refresh
+                        sessionStorage.removeItem("leaderboard_data");
+                    }
+
+                    if (!ws.isConnected()) {
+                        await ws.connect(roomId!, currentUsername!);
+                    }
+
+                    // Listen for leaderboard data (if not already received)
+                    ws.on("show_leaderboard", (data) => {
+                        console.log("Leaderboard data:", data);
+                        displayLeaderboard(data);
+                    });
+
+                    // Listen for next question event
+                    ws.on("next_question", (data) => {
+                        console.log("Next question event");
+                        stopCountdown();
+                        window.location.href = `/quiz?id=${roomId}&username=${currentUsername}`;
+                    });
+
+                    // Listen for quiz complete event
+                    ws.on("quiz_complete", () => {
+                        console.log("Quiz complete event");
+                        stopCountdown();
+                        window.location.href = `/quiz/results?id=${roomId}&username=${currentUsername}`;
+                    });
+
+                    // Listen for errors
+                    ws.on("error", (data) => {
+                        console.error("WebSocket error:", data);
+                    });
+
+                    // Only request leaderboard data if we didn't have cached data
+                    if (!cachedData) {
+                        ws.send({
+                            type: "request_leaderboard",
+                        });
+                    }
+                } catch (error) {
+                    console.error("Failed to connect to WebSocket:", error);
+                }
+            }
+
+            function displayLeaderboard(data: any) {
+                // Display correct answer
+                const correctAnswerSection = document.getElementById(
+                    "correctAnswerSection",
+                );
+                if (correctAnswerSection) {
+                    correctAnswerSection.innerHTML = `
+                        <div class="correct-answer-badge">Correct Answer</div>
+                        <div class="correct-answer-text">${String.fromCharCode(65 + data.correctAnswer)}. ${escapeHtml(data.correctAnswerText)}</div>
+                    `;
+                }
+
+                // Display podium (top 3)
+                const podium = document.getElementById("podium");
+                if (podium && data.leaderboard.length > 0) {
+                    const top3 = data.leaderboard.slice(0, 3);
+                    podium.innerHTML = "";
+
+                    // Order: 2nd, 1st, 3rd for visual podium effect
+                    const positions = [1, 0, 2];
+                    const heights = ["120px", "160px", "100px"];
+                    const medals = ["🥈", "🥇", "🥉"];
+
+                    positions.forEach((index, displayIndex) => {
+                        if (top3[index]) {
+                            const user = top3[index];
+                            const podiumSpot = document.createElement("div");
+                            podiumSpot.className = `podium-spot ${user.username === currentUsername ? "current-user" : ""}`;
+                            podiumSpot.style.height = heights[displayIndex];
+                            podiumSpot.innerHTML = `
+                                <div class="medal">${medals[index]}</div>
+                                <div class="podium-name">${escapeHtml(user.username)}</div>
+                                <div class="podium-score">${user.totalScore} pts</div>
+                                ${user.isCorrect ? `<div class="points-earned">+${user.pointsEarned}</div>` : '<div class="incorrect-badge">✗</div>'}
+                            `;
+                            podium.appendChild(podiumSpot);
+                        }
+                    });
+                }
+
+                // Display full leaderboard table
+                const table = document.getElementById("leaderboardTable");
+                if (table) {
+                    table.innerHTML = "";
+                    data.leaderboard.forEach((user: any, index: number) => {
+                        const row = document.createElement("div");
+                        row.className = `leaderboard-row ${user.username === currentUsername ? "current-user" : ""}`;
+                        row.innerHTML = `
+                                <div class="rank">#${index + 1}</div>
+                                <div class="player-info">
+                                    <span class="player-name">${escapeHtml(user.username)}</span>
+                                    ${user.isCorrect ? '<span class="correct-indicator">✓</span>' : '<span class="incorrect-indicator">✗</span>'}
+                                </div>
+                                <div class="score-info">
+                                    <span class="total-score">${user.totalScore} pts</span>
+                                    ${user.isCorrect ? `<span class="points-change">+${user.pointsEarned}</span>` : '<span class="points-change no-points">+0</span>'}
+                                </div>
+                                <div class="time-info">${(user.timeElapsed / 1000).toFixed(2)}s</div>
+                            `;
+                        table.appendChild(row);
+                    });
+                }
+
+                // Start countdown after displaying leaderboard
+                if (!countdownInterval) {
+                    startCountdown();
+                }
+            }
+
+            function startCountdown() {
+                const countdownEl = document.getElementById("countdown");
+
+                countdownInterval = setInterval(() => {
+                    countdown--;
+                    if (countdownEl)
+                        countdownEl.textContent = countdown.toString();
+
+                    if (countdown <= 0) {
+                        stopCountdown();
+                        advanceToNextQuestion();
+                    }
+                }, 1000);
+            }
+
+            function stopCountdown() {
+                if (countdownInterval) {
+                    clearInterval(countdownInterval);
+                }
+            }
+
+            async function advanceToNextQuestion() {
+                try {
+                    // Send advance event via WebSocket
+                    ws.send({
+                        type: "advance_question",
+                    });
+
+                    // The redirect will happen when we receive next_question or quiz_complete event
+                } catch (error) {
+                    console.error("Error advancing question:", error);
+                }
+            }
+
+            function escapeHtml(text: string) {
+                const div = document.createElement("div");
+                div.textContent = text;
+                return div.innerHTML;
+            }
+
+            // Initialize
+            connectWebSocket();
+
+            // Cleanup on page unload
+            window.addEventListener("beforeunload", () => {
+                stopCountdown();
+            });
+        </script>
+    </body>
+</html>
