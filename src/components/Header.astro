@@ -1,8 +1,8 @@
 ---
-import { SITE_TITLE } from '../consts';
-import Hamburger from './Hamburger.astro';
-import Navigation from './Navigation.astro';
-import ThemeSwitcher from './ThemeSwitcher.astro';
+import { SITE_TITLE } from "../consts";
+import Hamburger from "./Hamburger.astro";
+import Navigation from "./Navigation.astro";
+import ThemeSwitcher from "./ThemeSwitcher.astro";
 
 const i18nData = Astro.props.i18nData;
 ---
@@ -22,6 +22,7 @@ const i18nData = Astro.props.i18nData;
 		margin: 0;
 		padding: 0 1em;
 		box-shadow: 0 2px 8px rgba(var(--black), 5%);
+		position: relative;
 	}
 	h2 {
 		margin: 0;
