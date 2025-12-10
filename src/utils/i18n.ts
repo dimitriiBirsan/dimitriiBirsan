@@ -30,15 +30,23 @@ function getLocalizedPagePath(pathname: string, targetLang: SupportedLanguage): 
 
   // Current path has a language prefix (e.g., /it/about)
   if (currentLang in LANGUAGES && currentLang !== DEFAULT_LANGUAGE) {
+    const restPath = rest.join('/');
     return targetLang === DEFAULT_LANGUAGE
-      ? '/' + rest.join('/')  // To English: remove language prefix
-      : `/${targetLang}/${rest.join('/')}`; // To other language: replace prefix
+      ? (restPath ? '/' + restPath : '/')  // To English: remove language prefix
+      : `/${targetLang}${restPath ? '/' + restPath : ''}`; // To other language: replace prefix
   }
 
   // Current path is in English (e.g., /about)
-  return targetLang === DEFAULT_LANGUAGE
-    ? pathname  // Keep as is for English
-    : `/${targetLang}${pathname}`; // Add language prefix
+  if (targetLang === DEFAULT_LANGUAGE) {
+    return pathname;  // Keep as is for English
+  }
+
+  // Handle homepage specially to avoid /it/ with trailing slash
+  if (pathname === '/') {
+    return `/${targetLang}`;
+  }
+
+  return `/${targetLang}${pathname}`; // Add language prefix
 }
 
 export function getLocalizedPathname(pathname: string, targetLang: SupportedLanguage): string {

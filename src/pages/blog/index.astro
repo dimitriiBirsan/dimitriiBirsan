@@ -9,9 +9,9 @@ import { SITE_DESCRIPTION, SITE_TITLE } from "../../consts";
 import { Image } from "astro:assets";
 import "../../styles/elements/blog.css";
 
-const posts = (await getCollection("blog")).sort(
-	(a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf(),
-);
+const posts = (await getCollection("blog"))
+	.filter((post) => !post.data.lang || post.data.lang === "en")
+	.sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <!doctype html>

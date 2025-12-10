@@ -2,60 +2,26 @@
 import NavLink from "./NavLink.astro";
 import { getLocalizedPathname } from "../utils/i18n";
 import type { SupportedLanguage } from "../types/i18n";
-
-interface NavigationTranslations {
-  home: string;
-  about: string;
-  blog: string;
-  skills: string;
-  contact: string;
-}
-
-const navigationTranslations: Record<
-  SupportedLanguage,
-  NavigationTranslations
-> = {
-  en: {
-    home: "HOME",
-    about: "ABOUT",
-    blog: "BLOG",
-    skills: "SKILLS",
-    contact: "CONTACT",
-  },
-  it: {
-    home: "HOME",
-    about: "CHI SONO",
-    blog: "BLOG",
-    skills: "SKILLS",
-    contact: "CONTATTI",
-  },
-};
-
-function getNavigationTranslations(
-  language: SupportedLanguage,
-): NavigationTranslations {
-  return navigationTranslations[language];
-}
+import { useTranslations } from "../data/i18n/ui";
 
 interface Props {
-  language: SupportedLanguage;
+  language?: SupportedLanguage;
 }
 
 const { language = "en" } = Astro.props;
+const t = useTranslations(language);
 
 const currentUrl = Astro.request.url;
 
 // Base routes (always in English format)
 const BASE_ROUTES = ["/", "/blog", "/skills", "/about"] as const;
 
-// Get translations for labels
-const t = getNavigationTranslations(language);
-// Create route-to-label mapping
+// Create route-to-label mapping using centralized translations
 const routeLabelMap = new Map([
-  ["/", t.home],
-  ["/blog", t.blog],
-  ["/skills", t.skills],
-  ["/about", t.about],
+  ["/", t("nav.home")],
+  ["/blog", t("nav.blog")],
+  ["/skills", t("nav.skills")],
+  ["/about", t("nav.about")],
 ]);
 
 // Create route mapping with href and label

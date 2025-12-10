@@ -1,15 +1,16 @@
 ---
 import { getCollection } from "astro:content";
-import BaseHead from "../../components/BaseHead.astro";
-import Footer from "../../components/Footer.astro";
-import Header from "../../components/Header.astro";
-import { SITE_TITLE } from "../../consts";
-import "../../styles/elements/blog.css";
+import BaseHead from "../../../components/BaseHead.astro";
+import Footer from "../../../components/Footer.astro";
+import Header from "../../../components/Header.astro";
+import { useTranslations } from "../../../data/i18n/ui";
+import "../../../styles/elements/blog.css";
+
+const lang = "it";
+const t = useTranslations(lang);
 
 const allPosts = await getCollection("blog");
-const posts = allPosts.filter(
-    (post) => !post.data.lang || post.data.lang === "en",
-);
+const posts = allPosts.filter((post) => post.data.lang === "it");
 
 // Get all unique tags with post counts
 const tagCounts = posts.reduce(
@@ -30,33 +31,37 @@ const tags = Object.entries(tagCounts)
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="it">
     <head>
         <BaseHead
-            title={`Tags - ${SITE_TITLE}`}
-            description="Browse blog posts by tags"
+            title="Tag - Dumitru Birsan"
+            description="Sfoglia gli articoli del blog per tag"
         />
     </head>
     <body>
-        <Header />
+        <Header language={lang} />
         <main class="container">
             <section>
                 <div class="page-header">
-                    <h1>Browse by Tag</h1>
-                    <p class="subtitle">Explore articles organized by topic</p>
+                    <h1>Sfoglia per Tag</h1>
+                    <p class="subtitle">
+                        Esplora gli articoli organizzati per argomento
+                    </p>
                 </div>
 
                 <ul class="blog-grid tags-layout">
                     {
                         tags.map(({ tag, count }) => (
                             <li class="blog-card tag-card">
-                                <a href={`/tags/${tag.toLowerCase()}/`}>
+                                <a href={`/it/tags/${tag.toLowerCase()}/`}>
                                     <div class="card-content">
                                         <span class="tag-badge">{count}</span>
                                         <h3 class="title">{tag}</h3>
                                         <p class="description">
                                             {count}{" "}
-                                            {count === 1 ? "post" : "posts"}
+                                            {count === 1
+                                                ? "articolo"
+                                                : "articoli"}
                                         </p>
                                     </div>
                                 </a>
@@ -66,7 +71,7 @@ const tags = Object.entries(tagCounts)
                 </ul>
             </section>
         </main>
-        <Footer />
+        <Footer language={lang} />
 
         <style>
             /* Custom styles for tags layout using existing design system */

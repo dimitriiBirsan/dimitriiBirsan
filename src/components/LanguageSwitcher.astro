@@ -1,0 +1,127 @@
+---
+import { LANGUAGES, DEFAULT_LANGUAGE } from "../types/i18n";
+import type { SupportedLanguage } from "../types/i18n";
+import { getLocalizedPathname, getLanguageFromURL } from "../utils/i18n";
+
+interface Props {
+    currentPath: string;
+}
+
+const { currentPath } = Astro.props;
+const currentLang = getLanguageFromURL(currentPath);
+
+/**
+ * Check if the current path is an individual blog post.
+ * Blog posts have paths like /blog/some-slug/ or /it/blog/some-slug/
+ * But blog listing is just /blog or /it/blog
+ */
+function isIndividualBlogPost(path: string): boolean {
+    // Remove trailing slash and split
+    const cleanPath = path.replace(/\/$/, "");
+    const segments = cleanPath.split("/").filter(Boolean);
+
+    // Check for /blog/something or /it/blog/something (more than just /blog or /it/blog)
+    if (segments[0] === "blog" && segments.length > 1) return true;
+    if (segments[0] === "it" && segments[1] === "blog" && segments.length > 2)
+        return true;
+
+    return false;
+}
+
+/**
+ * Get the appropriate target path for language switching.
+ * For individual blog posts, redirect to blog listing since posts may not have translations.
+ */
+function getLanguageSwitchPath(
+    path: string,
+    targetLang: SupportedLanguage,
+): string {
+    if (isIndividualBlogPost(path)) {
+        // Redirect to blog listing for that language
+        return targetLang === DEFAULT_LANGUAGE
+            ? "/blog"
+            : `/${targetLang}/blog`;
+    }
+    return getLocalizedPathname(path, targetLang);
+}
+---
+
+<div class="language-switcher">
+    {
+        Object.values(LANGUAGES).map((lang) => {
+            const isActive = lang.code === currentLang;
+            const targetPath = getLanguageSwitchPath(currentPath, lang.code);
+
+            return (
+                <a
+                    href={targetPath}
+                    class:list={["lang-option", { active: isActive }]}
+                    aria-label={`Switch to ${lang.name}`}
+                    aria-current={isActive ? "true" : undefined}
+                >
+                    <span class="lang-flag">{lang.flag}</span>
+                    <span class="lang-code">{lang.code.toUpperCase()}</span>
+                </a>
+            );
+        })
+    }
+</div>
+
+<style>
+    .language-switcher {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.25rem;
+        background: color-mix(in srgb, var(--bg-secondary) 60%, transparent);
+        border-radius: var(--border-radius);
+        border: 1px solid var(--border-color);
+    }
+
+    .lang-option {
+        display: flex;
+        align-items: center;
+        gap: 0.25rem;
+        padding: 0.375rem 0.5rem;
+        border-radius: calc(var(--border-radius) - 2px);
+        text-decoration: none;
+        color: var(--text-secondary);
+        font-size: var(--font-size-sm);
+        font-weight: 500;
+        transition: all 0.2s ease;
+    }
+
+    .lang-option:hover {
+        background: color-mix(in srgb, var(--accent-primary) 10%, transparent);
+        color: var(--text-primary);
+    }
+
+    .lang-option.active {
+        background: var(--accent-primary);
+        color: var(--bg-primary);
+    }
+
+    .lang-option.active:hover {
+        background: var(--accent-secondary);
+    }
+
+    .lang-flag {
+        font-size: 1rem;
+        line-height: 1;
+    }
+
+    .lang-code {
+        font-size: 0.75rem;
+        letter-spacing: 0.05em;
+    }
+
+    @media (max-width: 636px) {
+        .lang-code {
+            display: none;
+        }
+
+        .lang-option {
+            padding: 0.375rem;
+        }
+    }
+</style>

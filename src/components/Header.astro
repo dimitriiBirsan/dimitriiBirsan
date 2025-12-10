@@ -3,16 +3,27 @@ import { SITE_TITLE } from "../consts";
 import Hamburger from "./Hamburger.astro";
 import Navigation from "./Navigation.astro";
 import ThemeSwitcher from "./ThemeSwitcher.astro";
+import LanguageSwitcher from "./LanguageSwitcher.astro";
+import { getLocalizedPathname, getLanguageFromURL } from "../utils/i18n";
+import type { SupportedLanguage } from "../types/i18n";
 
-const i18nData = Astro.props.i18nData;
+interface Props {
+	language?: SupportedLanguage;
+}
+
+const { language } = Astro.props;
+const currentPath = Astro.url.pathname;
+const currentLang = language ?? getLanguageFromURL(currentPath);
+const homeHref = getLocalizedPathname("/", currentLang);
 ---
 
 <header>
 	<nav>
 		<Hamburger />
-		<h2><a href="/">{SITE_TITLE}</a></h2>
-		<Navigation language={i18nData?.currentLang} />
+		<h2><a href={homeHref}>{SITE_TITLE}</a></h2>
+		<Navigation language={currentLang} />
 		<section class="switchers">
+			<LanguageSwitcher currentPath={currentPath} />
 			<ThemeSwitcher />
 		</section>
 	</nav>
@@ -47,5 +58,11 @@ const i18nData = Astro.props.i18nData;
 	nav a.active {
 		text-decoration: none;
 		border-bottom-color: var(--accent);
+	}
+
+	.switchers {
+		display: flex;
+		align-items: center;
+		gap: 0.5rem;
 	}
 </style>

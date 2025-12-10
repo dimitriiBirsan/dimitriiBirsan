@@ -1,6 +1,14 @@
 ---
 import Tracker from "./Tracker.astro";
+import { useTranslations } from "../data/i18n/ui";
+import type { SupportedLanguage } from "../types/i18n";
 
+interface Props {
+	language?: SupportedLanguage;
+}
+
+const { language = "en" } = Astro.props;
+const t = useTranslations(language);
 const today = new Date();
 ---
 
@@ -10,10 +18,10 @@ const today = new Date();
 		<div class="footer-top">
 			<div class="footer-brand">
 				<h3 class="brand-name">Dumitru Birsan</h3>
-				<p class="brand-tagline">Software Engineer & Developer</p>
+				<p class="brand-tagline">{t("footer.tagline")}</p>
 			</div>
 			<div class="footer-social">
-				<p class="social-title">Connect with me</p>
+				<p class="social-title">{t("footer.connect")}</p>
 				<div class="social-links">
 					<a
 						href="https://stackoverflow.com/users/13526174/dumitru-birsan"
@@ -100,10 +108,12 @@ const today = new Date();
 		<div class="footer-divider"></div>
 		<div class="footer-bottom">
 			<p class="copyright">
-				&copy; {today.getFullYear()} Dumitru Birsan. All rights reserved.
+				{t("footer.copyright", { year: today.getFullYear() })}
 			</p>
 			<p class="made-with">
-				Made with <span class="heart">♥</span> using Astro
+				{t("footer.madeWith").replace("♥", "")}
+				<span class="heart">♥</span>
+				{t("footer.madeWith").split("♥")[1] || "using Astro"}
 			</p>
 		</div>
 	</div>

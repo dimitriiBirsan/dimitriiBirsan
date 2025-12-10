@@ -1,0 +1,279 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import Footer from "../../components/Footer.astro";
+import Header from "../../components/Header.astro";
+import { getCollection } from "astro:content";
+import { Image } from "astro:assets";
+import FormattedDate from "../../components/FormattedDate.astro";
+import { skills } from "../../data/skills";
+import { useTranslations } from "../../data/i18n/ui";
+import "../../styles/elements/blog.css";
+import "../../styles/elements/home.css";
+
+const lang = "it";
+const t = useTranslations(lang);
+
+const posts = (await getCollection("blog"))
+    .filter((post) => post.data.lang === "it")
+    .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf())
+    .slice(0, 3);
+
+const { frontendSkills, backendSkills, infrastructureSkills } = skills;
+
+// Top skills to showcase (3-4 from each category)
+const topFrontend = frontendSkills.slice(0, 1)[0]?.children?.slice(0, 4) || [];
+const topBackend = backendSkills
+    .slice(0, 2)
+    .flatMap((skill) => skill.children?.slice(0, 2) || [])
+    .slice(0, 4);
+const topInfrastructure =
+    infrastructureSkills.slice(0, 1)[0]?.children?.slice(0, 4) || [];
+---
+
+<!doctype html>
+<html lang="it">
+    <head>
+        <BaseHead
+            title="Dumitru Birsan"
+            description="Dumitru Birsan - Sviluppatore Full Stack"
+        />
+    </head>
+    <body>
+        <Header language={lang} />
+
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <p class="hero-greeting">{t("home.greeting")}</p>
+                <h1 class="hero-name">Dumitru Birsan</h1>
+                <h2 class="hero-title">{t("home.title")}</h2>
+                <p class="hero-tagline">{t("home.tagline")}</p>
+                <div class="hero-cta">
+                    <a href="/it/about" class="cta-button cta-primary">
+                        {t("home.cta.learnMore")}
+                    </a>
+                    <a href="/it/blog" class="cta-button cta-secondary">
+                        {t("home.cta.blog")}
+                    </a>
+                </div>
+            </div>
+        </section>
+
+        <main class="container">
+            <!-- About Preview Section -->
+            <section class="about-preview">
+                <h2 class="section-title">{t("home.about.title")}</h2>
+                <div class="about-content">
+                    <p>
+                        Il mio viaggio è iniziato ad <span
+                            class="about-highlight">Anenii Noi, Moldavia</span
+                        >, è passato per la Romania e si è radicato nel cuore
+                        industriale dell'Italia. Questo percorso migratorio mi
+                        ha insegnato una verità fondamentale: qualsiasi
+                        sistema—che sia una nuova lingua parlata o un codice
+                        legacy—può essere padroneggiato con pazienza e
+                        resilienza.
+                    </p>
+                    <p>
+                        Oggi opero all'intersezione tra <span
+                            class="about-highlight">IoT Industriale (IIoT)</span
+                        >
+                        e <span class="about-highlight"
+                            >Architettura Web Moderna</span
+                        >. Non costruisco solo siti web; progetto i sistemi
+                        nervosi digitali per macchinari industriali, colmando il
+                        divario tra le astrazioni Cloud di alto livello e la
+                        realtà dell'automazione sul campo.
+                    </p>
+                    <p>
+                        Come <span class="about-highlight"
+                            >Senior Developer presso Change Wave SRL</span
+                        >, mi concentro sulla progettazione di robuste
+                        applicazioni Full Stack, sulla costruzione di interfacce
+                        utente interattive e sull'orchestrazione di microservizi
+                        event-driven.
+                    </p>
+                    <a href="/it/about" class="read-more"
+                        >{t("home.about.readMore")}</a
+                    >
+                </div>
+            </section>
+
+            <!-- Skills Section -->
+            <section class="skills-showcase">
+                <h2 class="section-title">{t("home.skills.title")}</h2>
+                <div class="skills-grid-home">
+                    <!-- Frontend Skills -->
+                    <div class="skill-category-card">
+                        <h3 class="skill-category-title">
+                            <span class="skill-category-icon">⚛️</span>
+                            {t("home.skills.frontend")}
+                        </h3>
+                        <div class="skill-tags">
+                            {
+                                topFrontend.map((skill) => (
+                                    <span class="skill-tag-home">
+                                        {skill.name}
+                                    </span>
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Backend Skills -->
+                    <div class="skill-category-card">
+                        <h3 class="skill-category-title">
+                            <span class="skill-category-icon">⚙️</span>
+                            {t("home.skills.backend")}
+                        </h3>
+                        <div class="skill-tags">
+                            {
+                                topBackend.map((skill) => (
+                                    <span class="skill-tag-home">
+                                        {skill.name}
+                                    </span>
+                                ))
+                            }
+                        </div>
+                    </div>
+
+                    <!-- Infrastructure Skills -->
+                    <div class="skill-category-card">
+                        <h3 class="skill-category-title">
+                            <span class="skill-category-icon">☁️</span>
+                            {t("home.skills.infrastructure")}
+                        </h3>
+                        <div class="skill-tags">
+                            {
+                                topInfrastructure.map((skill) => (
+                                    <span class="skill-tag-home">
+                                        {skill.name}
+                                    </span>
+                                ))
+                            }
+                        </div>
+                    </div>
+                </div>
+                <div class="view-all-skills">
+                    <a href="/it/skills">{t("home.skills.viewAll")}</a>
+                </div>
+            </section>
+
+            <!-- Featured Blog Posts -->
+            <section class="blog-section">
+                <div class="blog-header">
+                    <h2 class="section-title">{t("home.blog.title")}</h2>
+                    <p class="blog-subtitle">{t("home.blog.subtitle")}</p>
+                </div>
+                <ul class="blog-grid featured">
+                    {
+                        posts.map((post) => (
+                            <li class="blog-card">
+                                <a href={`/it/blog/${post.id}/`}>
+                                    <div class="card-image">
+                                        {post.data.heroImage && (
+                                            <Image
+                                                width={720}
+                                                height={360}
+                                                src={post.data.heroImage}
+                                                alt={post.data.title}
+                                            />
+                                        )}
+                                    </div>
+                                    <div class="card-content">
+                                        <h4 class="title">{post.data.title}</h4>
+                                        {post.data.description && (
+                                            <p class="description">
+                                                {post.data.description}
+                                            </p>
+                                        )}
+                                        {post.data.tags &&
+                                            post.data.tags.length > 0 && (
+                                                <div class="tag-list">
+                                                    {post.data.tags.map(
+                                                        (tag) => (
+                                                            <span class="tag-badge">
+                                                                {tag}
+                                                            </span>
+                                                        ),
+                                                    )}
+                                                </div>
+                                            )}
+                                        <p class="date">
+                                            <FormattedDate
+                                                date={post.data.pubDate}
+                                            />
+                                        </p>
+                                    </div>
+                                </a>
+                            </li>
+                        ))
+                    }
+                </ul>
+                <div class="view-all-skills">
+                    <a href="/it/blog">{t("home.blog.viewAll")}</a>
+                </div>
+            </section>
+
+            <!-- Contact CTA Section -->
+            <section class="contact-cta">
+                <div class="contact-content">
+                    <h2 class="contact-title">{t("home.contact.title")}</h2>
+                    <p class="contact-description">
+                        {t("home.contact.description")}
+                    </p>
+                    <div class="hero-cta">
+                        <a
+                            href="mailto:dimitriibirsan@gmail.com"
+                            class="cta-button cta-primary"
+                        >
+                            {t("home.contact.cta")}
+                        </a>
+                    </div>
+                    <div class="social-links">
+                        <a
+                            href="https://github.com/dimitriiBirsan"
+                            class="social-link"
+                            target="_blank"
+                            rel="noopener"
+                            aria-label="GitHub"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M12 0c-6.626 0-12 5.373-12 12 0 5.302 3.438 9.8 8.207 11.387.599.111.793-.261.793-.577v-2.234c-3.338.726-4.033-1.416-4.033-1.416-.546-1.387-1.333-1.756-1.333-1.756-1.089-.745.083-.729.083-.729 1.205.084 1.839 1.237 1.839 1.237 1.07 1.834 2.807 1.304 3.492.997.107-.775.418-1.305.762-1.604-2.665-.305-5.467-1.334-5.467-5.931 0-1.311.469-2.381 1.236-3.221-.124-.303-.535-1.524.117-3.176 0 0 1.008-.322 3.301 1.23.957-.266 1.983-.399 3.003-.404 1.02.005 2.047.138 3.006.404 2.291-1.552 3.297-1.23 3.297-1.23.653 1.653.242 2.874.118 3.176.77.84 1.235 1.911 1.235 3.221 0 4.609-2.807 5.624-5.479 5.921.43.372.823 1.102.823 2.222v3.293c0 .319.192.694.801.576 4.765-1.589 8.199-6.086 8.199-11.386 0-6.627-5.373-12-12-12z"
+                                ></path>
+                            </svg>
+                        </a>
+                        <a
+                            href="https://www.linkedin.com/in/dumitru-birsan-6b58771bb/"
+                            class="social-link"
+                            target="_blank"
+                            rel="noopener"
+                            aria-label="LinkedIn"
+                        >
+                            <svg
+                                xmlns="http://www.w3.org/2000/svg"
+                                width="20"
+                                height="20"
+                                viewBox="0 0 24 24"
+                                fill="currentColor"
+                            >
+                                <path
+                                    d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.762 0 5-2.239 5-5v-14c0-2.761-2.238-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z"
+                                ></path>
+                            </svg>
+                        </a>
+                    </div>
+                </div>
+            </section>
+        </main>
+
+        <Footer language={lang} />
+    </body>
+</html>

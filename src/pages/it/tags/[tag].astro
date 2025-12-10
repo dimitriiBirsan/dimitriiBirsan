@@ -1,13 +1,16 @@
 ---
 import { getCollection } from "astro:content";
 import type { CollectionEntry } from "astro:content";
-import BaseHead from "../../components/BaseHead.astro";
-import Footer from "../../components/Footer.astro";
-import Header from "../../components/Header.astro";
-import FormattedDate from "../../components/FormattedDate.astro";
+import BaseHead from "../../../components/BaseHead.astro";
+import Footer from "../../../components/Footer.astro";
+import Header from "../../../components/Header.astro";
+import FormattedDate from "../../../components/FormattedDate.astro";
 import { Image } from "astro:assets";
-import { SITE_TITLE } from "../../consts";
-import "../../styles/elements/blog.css";
+import { useTranslations } from "../../../data/i18n/ui";
+import "../../../styles/elements/blog.css";
+
+const lang = "it";
+const t = useTranslations(lang);
 
 export async function getStaticPaths() {
     const posts = await getCollection("blog");
@@ -33,34 +36,32 @@ const { tag } = Astro.props;
 const allPosts = await getCollection("blog");
 
 const posts = allPosts
-    .filter(
-        (post) =>
-            (!post.data.lang || post.data.lang === "en") &&
-            post.data.tags?.includes(tag),
-    )
+    .filter((post) => post.data.lang === "it" && post.data.tags?.includes(tag))
     .sort((a, b) => b.data.pubDate.valueOf() - a.data.pubDate.valueOf());
 ---
 
 <!doctype html>
-<html lang="en">
+<html lang="it">
     <head>
         <BaseHead
-            title={`Posts tagged "${tag}" - ${SITE_TITLE}`}
-            description={`All blog posts tagged with ${tag}`}
+            title={`Articoli con tag "${tag}" - Dumitru Birsan`}
+            description={`Tutti gli articoli con tag ${tag}`}
         />
     </head>
     <body>
-        <Header />
+        <Header language={lang} />
         <main class="container">
             <section>
-                <a href="/tags/" class="back-link"> ← Back to all tags </a>
+                <a href="/it/tags/" class="back-link">
+                    ← Torna a tutti i tag
+                </a>
 
                 <div class="tag-header">
                     <div class="tag-badge-header">{tag}</div>
-                    <h1>Posts Tagged "{tag}"</h1>
+                    <h1>Articoli con Tag "{tag}"</h1>
                     <p class="tag-count">
                         {posts.length}
-                        {posts.length === 1 ? "post" : "posts"}
+                        {posts.length === 1 ? "articolo" : "articoli"}
                     </p>
                 </div>
 
@@ -68,7 +69,7 @@ const posts = allPosts
                     {
                         posts.map((post) => (
                             <li class="blog-card">
-                                <a href={`/blog/${post.id}/`}>
+                                <a href={`/it/blog/${post.id}/`}>
                                     <div class="card-image">
                                         {post.data.heroImage && (
                                             <Image
@@ -81,8 +82,6 @@ const posts = allPosts
                                     </div>
                                     <div class="card-content">
                                         <h4 class="title">{post.data.title}</h4>
-
-                                        {/* Added Description */}
                                         {post.data.description && (
                                             <p class="description">
                                                 {post.data.description}
@@ -101,6 +100,6 @@ const posts = allPosts
                 </ul>
             </section>
         </main>
-        <Footer />
+        <Footer language={lang} />
     </body>
 </html>
