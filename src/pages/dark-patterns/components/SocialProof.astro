@@ -1,0 +1,48 @@
+---
+const tickerItems = [
+    { user: "User7281", action: "just upgraded to Enterprise" },
+    { user: "User3945", action: "purchased 10,000 Credits" },
+    { user: "User1562", action: "unlocked Premium Features" },
+    { user: "User9103", action: "just upgraded to Enterprise" },
+    { user: "User6428", action: "purchased 10,000 Credits" },
+    { user: "User2847", action: "unlocked Premium Features" },
+];
+---
+
+<!-- Social Proof -->
+<section>
+    <div class="glass-card">
+        <h2 class="section-title">Social Proof Fabricator</h2>
+        <p class="section-subtitle">
+            Everyone's upgrading! (Except they're not.)
+        </p>
+
+        <div class="ticker-container">
+            <div class="ticker" id="ticker">
+                {
+                    tickerItems.map((item) => (
+                        <div class="ticker-item">
+                            👤 <span class="highlight">{item.user}</span>{" "}
+                            {item.action}
+                        </div>
+                    ))
+                }
+                <!-- Duplicate for seamless scroll -->
+                {
+                    tickerItems.map((item) => (
+                        <div class="ticker-item">
+                            👤 <span class="highlight">{item.user}</span>{" "}
+                            {item.action}
+                        </div>
+                    ))
+                }
+            </div>
+        </div>
+        <p
+            style="color: var(--text-muted); text-align: center; margin-top: 1.5rem; font-style: italic;"
+        >
+            (These are 100% real users doing real things. Trust us. We're a SaaS
+            company.)
+        </p>
+    </div>
+</section>

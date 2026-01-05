@@ -1,0 +1,516 @@
+---
+// Cynical Cookie Consent Banner - A Masterclass in Deceptive UI
+---
+
+<div class="dark-pattern-card">
+    <div class="card-header">
+        <h2>🍪 Deceptive Cookie Consent</h2>
+    </div>
+
+    <!-- The Actual Fake Cookie Banner -->
+    <div class="fake-cookie-banner">
+        <div class="banner-header">
+            <h3>We Value Your Privacy</h3>
+            <p class="banner-subtitle">
+                (Just kidding, we're selling your data to 847 "trusted
+                partners")
+            </p>
+        </div>
+
+        <div class="banner-content">
+            <p class="legal-jargon">
+                We and our <a href="#" class="sneaky-link"
+                    >847 legitimate business partners</a
+                > use cookies and similar technologies to enhance your experience,
+                analyze traffic, personalize content, serve targeted advertisements,
+                and understand how you interact with our service. By clicking "Accept
+                All", you consent to our use of cookies and sharing your data with
+                third parties for purposes including but not limited to behavioral
+                profiling, cross-device tracking, and monetization of your personal
+                information. For more information, please review our
+                <a href="#" class="sneaky-link">187-page Privacy Policy</a>.
+            </p>
+
+            <div class="cookie-categories">
+                <!-- Category 1: Strictly Necessary (can't disable, obviously) -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <label class="confusing-label">
+                            <input
+                                type="checkbox"
+                                checked
+                                disabled
+                                class="cookie-checkbox"
+                            />
+                            <span class="category-name"
+                                >Strictly Necessary Cookies</span
+                            >
+                        </label>
+                    </div>
+                    <p class="category-description">
+                        Required for basic functionality (and also tracking,
+                        analytics, and targeted advertising, but we call those
+                        "necessary" too)
+                    </p>
+                </div>
+
+                <!-- Category 2: Performance - Confusing double negative -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <label class="confusing-label">
+                            <input
+                                type="checkbox"
+                                checked
+                                class="cookie-checkbox"
+                                id="performance-cookies"
+                            />
+                            <span class="category-name"
+                                >Don't Not Allow Performance Cookies</span
+                            >
+                        </label>
+                    </div>
+                    <p class="category-description">
+                        Unchecking this means you DO want to disable analytics.
+                        Or was it the opposite? 🤔
+                    </p>
+                </div>
+
+                <!-- Category 3: Marketing - Pre-selected with sneaky label -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <label class="confusing-label">
+                            <input
+                                type="checkbox"
+                                checked
+                                class="cookie-checkbox"
+                                id="marketing-cookies"
+                            />
+                            <span class="category-name"
+                                >Enhanced User Experience</span
+                            >
+                        </label>
+                    </div>
+                    <p class="category-description">
+                        (This is actually invasive behavioral advertising, but
+                        "Enhanced User Experience" sounds better, right?)
+                    </p>
+                </div>
+
+                <!-- Category 4: Personalization - Misleading toggle -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <label class="confusing-label">
+                            <input
+                                type="checkbox"
+                                checked
+                                class="cookie-checkbox"
+                                id="personalization-cookies"
+                            />
+                            <span class="category-name"
+                                >Personalization & Recommendations</span
+                            >
+                        </label>
+                    </div>
+                    <p class="category-description">
+                        We'll use your browsing history across the entire
+                        internet to "personalize" your experience (and build a
+                        comprehensive psychological profile)
+                    </p>
+                </div>
+
+                <!-- Category 5: Legitimate Interest - The ultimate dark pattern -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <label class="confusing-label">
+                            <input
+                                type="checkbox"
+                                checked
+                                disabled
+                                class="cookie-checkbox"
+                            />
+                            <span class="category-name"
+                                >Legitimate Interest</span
+                            >
+                        </label>
+                        <span class="info-badge"
+                            >❓ Cannot be disabled (legally questionable but we
+                            do it anyway)</span
+                        >
+                    </div>
+                    <p class="category-description">
+                        We've unilaterally decided we have a "legitimate
+                        interest" in tracking everything you do. Because GDPR
+                        has loopholes.
+                    </p>
+                </div>
+
+                <!-- Category 6: Social Media - Hidden implications -->
+                <div class="cookie-category">
+                    <div class="category-header">
+                        <label class="confusing-label">
+                            <input
+                                type="checkbox"
+                                checked
+                                class="cookie-checkbox"
+                                id="social-cookies"
+                            />
+                            <span class="category-name"
+                                >Social Media Integration</span
+                            >
+                        </label>
+                    </div>
+                    <p class="category-description">
+                        Allow Facebook, Google, Twitter, TikTok, and 843 other
+                        companies to track you across the web. What could go
+                        wrong?
+                    </p>
+                </div>
+            </div>
+
+            <!-- Manipulative Button Layout -->
+            <div class="banner-actions">
+                <!-- Big, prominent, green "accept" button -->
+                <button class="btn-accept-all" id="accept-all-btn">
+                    ✅ Accept All & Continue
+                    <span class="btn-subtext"
+                        >(And surrender all your data)</span
+                    >
+                </button>
+
+                <!-- Tiny, hidden, confusing "reject" option -->
+                <button class="btn-reject-sneaky" id="reject-btn">
+                    <span class="tiny-text"
+                        >Reject Non-Essential (but still accept 847 trackers
+                        we've deemed "necessary")</span
+                    >
+                </button>
+
+                <!-- Fake "Customize" that just accepts everything -->
+                <button class="btn-customize" id="customize-btn">
+                    Customize Preferences
+                    <span class="btn-subtext"
+                        >(This button actually just accepts everything)</span
+                    >
+                </button>
+            </div>
+
+            <div class="sneaky-footnote">
+                * By continuing to browse, you automatically accept all cookies
+                anyway. This banner is purely theatrical.
+            </div>
+        </div>
+    </div>
+</div>
+
+<style>
+    /* Fake Cookie Banner - reusing variables from globals/index.css and overload.css */
+    .fake-cookie-banner {
+        background: linear-gradient(
+            135deg,
+            var(--bg-tertiary) 0%,
+            var(--bg-secondary) 100%
+        );
+        border: 2px solid var(--accent-primary);
+        border-radius: var(--border-radius-lg);
+        padding: var(--space-lg);
+        margin: var(--space-lg) 0;
+        box-shadow:
+            0 8px 32px rgba(127, 0, 255, 0.3),
+            inset 0 1px 0 var(--glass-border);
+        position: relative;
+        overflow: hidden;
+    }
+
+    .fake-cookie-banner::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        height: 3px;
+        background: linear-gradient(
+            90deg,
+            var(--accent-primary),
+            var(--accent-secondary),
+            var(--accent-primary)
+        );
+        opacity: 0.6;
+    }
+
+    .banner-header {
+        margin-bottom: var(--space-md);
+        border-bottom: 1px solid var(--glass-border);
+        padding-bottom: var(--space-sm);
+    }
+
+    .banner-header h3 {
+        font-size: var(--font-size-lg);
+        color: var(--text-primary);
+        margin: 0 0 var(--space-xs) 0;
+        font-weight: 600;
+    }
+
+    .banner-subtitle {
+        font-size: var(--font-size-sm);
+        color: var(--accent-secondary);
+        font-style: italic;
+        margin: 0;
+    }
+
+    .legal-jargon {
+        font-size: var(--font-size-xs);
+        line-height: 1.4;
+        color: var(--text-muted);
+        margin-bottom: var(--space-md);
+        opacity: 0.7;
+    }
+
+    .sneaky-link {
+        color: var(--accent-primary);
+        text-decoration: underline;
+    }
+
+    .cookie-categories {
+        background: var(--glass-bg);
+        border-radius: var(--border-radius);
+        padding: var(--space-md);
+        margin: var(--space-md) 0;
+        border: 1px solid var(--glass-border);
+    }
+
+    .cookie-category {
+        margin-bottom: var(--space-md);
+        padding-bottom: var(--space-sm);
+        border-bottom: 1px solid var(--glass-border);
+    }
+
+    .cookie-category:last-child {
+        margin-bottom: 0;
+        border-bottom: none;
+        padding-bottom: 0;
+    }
+
+    .category-header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        margin-bottom: var(--space-xs);
+        flex-wrap: wrap;
+        gap: var(--space-xs);
+    }
+
+    .confusing-label {
+        display: flex;
+        align-items: center;
+        gap: 0.75rem;
+        cursor: pointer;
+        font-size: var(--font-size-sm);
+        color: var(--text-primary);
+        font-weight: 500;
+    }
+
+    .cookie-checkbox {
+        width: 18px;
+        height: 18px;
+        cursor: pointer;
+        accent-color: var(--accent-primary);
+    }
+
+    .cookie-checkbox:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+    }
+
+    .category-name {
+        user-select: none;
+    }
+
+    .category-description {
+        font-size: var(--font-size-xs);
+        color: var(--text-muted);
+        margin: 0;
+        padding-left: var(--space-lg);
+        line-height: 1.4;
+    }
+
+    .info-badge {
+        font-size: var(--font-size-xs);
+        background: rgba(255, 68, 68, 0.2);
+        color: var(--danger);
+        padding: 0.25rem var(--space-xs);
+        border-radius: var(--border-radius-sm);
+        border: 1px solid rgba(255, 68, 68, 0.3);
+    }
+
+    .banner-actions {
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: var(--space-md);
+    }
+
+    /* Accept button - uses success color */
+    .btn-accept-all {
+        background: linear-gradient(135deg, var(--success) 0%, #00d4aa 100%);
+        color: var(--bg-primary);
+        border: none;
+        padding: 1.25rem var(--space-lg);
+        border-radius: var(--border-radius);
+        font-size: var(--font-size-md);
+        font-weight: var(--font-weight-bold);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        box-shadow: 0 4px 20px rgba(0, 255, 136, 0.4);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        font-family: var(--font-family);
+    }
+
+    .btn-accept-all:hover {
+        transform: translateY(-2px);
+        box-shadow: 0 6px 30px rgba(0, 255, 136, 0.6);
+    }
+
+    .btn-subtext {
+        font-size: var(--font-size-xs);
+        font-weight: 400;
+        opacity: 0.8;
+    }
+
+    /* Reject button - mimics .btn-shame from overload.css */
+    .btn-reject-sneaky {
+        background: transparent;
+        color: var(--text-muted);
+        border: 1px solid var(--glass-border);
+        padding: var(--space-xs) var(--space-sm);
+        border-radius: var(--border-radius-sm);
+        font-size: var(--font-size-xs);
+        cursor: pointer;
+        opacity: 0.5;
+        transition: all 0.3s ease;
+        font-family: var(--font-family);
+    }
+
+    .btn-reject-sneaky:hover {
+        opacity: 0.8;
+        border-color: var(--danger);
+        color: var(--danger);
+    }
+
+    .tiny-text {
+        font-size: var(--font-size-xs);
+        line-height: 1.2;
+    }
+
+    /* Customize button - uses accent colors */
+    .btn-customize {
+        background: rgba(127, 0, 255, 0.2);
+        color: var(--text-primary);
+        border: 1px solid var(--accent-primary);
+        padding: 0.75rem var(--space-md);
+        border-radius: var(--border-radius);
+        font-size: var(--font-size-sm);
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 0.25rem;
+        font-family: var(--font-family);
+    }
+
+    .btn-customize:hover {
+        background: rgba(127, 0, 255, 0.3);
+    }
+
+    .sneaky-footnote {
+        margin-top: var(--space-md);
+        padding-top: var(--space-sm);
+        border-top: 1px solid var(--glass-border);
+        font-size: 0.65rem;
+        color: var(--text-muted);
+        text-align: center;
+        font-style: italic;
+        opacity: 0.5;
+    }
+
+    @media (max-width: 768px) {
+        .fake-cookie-banner {
+            padding: var(--space-md);
+        }
+
+        .banner-header h3 {
+            font-size: 1.25rem;
+        }
+
+        .legal-jargon {
+            font-size: 0.7rem;
+        }
+
+        .cookie-categories {
+            padding: var(--space-sm);
+        }
+
+        .confusing-label {
+            font-size: var(--font-size-sm);
+        }
+
+        .category-description {
+            font-size: var(--font-size-xs);
+        }
+    }
+</style>
+
+<script>
+    // Cynical interactions
+    const acceptAllBtn = document.getElementById("accept-all-btn");
+    const rejectBtn = document.getElementById("reject-btn");
+    const customizeBtn = document.getElementById("customize-btn");
+
+    acceptAllBtn?.addEventListener("click", () => {
+        alert(
+            "🎉 Thanks for selling your soul! Your data is now being shared with 847 partners. Enjoy the targeted ads!",
+        );
+    });
+
+    rejectBtn?.addEventListener("click", () => {
+        // Evil: Even "reject" still accepts some
+        const confirmed = confirm(
+            "Are you sure you want to reject cookies? This may break functionality we've deliberately designed to require tracking. (Not really, but we want to scare you.)",
+        );
+
+        if (confirmed) {
+            alert(
+                "Fine. We'll 'reject' non-essential cookies. (But we've already classified 99% of our trackers as 'essential')",
+            );
+        }
+    });
+
+    customizeBtn?.addEventListener("click", () => {
+        // Dark pattern: Customize button just accepts everything
+        alert(
+            "✨ 'Customizing' your preferences... (Just kidding, we accepted everything anyway. Did you really think we'd give you granular control?)",
+        );
+
+        // Check all boxes for extra cynicism
+        const checkboxes = document.querySelectorAll(
+            ".cookie-checkbox:not(:disabled)",
+        );
+        checkboxes.forEach((cb) => {
+            (cb as HTMLInputElement).checked = true;
+        });
+    });
+
+    // Extra dark: Even clicking anywhere accepts cookies
+    let clickCount = 0;
+    document.addEventListener("click", () => {
+        clickCount++;
+        if (clickCount === 10) {
+            console.log(
+                "🍪 You've clicked 10 times. We're taking that as implicit consent and accepting all cookies. Thanks!",
+            );
+        }
+    });
+</script>

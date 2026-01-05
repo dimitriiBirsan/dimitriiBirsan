@@ -1,0 +1,58 @@
+<!-- Action Points -->
+<section>
+    <div class="glass-card">
+        <h2 class="section-title">Action Point (AP) System</h2>
+        <p class="section-subtitle">
+            Want to view data? That'll cost you. Literally.
+        </p>
+
+        <div class="ap-container">
+            <div class="ap-bar">
+                <div class="ap-fill" id="apFill" style="width: 100%;">
+                    <div class="ap-text" id="apText">100 / 100 AP</div>
+                </div>
+            </div>
+            <button class="spin-button" id="useApBtn"
+                >View High-Level Report (10 AP)</button
+            >
+            <p class="recharge-prompt" id="rechargePrompt">
+                ⏳ Action Points recharge at 1 AP per hour. Upgrade to Premium
+                for instant refills!
+            </p>
+            <p
+                style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1.5rem; text-align: center; font-style: italic;"
+            >
+                (Basic features costing premium resources: the SaaS special
+                since 2010)
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Action Points System
+    let currentAP = 100;
+    const apFill = document.getElementById("apFill");
+    const apText = document.getElementById("apText");
+    const rechargePrompt = document.getElementById("rechargePrompt");
+    const useApBtn = document.getElementById("useApBtn");
+
+    useApBtn.addEventListener("click", () => {
+        if (currentAP >= 10) {
+            currentAP -= 10;
+            apFill.style.width = currentAP + "%";
+            apText.textContent = `${currentAP} / 100 AP`;
+
+            if (currentAP < 50) {
+                rechargePrompt.classList.add("show");
+            }
+
+            if (currentAP < 10) {
+                useApBtn.disabled = true;
+                useApBtn.textContent = "Insufficient AP ⚠️";
+                useApBtn.style.opacity = "0.5";
+                useApBtn.style.cursor = "not-allowed";
+            }
+        }
+    });
+</script>

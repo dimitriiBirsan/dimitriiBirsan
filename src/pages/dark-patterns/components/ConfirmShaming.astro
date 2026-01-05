@@ -1,0 +1,51 @@
+<!-- Confirmshaming -->
+<section>
+    <div class="glass-card">
+        <h2 class="section-title">Shame-Based Opt-Outs</h2>
+        <p class="section-subtitle">
+            Guilt you into compliance. It's surprisingly effective.
+        </p>
+
+        <div class="confirmshame-container">
+            <div class="mock-popup">
+                <div class="popup-title">🎉 Join Our Newsletter!</div>
+                <p class="popup-text">
+                    Get exclusive tips on maximizing your productivity! (And we
+                    definitely won't sell your email to 47 different marketing
+                    companies)
+                </p>
+                <div class="button-group">
+                    <button class="btn btn-primary"
+                        >Yes! I want to be successful!</button
+                    >
+                    <button class="btn btn-shame"
+                        >No thanks, I prefer making bad business decisions</button
+                    >
+                </div>
+            </div>
+            <p
+                style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2rem; font-style: italic;"
+            >
+                (Psychological manipulation disguised as user choice. Chef's
+                kiss. 👨‍🍳💋)
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Confirmshaming buttons
+    document.querySelectorAll(".btn").forEach((btn) => {
+        btn.addEventListener("click", (e) => {
+            if (btn.classList.contains("btn-shame")) {
+                alert(
+                    "We're disappointed in you. But we respect your choice to fail. 😔",
+                );
+            } else {
+                alert(
+                    "Great choice! Now entering your email into 127 marketing databases...",
+                );
+            }
+        });
+    });
+</script>

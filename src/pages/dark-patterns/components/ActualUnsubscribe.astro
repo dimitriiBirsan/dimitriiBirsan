@@ -1,0 +1,91 @@
+<!-- Unsubscribe section -->
+<section>
+    <div class="glass-card" style="position: relative; overflow: hidden;">
+        <h2 class="section-title">Special Offers & Updates</h2>
+        <p class="section-subtitle">Stay connected with exclusive content!</p>
+
+        <div style="padding: 2rem 0;">
+            <p style="text-align: center; margin-bottom: 2rem;">
+                🎉 Join thousands of satisfied users receiving our daily emails!
+            </p>
+
+            <div
+                style="display: flex; gap: 1rem; justify-center; flex-wrap: wrap;"
+            >
+                <button class="spin-button"> Subscribe to More Emails! </button>
+                <button
+                    class="spin-button"
+                    style="background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));"
+                >
+                    Enable All Notifications!
+                </button>
+            </div>
+
+            <!-- The "hidden" unsubscribe -->
+            <div
+                style="margin-top: 4rem; text-align: center; opacity: 0.15; transition: opacity 0.3s;"
+            >
+                <p
+                    style="font-size: 0.85rem; color: #333; letter-spacing: -0.5px; line-height: 1.1;"
+                >
+                    If you no longer wish to receive our absolutely essential
+                    daily emails about features you'll never use, limited-time
+                    offers that aren't actually limited, and urgent
+                    notifications about things that aren't urgent, you may,
+                    theoretically, after completing a brief 47-step verification
+                    process, potentially consider the possibility of maybe
+                    adjusting your communication preferences by locating and
+                    successfully navigating to the preferences panel, which may
+                    or may not be accessible depending on your current
+                    subscription tier and whether Mercury is in retrograde.
+                    <br />
+                    <span style="color: var(--text-muted);">
+                        To unsubscribe, simply don't click
+                        <a
+                            href="#"
+                            style="text-decoration: none; cursor: default; pointer-events: none;"
+                        >
+                            here
+                        </a>
+                        but instead click
+                    </span>
+                    <a
+                        href="#"
+                        id="actualUnsubscribe"
+                        style="text-decoration: none; letter-spacing: -0.8px; color: var(--text-muted);"
+                        >here</a
+                    >
+                    <span style="">
+                        or maybe
+                        <a
+                            href="#"
+                            style="text-decoration: none; color: var(--text-muted);"
+                        >
+                            this one
+                        </a>
+                        to begin the unsubscription consideration request form.
+                    </span>
+                </p>
+            </div>
+
+            <p
+                style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2rem; font-style: italic; text-align: center;"
+            >
+                (The unsubscribe link is definitely somewhere on this page. We
+                promise. Good luck finding it though. 🔍)
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Unsubscribe button (lol good luck finding it)
+    document
+        .getElementById("actualUnsubscribe")
+        ?.addEventListener("click", (e) => {
+            e.preventDefault();
+            alert(
+                "Congratulations! You found the unsubscribe link!\n\n...Unfortunately, this feature requires Premium. Would you like to upgrade for only $29.99/month to unlock the ability to unsubscribe from free emails? 💸",
+            );
+        });
+</script>

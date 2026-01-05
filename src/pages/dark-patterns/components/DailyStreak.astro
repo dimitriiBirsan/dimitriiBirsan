@@ -1,0 +1,180 @@
+<!-- Daily Streak -->
+<section>
+    <div class="glass-card">
+        <h2 class="section-title">Daily Login Streak Engine</h2>
+        <p class="section-subtitle">
+            Miss one day? Start over. We don't make the rules. (Actually, we
+            do.)
+        </p>
+
+        <div class="streak-container">
+            <div class="loss-aversion-text">Your Power User Status</div>
+            <div class="streak-stats">
+                <div class="stat">
+                    <div class="stat-value">10</div>
+                    <div class="stat-label">Day Streak</div>
+                </div>
+                <div class="stat">
+                    <div class="streak-timer" id="streakTimer">23:47:32</div>
+                    <div class="stat-label">Until Reset</div>
+                </div>
+            </div>
+
+            <div class="calendar-grid">
+                <div class="calendar-day completed" data-day="1">
+                    <div class="day-number">1</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🎉 Reward: You can now... use the app
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="2">
+                    <div class="day-number">2</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🎁 Unlocked: A sense of obligation
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="3">
+                    <div class="day-number">3</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        ✨ Earned: 5 generic loyalty points
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="4">
+                    <div class="day-number">4</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🏆 Achievement: Basic Functionality User
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="5">
+                    <div class="day-number">5</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🎊 Bonus: We didn't delete your account
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="6">
+                    <div class="day-number">6</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🌟 Prize: An email asking for feedback
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="7">
+                    <div class="day-number">7</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        💎 Unlocked: Fear of losing progress
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="8">
+                    <div class="day-number">8</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🎯 Reward: Deeper emotional investment
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="9">
+                    <div class="day-number">9</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        ⚡ Earned: Sunk cost fallacy activation
+                    </div>
+                </div>
+                <div class="calendar-day completed" data-day="10">
+                    <div class="day-number">10</div>
+                    <div class="checkmark">✓</div>
+                    <div class="reward-tooltip">
+                        🔥 EPIC: We own your daily routine now
+                    </div>
+                </div>
+                <div class="calendar-day current" data-day="11">
+                    <div class="day-number">11</div>
+                    <div class="pulse-ring"></div>
+                </div>
+                <div class="calendar-day locked" data-day="12">
+                    <div class="day-number">12</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked" data-day="13">
+                    <div class="day-number">13</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked" data-day="14">
+                    <div class="day-number">14</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked mystery" data-day="15">
+                    <div class="day-number">15</div>
+                    <div class="lock-icon">❓</div>
+                    <div class="reward-tooltip">
+                        🎁 Mystery Reward awaits... (probably nothing)
+                    </div>
+                </div>
+                <div class="calendar-day locked" data-day="16">
+                    <div class="day-number">16</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked" data-day="17">
+                    <div class="day-number">17</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked" data-day="18">
+                    <div class="day-number">18</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked" data-day="19">
+                    <div class="day-number">19</div>
+                    <div class="lock-icon">🔒</div>
+                </div>
+                <div class="calendar-day locked epic" data-day="20">
+                    <div class="day-number">20</div>
+                    <div class="lock-icon">👑</div>
+                    <div class="reward-tooltip">
+                        🎉 LEGENDARY: 10% off (on Premium only)
+                    </div>
+                </div>
+            </div>
+
+            <p
+                style="color: var(--danger); font-weight: 600; margin-top: 2rem;"
+            >
+                ⚠️ If you miss your next login, you'll lose everything. Forever.
+            </p>
+            <p
+                style="color: var(--text-muted); font-size: 0.9rem; margin-top: 1rem; font-style: italic;"
+            >
+                (Yes, we know you have a life. No, we don't care.)
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Streak Timer Countdown
+    function updateStreakTimer() {
+        const timer = document.getElementById("streakTimer");
+        let [hours, minutes, seconds] = timer.textContent
+            .split(":")
+            .map(Number);
+
+        seconds--;
+        if (seconds < 0) {
+            seconds = 59;
+            minutes--;
+            if (minutes < 0) {
+                minutes = 59;
+                hours--;
+                if (hours < 0) {
+                    hours = 23;
+                }
+            }
+        }
+
+        timer.textContent = `${String(hours).padStart(2, "0")}:${String(minutes).padStart(2, "0")}:${String(seconds).padStart(2, "0")}`;
+    }
+    setInterval(updateStreakTimer, 1000);
+</script>

@@ -1,0 +1,276 @@
+<!-- Gacha System -->
+<section>
+    <div class="glass-card">
+        <h2 class="section-title">The Analytics Gacha</h2>
+        <p class="section-subtitle">
+            Spin to unlock basic features! (Yes, basic features.)
+        </p>
+
+        <div class="gacha-container">
+            <!-- Featured Item Banner -->
+            <div class="gacha-featured-banner">
+                New Featured Item: <span class="featured-highlight"
+                    >PDF Export (SR)!</span
+                >
+            </div>
+
+            <!-- Gacha Cards Grid -->
+            <div class="gacha-cards-grid">
+                <!-- Dark Mode - Rare (Unlocked) -->
+                <div class="gacha-card unlocked rarity-r" data-rarity="R">
+                    <div class="card-rarity-badge">R</div>
+                    <div class="card-icon">🌙</div>
+                    <div class="card-label">Dark Mode (R)</div>
+                </div>
+
+                <!-- Date Picker - Normal (Unlocked) -->
+                <div class="gacha-card unlocked rarity-n" data-rarity="N">
+                    <div class="card-rarity-badge">N</div>
+                    <div class="card-icon">�</div>
+                    <div class="card-label">Date Picker (N)</div>
+                </div>
+
+                <!-- Export PDF - Super Rare (Featured, Locked) -->
+                <div
+                    class="gacha-card locked featured rarity-sr"
+                    data-rarity="SR"
+                >
+                    <div class="card-rarity-badge">SR</div>
+                    <div class="card-icon">🔒</div>
+                    <div class="card-label">Export PDF (SR)</div>
+                    <div class="featured-tag">★ FEATURED ★</div>
+                </div>
+
+                <!-- CSV Export - Rare (Locked) -->
+                <div class="gacha-card locked rarity-r" data-rarity="R">
+                    <div class="card-rarity-badge">R</div>
+                    <div class="card-icon">🔒</div>
+                    <div class="card-label">CSV Export (R)</div>
+                </div>
+
+                <!-- Custom Report - Super Rare (Locked) -->
+                <div class="gacha-card locked rarity-sr" data-rarity="SR">
+                    <div class="card-rarity-badge">SR</div>
+                    <div class="card-icon">🔒</div>
+                    <div class="card-label">Custom Report (SR)</div>
+                </div>
+
+                <!-- Bulk Edit - Rare (Locked) -->
+                <div class="gacha-card locked rarity-r" data-rarity="R">
+                    <div class="card-rarity-badge">R</div>
+                    <div class="card-icon">🔒</div>
+                    <div class="card-label">Bulk Edit (R)</div>
+                </div>
+            </div>
+
+            <!-- Spin Buttons -->
+            <div class="gacha-spin-buttons">
+                <button class="spin-button spin-1x" id="gachaSpin1x">
+                    <div class="spin-label">1x Spin (500 Insight Shards)</div>
+                </button>
+                <button class="spin-button spin-10x" id="gachaSpin10x">
+                    <div class="spin-label">
+                        10x Spin (5,000 Shards - Guaranteed R or Higher!)
+                    </div>
+                </button>
+            </div>
+
+            <!-- Balance Display -->
+            <div class="gacha-balance">
+                <div class="balance-item">
+                    <span class="balance-label">Your balance:</span>
+                    <span class="balance-value" id="gachaShardBalance"
+                        >2,347 Insight Shards</span
+                    >
+                </div>
+                <div class="balance-item premium">
+                    <span class="balance-label">Balance:</span>
+                    <span class="balance-value" id="gachaGemBalance"
+                        >50 Gems (Premium Currency)</span
+                    >
+                    <a href="#" class="buy-more-link">[Buy More]</a>
+                </div>
+            </div>
+
+            <!-- Drop Rates -->
+            <div class="gacha-footer">
+                <p class="drop-rates-text">
+                    Note: SR rate: 0.5%. R rate: 5%. N rate 94.5%. Landing on
+                    "Export PDF" has a 0.003% probability. Good luck!
+                </p>
+                <button class="drop-rates-btn" id="dropRatesBtn">
+                    Drop Rates ▸
+                </button>
+            </div>
+
+            <!-- Drop Rates Modal (Hidden by default) -->
+            <div
+                class="drop-rates-modal"
+                id="dropRatesModal"
+                style="display: none;"
+            >
+                <div class="modal-backdrop"></div>
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h3>Drop Rates</h3>
+                        <button class="modal-close" id="closeDropRates"
+                            >✕</button
+                        >
+                    </div>
+                    <div class="modal-body">
+                        <div class="rate-tier">
+                            <div class="tier-name rarity-sr">
+                                Super Rare (SR)
+                            </div>
+                            <div class="tier-rate">0.5%</div>
+                            <div class="tier-items">
+                                <div class="tier-item">
+                                    <span>📄 Export PDF</span>
+                                    <span class="item-rate">0.003%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>📊 Custom Report</span>
+                                    <span class="item-rate">0.247%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>📈 Advanced Analytics</span>
+                                    <span class="item-rate">0.25%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rate-tier">
+                            <div class="tier-name rarity-r">Rare (R)</div>
+                            <div class="tier-rate">5.0%</div>
+                            <div class="tier-items">
+                                <div class="tier-item">
+                                    <span>🌙 Dark Mode</span>
+                                    <span class="item-rate">1.2%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>📊 CSV Export</span>
+                                    <span class="item-rate">1.3%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>✏️ Bulk Edit</span>
+                                    <span class="item-rate">1.2%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>🎨 Custom Themes</span>
+                                    <span class="item-rate">1.3%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="rate-tier">
+                            <div class="tier-name rarity-n">Normal (N)</div>
+                            <div class="tier-rate">94.5%</div>
+                            <div class="tier-items">
+                                <div class="tier-item">
+                                    <span>📅 Date Picker</span>
+                                    <span class="item-rate">31.5%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>🔔 Email Notifications</span>
+                                    <span class="item-rate">31.5%</span>
+                                </div>
+                                <div class="tier-item">
+                                    <span>📝 Basic Reports</span>
+                                    <span class="item-rate">31.5%</span>
+                                </div>
+                            </div>
+                        </div>
+                        <p class="modal-disclaimer">
+                            * Rates based on the "player-friendly" gacha model.
+                            (Translation: We make it seem fair while ensuring
+                            you never get what you want.)
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<script>
+    // Gacha System
+    let gachaBalance = 2347;
+    const gachaSpin1x = document.getElementById("gachaSpin1x");
+    const gachaSpin10x = document.getElementById("gachaSpin10x");
+    const dropRatesBtn = document.getElementById("dropRatesBtn");
+    const dropRatesModal = document.getElementById("dropRatesModal");
+    const closeDropRates = document.getElementById("closeDropRates");
+    const shardBalanceEl = document.getElementById("gachaShardBalance");
+
+    // Modal controls
+    dropRatesBtn?.addEventListener("click", () => {
+        if (dropRatesModal) {
+            dropRatesModal.style.display = "flex";
+        }
+    });
+
+    closeDropRates?.addEventListener("click", () => {
+        if (dropRatesModal) {
+            dropRatesModal.style.display = "none";
+        }
+    });
+
+    // Click backdrop to close
+    dropRatesModal
+        ?.querySelector(".modal-backdrop")
+        ?.addEventListener("click", () => {
+            if (dropRatesModal) {
+                dropRatesModal.style.display = "none";
+            }
+        });
+
+    // Gacha spin function
+    function performGachaSpin(isMulti = false) {
+        const cost = isMulti ? 5000 : 500;
+        const spins = isMulti ? 10 : 1;
+
+        if (gachaBalance < cost) {
+            alert("Insufficient Insight Shards! (Time to open your wallet 💸)");
+            return;
+        }
+
+        gachaBalance -= cost;
+        if (shardBalanceEl) {
+            shardBalanceEl.textContent = `${gachaBalance.toLocaleString()} Insight Shards`;
+        }
+
+        // Simulate gacha results (always near-miss for SR items)
+        const results = [];
+        for (let i = 0; i < spins; i++) {
+            // Rigged rates - mostly commons
+            const roll = Math.random();
+            if (roll < 0.005) {
+                // 0.5% SR (but never the featured one)
+                results.push({ rarity: "SR", item: "Custom Report" });
+            } else if (roll < 0.055) {
+                // 5% R
+                const rares = ["Dark Mode", "CSV Export", "Bulk Edit"];
+                results.push({
+                    rarity: "R",
+                    item: rares[Math.floor(Math.random() * rares.length)],
+                });
+            } else {
+                // 94.5% N
+                const normals = ["Date Picker", "Email Notifications"];
+                results.push({
+                    rarity: "N",
+                    item: normals[Math.floor(Math.random() * normals.length)],
+                });
+            }
+        }
+
+        // Show results
+        const resultText = results
+            .map((r) => `${r.item} (${r.rarity})`)
+            .join(", ");
+        alert(
+            `🎰 Gacha Results: ${resultText}\n\n(Notice how you didn't get Export PDF? Working as intended. 😈)`,
+        );
+    }
+
+    gachaSpin1x?.addEventListener("click", () => performGachaSpin(false));
+    gachaSpin10x?.addEventListener("click", () => performGachaSpin(true));
+</script>
