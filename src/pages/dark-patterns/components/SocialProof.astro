@@ -1,4 +1,6 @@
 ---
+import DarkPatternLabel from "./DarkPatternLabel.astro";
+
 const tickerItems = [
     { user: "User7281", action: "just upgraded to Enterprise" },
     { user: "User3945", action: "purchased 10,000 Credits" },
@@ -13,6 +15,10 @@ const tickerItems = [
 <section>
     <div class="glass-card">
         <h2 class="section-title">Social Proof Fabricator</h2>
+        <DarkPatternLabel
+            categories={["Social Engineering", "Sneaking"]}
+            tooltip="Social Engineering: Fabricated testimonials to create FOMO"
+        />
         <p class="section-subtitle">
             Everyone's upgrading! (Except they're not.)
         </p>

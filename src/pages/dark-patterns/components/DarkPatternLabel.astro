@@ -1,0 +1,23 @@
+---
+interface Props {
+    categories: string[];
+    tooltip: string;
+}
+
+const { categories, tooltip } = Astro.props;
+---
+
+<div class="dp-label-container">
+    <div class="dp-badges">
+        {
+            categories.map((category) => (
+                <span
+                    class={`dp-category-badge dp-${category.toLowerCase().replace(/\s+/g, "-")}`}
+                >
+                    {category}
+                </span>
+            ))
+        }
+    </div>
+    <div class="dp-tooltip">{tooltip}</div>
+</div>

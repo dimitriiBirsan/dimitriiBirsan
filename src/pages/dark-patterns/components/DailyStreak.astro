@@ -1,7 +1,15 @@
+---
+import DarkPatternLabel from "./DarkPatternLabel.astro";
+---
+
 <!-- Daily Streak -->
 <section>
     <div class="glass-card">
         <h2 class="section-title">Daily Login Streak Engine</h2>
+        <DarkPatternLabel
+            categories={["Nagging", "Forced Action"]}
+            tooltip="Nagging + Forced Action: Persistent reminders that pressure daily engagement"
+        />
         <p class="section-subtitle">
             Miss one day? Start over. We don't make the rules. (Actually, we
             do.)
