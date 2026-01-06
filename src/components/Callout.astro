@@ -1,0 +1,196 @@
+---
+interface Props {
+    type?: "note" | "tip" | "warning" | "caution" | "info" | "danger";
+    title?: string;
+    collapsible?: boolean;
+    collapsed?: boolean;
+}
+
+const {
+    type = "note",
+    title,
+    collapsible = false,
+    collapsed = false,
+} = Astro.props;
+
+const typeConfig = {
+    note: { color: "#7F00FF", label: "Note" },
+    tip: { color: "#00e0e0", label: "Tip" },
+    warning: { color: "#e8bf3f", label: "Warning" },
+    caution: { color: "#c03535", label: "Caution" },
+    info: { color: "#3d7a35", label: "Info" },
+    danger: { color: "#ff4444", label: "Danger" },
+};
+
+const config = typeConfig[type];
+const displayTitle = title || config.label;
+---
+
+<div class="callout" data-type={type} data-collapsible={collapsible}>
+    <div class="callout-header">
+        <span class="callout-title">{displayTitle}</span>
+        {collapsible && <span class="callout-toggle">▼</span>}
+    </div>
+    <div class="callout-content" data-collapsed={collapsed}>
+        <slot />
+    </div>
+</div>
+
+<style define:vars={{ accentColor: config.color }}>
+    .callout {
+        margin: 1.5rem 0;
+        padding: 1rem;
+        border-left: 4px solid var(--accentColor);
+        background: var(--bg-secondary);
+        border-radius: var(--border-radius);
+        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        transition: all 0.3s ease;
+    }
+
+    .callout:hover {
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+    }
+
+    .callout-header {
+        display: flex;
+        align-items: center;
+        gap: 0.5rem;
+        margin-bottom: 0.75rem;
+        font-weight: var(--font-weight-bold);
+        color: var(--accentColor);
+        cursor: default;
+    }
+
+    .callout[data-collapsible="true"] .callout-header {
+        cursor: pointer;
+        user-select: none;
+    }
+
+    .callout-icon {
+        font-size: 1.25rem;
+        line-height: 1;
+    }
+
+    .callout-title {
+        font-size: 1rem;
+        flex: 1;
+    }
+
+    .callout-toggle {
+        font-size: 0.875rem;
+        transition: transform 0.2s ease;
+    }
+
+    .callout[data-collapsible="true"]
+        .callout-content[data-collapsed="true"]
+        ~ .callout-header
+        .callout-toggle {
+        transform: rotate(-90deg);
+    }
+
+    .callout-content {
+        color: var(--text-primary);
+        line-height: var(--line-height-base);
+    }
+
+    .callout-content[data-collapsed="true"] {
+        display: none;
+    }
+
+    .callout-content > :first-child {
+        margin-top: 0;
+    }
+
+    .callout-content > :last-child {
+        margin-bottom: 0;
+    }
+
+    /* Type-specific subtle backgrounds */
+    .callout[data-type="note"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(127, 0, 255, 0.05) 100%
+        );
+    }
+
+    .callout[data-type="tip"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(0, 224, 224, 0.05) 100%
+        );
+    }
+
+    .callout[data-type="warning"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(232, 191, 63, 0.05) 100%
+        );
+    }
+
+    .callout[data-type="caution"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(192, 53, 53, 0.05) 100%
+        );
+    }
+
+    .callout[data-type="info"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(61, 122, 53, 0.05) 100%
+        );
+    }
+
+    .callout[data-type="danger"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(255, 68, 68, 0.05) 100%
+        );
+    }
+
+    /* Responsive adjustments */
+    @media (max-width: 636px) {
+        .callout {
+            margin: 1rem 0;
+            padding: 0.875rem;
+        }
+
+        .callout-icon {
+            font-size: 1.125rem;
+        }
+
+        .callout-title {
+            font-size: 0.9375rem;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener("DOMContentLoaded", () => {
+        const callouts = document.querySelectorAll(
+            '.callout[data-collapsible="true"]',
+        );
+
+        callouts.forEach((callout) => {
+            const header = callout.querySelector(".callout-header");
+            const content = callout.querySelector(".callout-content");
+
+            if (header && content) {
+                header.addEventListener("click", () => {
+                    const isCollapsed =
+                        content.getAttribute("data-collapsed") === "true";
+                    content.setAttribute(
+                        "data-collapsed",
+                        String(!isCollapsed),
+                    );
+                });
+            }
+        });
+    });
+</script>

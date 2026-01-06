@@ -27,8 +27,18 @@ const { images } = Astro.props;
         }
     </div>
 
-    <button class="carousel-btn prev" aria-label="Previous Slide">❮</button>
-    <button class="carousel-btn next" aria-label="Next Slide">❯</button>
+    {
+        images.length > 1 && (
+            <>
+                <button class="carousel-btn prev" aria-label="Previous Slide">
+                    ❮
+                </button>
+                <button class="carousel-btn next" aria-label="Next Slide">
+                    ❯
+                </button>
+            </>
+        )
+    }
 
     <div class="carousel-indicators">
         {
