@@ -16,15 +16,21 @@ import heroImage from '../../content/blog/microservices/hero.jpg';
 
 I remember the first time I attended a Fullstack Meetup in Reggio Emilia. I was standing in a circle of maybe 12 developers, when a grizzled senior architect started ranting. "You just need two lines of bash," he said. "Two lines, and you can deploy a monolith that serves millions."
 
-He wasn't wrong. But the discomfort in that circle was palpable. We engineers have a beautiful, sometimes toxic trait: **we crave complexity**. If a solution feels too simple, we assume it's "junior." We convince ourselves we need to handle *every* possible scenario, *every* hypothetical scaling issue that hasn't happened yet, *every* edge case that lives only in our architectural anxiety dreams.
+He wasn't wrong. But the discomfort in that circle was palpable.
+
+We engineers have a beautiful, sometimes toxic trait: **we crave complexity**. If a solution feels too simple, we assume it's "junior."
+
+We convince ourselves we need to handle *every* possible scenario, *every* hypothetical scaling issue that hasn't happened yet, *every* edge case that lives only in our architectural anxiety dreams.
 
 One year and countless production incidents later, I've learned a humbling truth: 
 
-<Callout type="note" title="The Hard Truth">
+<Callout type="note" title="The Hard Truth" prominent={true}>
 **Microservices aren't a destination, they're a deliberate choice of problems**.
 </Callout> 
 
-And the question nobody wants to ask is: *Is your team actually big enough to justify the pain I'm about to describe?*
+And the question nobody wants to ask is:
+
+<p class="question">Is your team actually big enough to justify the pain I'm about to describe?</p>
 
 ---
 
@@ -32,11 +38,15 @@ And the question nobody wants to ask is: *Is your team actually big enough to ju
 
 You know your industry has a problem when **Amazon**—the company that literally invented the cloud platform microservices run on—publishes a blog post titled "Scaling up the Prime Video audio/video monitoring service and reducing costs by 90%."
 
-Their monitoring team had built the "perfect" modern system: serverless, decoupled, distributed. AWS Step Functions orchestrating Lambda functions. The kind of architecture diagram that gets you upvotes on Reddit.
+Their monitoring team had built the "perfect" modern system: serverless, decoupled, distributed. AWS Step Functions orchestrating Lambda functions.
+
+The kind of architecture diagram that gets you upvotes on Reddit.
 
 Except it was hemorrhaging money and couldn't scale.
 
-The problem? Every. Single. Network. Hop. They were serializing data, storing it in S3, retrieving it for the next function, over and over. The orchestration overhead alone was killing them. So they did the unthinkable: they refactored back into a monolith.
+The problem? Every. Single. Network. Hop. They were serializing data, storing it in S3, retrieving it for the next function, over and over.
+
+The orchestration overhead alone was killing them. So they did the unthinkable: they refactored back into a monolith.
 
 **The results were staggering:**
 

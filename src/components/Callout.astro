@@ -4,6 +4,7 @@ interface Props {
     title?: string;
     collapsible?: boolean;
     collapsed?: boolean;
+    prominent?: boolean;
 }
 
 const {
@@ -11,6 +12,7 @@ const {
     title,
     collapsible = false,
     collapsed = false,
+    prominent = false,
 } = Astro.props;
 
 const typeConfig = {
@@ -26,7 +28,12 @@ const config = typeConfig[type];
 const displayTitle = title || config.label;
 ---
 
-<div class="callout" data-type={type} data-collapsible={collapsible}>
+<div
+    class="callout"
+    data-type={type}
+    data-collapsible={collapsible}
+    data-prominent={prominent}
+>
     <div class="callout-header">
         <span class="callout-title">{displayTitle}</span>
         {collapsible && <span class="callout-toggle">▼</span>}
@@ -168,6 +175,15 @@ const displayTitle = title || config.label;
         .callout-title {
             font-size: 0.9375rem;
         }
+    }
+
+    .callout[data-prominent="true"] {
+        font-size: 1.2em;
+        line-height: 1.6;
+    }
+
+    .callout[data-prominent="true"] .callout-title {
+        font-size: 1.3em;
     }
 </style>
 
