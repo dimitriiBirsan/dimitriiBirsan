@@ -8,6 +8,7 @@ lang: "en"
 ---
 import Callout from '../../components/Callout.astro';
 import ImageCarousel from '../../components/ImageCarousel.astro';
+import Table from '../../components/Table.astro';
 import heroImage from '../../content/blog/microservices/hero.jpg';
 
 <ImageCarousel images={[heroImage ]} />
@@ -24,7 +25,7 @@ We convince ourselves we need to handle *every* possible scenario, *every* hypot
 
 One year and countless production incidents later, I've learned a humbling truth: 
 
-<Callout type="note" title="The Hard Truth" prominent={true}>
+<Callout type="insight" title="The Hard Truth" prominent={true}>
 **Microservices aren't a destination, they're a deliberate choice of problems**.
 </Callout> 
 
@@ -78,7 +79,7 @@ Here's what I learned, face-first into CloudAMQP documentation:
 * If you're not actively sending/receiving messages, the connection appears "idle" to intermediate proxies
 * **The 2-minute timeout was the proxy giving up on our "dead" connection**
 
-<Callout type="note" title="The Latency Penalty">
+<Callout type="warning" title="The Latency Penalty">
 RabbitMQ calls add physical distance and network hops. Development feels fast locally, but production bleeds performance.
 
 Code → Network → Queue → Service B (Latency ↑)
@@ -93,7 +94,7 @@ Code → Network → Queue → Service B (Latency ↑)
   ```
   and **shuts down your entire pipeline**
 
-<Callout type="warning" title="Lesson Learned">
+<Callout type="insight" title="Lesson Learned">
 I once spent three hours tracking down why a service wouldn't start, only to discover it was an exchange auto-delete flag mismatch. The error message was useless. The documentation was sparse. Stack Overflow had nothing. I felt very alone.
 </Callout>
 
@@ -108,7 +109,7 @@ The "Technology Diversity" promised by microservices often turns into a polyglot
 * If you develop on a Mac but deploy to an Alpine Linux container, pre-built binaries fail due to the `libc` vs. `musl` conflict
 * You are forced to install Python, `g++`, and `make` into your production images, bloating them and increasing build times **from seconds to 10+ minutes**
 
-<Callout type="caution">
+<Callout type="warning">
 This isn't "technology diversity" it's dependency hell with extra steps.
 </Callout>
 
@@ -131,9 +132,11 @@ For the rest of us who've lived through it: remember that time you tried to dele
 9. It works 🎉
 10. You immediately start researching Linux alternatives
 
-<Callout type="info">
+<Callout type="tip">
 I wish I was exaggerating. I still have that PowerShell script bookmarked.
 </Callout>
+
+If you think local development is hard, wait until you try to deploy this sprawl.
 
 #### 4. Ops is Not Optional
 
@@ -187,15 +190,17 @@ Once you have containers, you must run them. Kubernetes (K8s) has won the war, b
 
 **K8s vs. Rancher: A Quick Comparison**
 
+<Table>
 | Feature Category | Managed K8s (AKS/EKS) | SUSE Rancher |
 |---|---|---|
-| **Control Plane** | ✅ Managed by cloud provider | ⚠️ Managed by you (Single Point of Failure) |
+| **Control Plane** | ✅ Managed by cloud provider | ⚠️ Self-managed (Maintenance Overhead) |
 | **Developer UI** | ❌ Often slow and disjointed | ✅ Unified "Cluster Explorer" view |
 | **Multi-Cloud** | ❌ Limited to the provider | ✅ "Single pane of glass" across Azure, AWS, and on-prem |
+</Table>
 
 **My take:** If you're a small team (< 20 devs), managed K8s (AKS/EKS) is worth the cost. If you need multi-cloud or have strong ops expertise, Rancher gives you more control—but you're also responsible when things break.
 
-<Callout type="warning" title="Reality Check">
+<Callout type="insight" title="Reality Check">
 Most developers (myself included at the start) admit they only know enough to "edit some damn YAML files." This creates a dangerous single-point-of-failure where the entire team is blocked waiting for the one "K8s expert" to come back from vacation and explain why the pod is stuck in `CrashLoopBackOff` even though *it works on my machine*.
 </Callout>
 
@@ -243,7 +248,7 @@ Then, **only if** you hit one of these hard constraints:
 * You need a logging/observability platform from Day 1 not "when we get around to it"
 * You need to accept that your junior developers will spend their first month just understanding how to run the entire system locally
 
-<Callout type="danger" title="The Hard Truth">
+<Callout type="insight" title="The Hard Truth">
 Microservices don't make your system simpler. They trade code complexity for operational complexity. Make sure you're ready for that trade.
 </Callout>
 

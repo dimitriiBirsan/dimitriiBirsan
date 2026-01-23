@@ -8,6 +8,7 @@ lang: "it"
 ---
 import Callout from '../../components/Callout.astro';
 import ImageCarousel from '../../components/ImageCarousel.astro';
+import Table from '../../components/Table.astro';
 import heroImage from '../../content/blog/microservices/hero.jpg';
 
 <ImageCarousel images={[heroImage ]} />
@@ -20,11 +21,13 @@ Non aveva torto. Ma il disagio in quel cerchio era palpabile. Noi ingegneri abbi
 
 Un anno e innumerevoli incidenti in produzione dopo, ho imparato una verità umiliante:
 
-<Callout type="note" title="La Dura Verità">
+<Callout type="insight" title="La Dura Verità" prominent={true}>
 **I microservizi non sono una destinazione, sono una scelta deliberata di problemi**.
 </Callout>
 
-E la domanda che nessuno vuole fare è: *Il tuo team è davvero abbastanza grande da giustificare il dolore che sto per descrivere?*
+E la domanda che nessuno vuole fare è:
+
+<p class="question">Il tuo team è davvero abbastanza grande da giustificare il dolore che sto per descrivere?</p>
 
 ---
 
@@ -68,7 +71,7 @@ Ecco cosa ho imparato, a faccia in giù nella documentazione di CloudAMQP:
 * Se non stai attivamente inviando/ricevendo messaggi, la connessione appare "idle" ai proxy intermedi
 * **Il timeout di 2 minuti era il proxy che si arrendeva sulla nostra connessione "morta"**
 
-<Callout type="note" title="La Penalità di Latenza">
+<Callout type="warning" title="La Penalità di Latenza">
 Le chiamate a RabbitMQ aggiungono distanza fisica e hop di rete. Lo sviluppo sembra veloce localmente, ma la produzione perde prestazioni.
 
 Codice → Rete → Coda → Servizio B (Latenza ↑)
@@ -83,7 +86,7 @@ Codice → Rete → Coda → Servizio B (Latenza ↑)
   ```
   e **blocca l'intera tua pipeline**
 
-<Callout type="warning" title="Lezione Imparata">
+<Callout type="insight" title="Lezione Imparata">
 Una volta ho passato tre ore a capire perché un servizio non si avviasse, solo per scoprire che era un mismatch del flag auto-delete dell'exchange. Il messaggio di errore era inutile. La documentazione era scarsa. Stack Overflow non aveva niente. Mi sono sentito molto solo.
 </Callout>
 
@@ -98,7 +101,7 @@ La "Diversità Tecnologica" promessa dai microservizi spesso si trasforma in un 
 * Se sviluppi su Mac ma deployai su un container Alpine Linux, i binari pre-compilati falliscono a causa del conflitto `libc` vs. `musl`
 * Sei costretto a installare Python, `g++` e `make` nelle tue immagini di produzione, gonfiandole e aumentando i tempi di build **da secondi a oltre 10 minuti**
 
-<Callout type="caution">
+<Callout type="warning">
 Questo non è "diversità tecnologica" — è l'inferno delle dipendenze con passi extra.
 </Callout>
 
@@ -121,9 +124,11 @@ Per il resto di noi che ci siamo passati: ricordi quella volta che hai provato a
 9. Funziona 🎉
 10. Inizi immediatamente a ricercare alternative Linux
 
-<Callout type="info">
+<Callout type="tip">
 Vorrei esagerare. Ho ancora quello script PowerShell nei segnalibri.
 </Callout>
+
+Se pensi che lo sviluppo locale sia difficile, aspetta di provare a deployare questa espansione tentacolare.
 
 #### 4. Le Ops Non Sono Opzionali
 
@@ -177,15 +182,17 @@ Una volta che hai i container, devi eseguirli. Kubernetes (K8s) ha vinto la guer
 
 **K8s vs. Rancher: Un Confronto Rapido**
 
+<Table>
 | Categoria | K8s Gestito (AKS/EKS) | SUSE Rancher |
 |---|---|---|
-| **Control Plane** | ✅ Gestito dal cloud provider | ⚠️ Gestito da te (Single Point of Failure) |
+| **Control Plane** | ✅ Gestito dal cloud provider | ⚠️ Gestito da te (Overhead di Manutenzione) |
 | **UI Developer** | ❌ Spesso lenta e disgiunta | ✅ Vista unificata "Cluster Explorer" |
 | **Multi-Cloud** | ❌ Limitato al provider | ✅ "Single pane of glass" tra Azure, AWS e on-prem |
+</Table>
 
 **La mia opinione:** Se sei un team piccolo (< 20 dev), il K8s gestito (AKS/EKS) vale il costo. Se hai bisogno di multi-cloud o hai forte esperienza ops, Rancher ti dà più controllo—ma sei anche responsabile quando le cose si rompono.
 
-<Callout type="warning" title="Check di Realtà">
+<Callout type="insight" title="Check di Realtà">
 La maggior parte degli sviluppatori (me compreso all'inizio) ammette di sapere solo abbastanza per "modificare qualche dannato file YAML". Questo crea un pericoloso single-point-of-failure dove l'intero team è bloccato in attesa che l'unico "esperto K8s" torni dalle vacanze e spieghi perché il pod è bloccato in `CrashLoopBackOff` anche se *funziona sulla mia macchina*.
 </Callout>
 
@@ -233,7 +240,7 @@ Poi, **solo se** colpisci uno di questi vincoli rigidi:
 * Hai bisogno di una piattaforma di logging/observability dal Giorno 1 — non "quando ci arriviamo"
 * Devi accettare che i tuoi sviluppatori junior passeranno il loro primo mese solo a capire come eseguire l'intero sistema localmente
 
-<Callout type="danger" title="La Dura Verità">
+<Callout type="insight" title="La Dura Verità">
 I microservizi non rendono il tuo sistema più semplice. Scambiano la complessità del codice con la complessità operativa. Assicurati di essere pronto per quello scambio.
 </Callout>
 

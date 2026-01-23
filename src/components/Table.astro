@@ -1,0 +1,51 @@
+---
+
+---
+
+<div class="table-container">
+    <slot />
+</div>
+
+<style>
+    .table-container {
+        overflow-x: auto;
+        margin: 2rem 0;
+        border-radius: var(--border-radius);
+        box-shadow:
+            0 4px 6px -1px rgba(0, 0, 0, 0.1),
+            0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border: 1px solid var(--border-color);
+    }
+
+    /* Style the table within the slot */
+    :global(.table-container table) {
+        width: 100%;
+        border-collapse: collapse;
+        font-size: 0.95rem;
+        background: var(--bg-secondary);
+    }
+
+    :global(.table-container th),
+    :global(.table-container td) {
+        padding: 1rem;
+        text-align: left;
+        border-bottom: 1px solid var(--border-color);
+    }
+
+    :global(.table-container th) {
+        background: var(--bg-tertiary);
+        font-weight: 600;
+        color: var(--text-primary);
+        text-transform: uppercase;
+        font-size: 0.85rem;
+        letter-spacing: 0.05em;
+    }
+
+    :global(.table-container tr:last-child td) {
+        border-bottom: none;
+    }
+
+    :global(.table-container tr:hover td) {
+        background-color: rgba(var(--accent-rgb), 0.02);
+    }
+</style>

@@ -17,7 +17,7 @@ export const ui = {
         'footer.tagline': 'Software Engineer & Developer',
         'footer.connect': 'Connect with me',
         'footer.copyright': '© {year} Dumitru Birsan. All rights reserved.',
-        'footer.madeWith': 'Made with ♥ using Astro',
+        'footer.madeWith': 'Made with ♥',
 
         // Home Page
         'home.greeting': "Hello, I'm",

@@ -1,6 +1,13 @@
 ---
 interface Props {
-    type?: "note" | "tip" | "warning" | "caution" | "info" | "danger";
+    type?:
+        | "note"
+        | "tip"
+        | "warning"
+        | "caution"
+        | "info"
+        | "danger"
+        | "insight";
     title?: string;
     collapsible?: boolean;
     collapsed?: boolean;
@@ -17,6 +24,7 @@ const {
 
 const typeConfig = {
     note: { color: "#7F00FF", label: "Note" },
+    insight: { color: "#7F00FF", label: "Insight" },
     tip: { color: "#00e0e0", label: "Tip" },
     warning: { color: "#e8bf3f", label: "Warning" },
     caution: { color: "#c03535", label: "Caution" },
@@ -158,6 +166,14 @@ const displayTitle = title || config.label;
             135deg,
             var(--bg-secondary) 0%,
             rgba(255, 68, 68, 0.05) 100%
+        );
+    }
+
+    .callout[data-type="insight"] {
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            rgba(127, 0, 255, 0.05) 100%
         );
     }
 
