@@ -42,7 +42,7 @@
 
 .career-card:hover {
     transform: translateY(-6px);
-    box-shadow: 0 20px 40px var(--accent-primary);
+    box-shadow: var(--shadow-accent-xl);
     opacity: 0.95;
     border-color: var(--accent-primary);
 }

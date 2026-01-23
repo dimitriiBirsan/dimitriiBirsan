@@ -37,6 +37,22 @@
     --disabled: #505050;
     /* Dark grey for disabled state */
 
+    /* --- Status Colors --- */
+    --color-tip: #00e0e0;
+    --color-warning: #e8bf3f;
+    --color-caution: #c03535;
+    --color-info: #3d7a35;
+    --color-danger: #ff4444;
+
+    /* --- Shadows --- */
+    --shadow-sm: 0 2px 8px rgba(0, 0, 0, 0.1);
+    --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.15);
+    --shadow-lg: 0 8px 24px rgba(0, 0, 0, 0.2);
+    --shadow-xl: 0 20px 40px rgba(0, 0, 0, 0.3);
+
+    --shadow-accent-lg: 0 10px 30px var(--accent-primary);
+    --shadow-accent-xl: 0 20px 40px var(--accent-primary);
+
     /* Typography */
     --font-family: 'Inter', system-ui, sans-serif;
     --font-size-base: 1.25rem;
@@ -84,13 +100,15 @@
     --heading-color: #ffffff;
 
     /* --- Accents --- */
-    --accent-primary: #7F00FF;
-    --accent-hover: #9d4edd;
+    --accent-primary: #9D4EDD;
+    /* Light Violet for better contrast */
+    --accent-hover: #C77DFF;
+    /* Lighter Violet for hover */
     --accent-secondary: #e040fb;
     --accent-tertiary: #00e0e0;
 
     /* --- UI Elements --- */
-    --highlight: #7F00FF;
+    --highlight: #9D4EDD;
     --disabled: #505050;
 }
 

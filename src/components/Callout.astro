@@ -23,13 +23,13 @@ const {
 } = Astro.props;
 
 const typeConfig = {
-    note: { color: "#7F00FF", label: "Note" },
-    insight: { color: "#7F00FF", label: "Insight" },
-    tip: { color: "#00e0e0", label: "Tip" },
-    warning: { color: "#e8bf3f", label: "Warning" },
-    caution: { color: "#c03535", label: "Caution" },
-    info: { color: "#3d7a35", label: "Info" },
-    danger: { color: "#ff4444", label: "Danger" },
+    note: { color: "var(--accent-primary)", label: "Note" },
+    insight: { color: "var(--accent-primary)", label: "Insight" },
+    tip: { color: "var(--color-tip)", label: "Tip" },
+    warning: { color: "var(--color-warning)", label: "Warning" },
+    caution: { color: "var(--color-caution)", label: "Caution" },
+    info: { color: "var(--color-info)", label: "Info" },
+    danger: { color: "var(--color-danger)", label: "Danger" },
 };
 
 const config = typeConfig[type];
@@ -56,14 +56,18 @@ const displayTitle = title || config.label;
         margin: 1.5rem 0;
         padding: 1rem;
         border-left: 4px solid var(--accentColor);
-        background: var(--bg-secondary);
+        background: linear-gradient(
+            135deg,
+            var(--bg-secondary) 0%,
+            color-mix(in srgb, var(--accentColor) 5%, transparent) 100%
+        );
         border-radius: var(--border-radius);
-        box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
+        box-shadow: var(--shadow-sm);
         transition: all 0.3s ease;
     }
 
     .callout:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+        box-shadow: var(--shadow-md);
     }
 
     .callout-header {
@@ -120,62 +124,7 @@ const displayTitle = title || config.label;
         margin-bottom: 0;
     }
 
-    /* Type-specific subtle backgrounds */
-    .callout[data-type="note"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(127, 0, 255, 0.05) 100%
-        );
-    }
-
-    .callout[data-type="tip"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(0, 224, 224, 0.05) 100%
-        );
-    }
-
-    .callout[data-type="warning"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(232, 191, 63, 0.05) 100%
-        );
-    }
-
-    .callout[data-type="caution"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(192, 53, 53, 0.05) 100%
-        );
-    }
-
-    .callout[data-type="info"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(61, 122, 53, 0.05) 100%
-        );
-    }
-
-    .callout[data-type="danger"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(255, 68, 68, 0.05) 100%
-        );
-    }
-
-    .callout[data-type="insight"] {
-        background: linear-gradient(
-            135deg,
-            var(--bg-secondary) 0%,
-            rgba(127, 0, 255, 0.05) 100%
-        );
-    }
+    /* Type-specific subtle backgrounds - removed in favor of dynamic color-mix */
 
     /* Responsive adjustments */
     @media (max-width: 636px) {
