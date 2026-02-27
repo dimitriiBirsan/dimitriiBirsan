@@ -52,4 +52,4 @@ I am an active contributor to the local tech community in Italy.
 
 * **Portfolio:** [dimitrii.dev](https://dimitrii.dev/)
 * **LinkedIn:** [Dumitru Birsan](https://www.linkedin.com/in/dumitru-birsan-6b58771bb)
-* **Email:** dimitriibirsan@gmail.com
+* **Email:** d.birsan@volttrace.eu
