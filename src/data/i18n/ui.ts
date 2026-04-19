@@ -44,7 +44,7 @@ export const ui = {
         'about.journey.title': 'My Journey',
         'about.journey.p1': 'My journey began in <highlight>Anenii Noi, Moldova</highlight>, moved through Romania, and took root in the industrial heartland of Italy. This migration path taught me a fundamental truth: any system—whether a new spoken language or a legacy codebase—can be mastered with patience and resilience.',
         'about.journey.p2': 'Today, I operate at the intersection of <highlight>Industrial IoT (IIoT)</highlight> and <highlight>Modern Web Architecture</highlight>. I don\'t just build websites; I engineer the digital nervous systems for industrial machinery, bridging the gap between high-level Cloud abstractions and the reality on the field automation.',
-        'about.journey.p3': 'As a <highlight>Senior Developer at Change Wave SRL</highlight>, I focus on architecting robust Full Stack applications, building interactive user interfaces, and orchestrating event-driven microservices.',
+        'about.journey.p3': 'Currently, I serve as a <highlight>Cloud Architect at Dreamonkey</highlight> and <highlight>Senior Frontend Developer at Er Sistemi SPA</highlight>, where I bridge the gap between scalable cloud infrastructures and high-performance industrial interfaces.',
 
         // Skills Page
         'skills.title': 'Skills & Expertise',
@@ -98,7 +98,7 @@ export const ui = {
         'about.journey.title': 'Il mio percorso',
         'about.journey.p1': 'Il mio viaggio è iniziato ad <highlight>Anenii Noi, Moldavia</highlight>, è passato per la Romania e si è radicato nel cuore industriale dell\'Italia. Questo percorso migratorio mi ha insegnato una verità fondamentale: qualsiasi sistema—che sia una nuova lingua parlata o un codice legacy—può essere padroneggiato con pazienza e resilienza.',
         'about.journey.p2': 'Oggi opero all\'intersezione tra <highlight>IoT Industriale (IIoT)</highlight> e <highlight>Architettura Web Moderna</highlight>. Non costruisco solo siti web; progetto i sistemi nervosi digitali per macchinari industriali, colmando il divario tra le astrazioni Cloud di alto livello e la realtà dell\'automazione sul campo.',
-        'about.journey.p3': 'Come <highlight>Senior Developer presso Change Wave SRL</highlight>, mi concentro sulla progettazione di robuste applicazioni Full Stack, sulla costruzione di interfacce utente interattive e sull\'orchestrazione di microservizi event-driven.',
+        'about.journey.p3': 'Attualmente ricopro il ruolo di <highlight>Cloud Architect presso Dreamonkey</highlight> e <highlight>Senior Frontend Developer presso Er Sistemi SPA</highlight>, dove collego infrastrutture cloud scalabili con interfacce industriali ad alte prestazioni.',
 
         // Skills Page
         'skills.title': 'Competenze & Expertise',
