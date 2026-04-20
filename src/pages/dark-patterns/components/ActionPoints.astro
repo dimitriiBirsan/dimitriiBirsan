@@ -16,9 +16,8 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 
         <div class="ap-container">
             <div class="ap-bar">
-                <div class="ap-fill" id="apFill" style="width: 100%;">
-                    <div class="ap-text" id="apText">100 / 100 AP</div>
-                </div>
+                <div class="ap-fill" id="apFill" style="width: 100%;"></div>
+                <div class="ap-text" id="apText">100 / 100 AP</div>
             </div>
             <button class="spin-button" id="useApBtn"
                 >View High-Level Report (10 AP)</button
@@ -40,10 +39,12 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 <script>
     // Action Points System
     let currentAP = 100;
-    const apFill = document.getElementById("apFill");
-    const apText = document.getElementById("apText");
-    const rechargePrompt = document.getElementById("rechargePrompt");
-    const useApBtn = document.getElementById("useApBtn");
+    const apFill = document.getElementById("apFill") as HTMLDivElement;
+    const apText = document.getElementById("apText") as HTMLDivElement;
+    const rechargePrompt = document.getElementById(
+        "rechargePrompt",
+    ) as HTMLParagraphElement;
+    const useApBtn = document.getElementById("useApBtn") as HTMLButtonElement;
 
     useApBtn.addEventListener("click", () => {
         if (currentAP >= 10) {

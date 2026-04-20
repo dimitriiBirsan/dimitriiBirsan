@@ -164,7 +164,7 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 <script>
     // Streak Timer Countdown
     function updateStreakTimer() {
-        const timer = document.getElementById("streakTimer");
+        const timer = document.getElementById("streakTimer") as HTMLDivElement;
         let [hours, minutes, seconds] = timer.textContent
             .split(":")
             .map(Number);

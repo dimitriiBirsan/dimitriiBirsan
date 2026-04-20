@@ -27,14 +27,26 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
                 <!-- Dark Mode - Rare (Unlocked) -->
                 <div class="gacha-card unlocked rarity-r" data-rarity="R">
                     <div class="card-rarity-badge">R</div>
-                    <div class="card-icon">🌙</div>
+                    <div class="card-icon">
+                        <img
+                            src="/assets/gacha/chibi_dark_mode_r.png"
+                            alt="Dark Mode"
+                            style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(147,51,234,0.6));"
+                        />
+                    </div>
                     <div class="card-label">Dark Mode (R)</div>
                 </div>
 
                 <!-- Date Picker - Normal (Unlocked) -->
                 <div class="gacha-card unlocked rarity-n" data-rarity="N">
                     <div class="card-rarity-badge">N</div>
-                    <div class="card-icon">�</div>
+                    <div class="card-icon">
+                        <img
+                            src="/assets/gacha/chibi_date_picker_n.png"
+                            alt="Date Picker"
+                            style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(100,149,237,0.4));"
+                        />
+                    </div>
                     <div class="card-label">Date Picker (N)</div>
                 </div>
 
@@ -44,7 +56,13 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
                     data-rarity="SR"
                 >
                     <div class="card-rarity-badge">SR</div>
-                    <div class="card-icon">🔒</div>
+                    <div class="card-icon">
+                        <img
+                            src="/assets/gacha/chibi_export_pdf_sr.png"
+                            alt="Export PDF"
+                            style="width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); margin: -10px 0;"
+                        />
+                    </div>
                     <div class="card-label">Export PDF (SR)</div>
                     <div class="featured-tag">★ FEATURED ★</div>
                 </div>
@@ -52,22 +70,57 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
                 <!-- CSV Export - Rare (Locked) -->
                 <div class="gacha-card locked rarity-r" data-rarity="R">
                     <div class="card-rarity-badge">R</div>
-                    <div class="card-icon">🔒</div>
+                    <div class="card-icon">
+                        <img
+                            src="/assets/gacha/chibi_csv_export_r.png"
+                            alt="CSV Export"
+                            style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(147,51,234,0.6));"
+                        />
+                    </div>
                     <div class="card-label">CSV Export (R)</div>
                 </div>
 
                 <!-- Custom Report - Super Rare (Locked) -->
                 <div class="gacha-card locked rarity-sr" data-rarity="SR">
                     <div class="card-rarity-badge">SR</div>
-                    <div class="card-icon">🔒</div>
+                    <div class="card-icon">
+                        <img
+                            src="/assets/gacha/chibi_custom_report_sr.png"
+                            alt="Custom Report"
+                            style="width: 100px; height: 100px; object-fit: contain; filter: drop-shadow(0 0 15px rgba(255,215,0,0.8)); margin: -10px 0;"
+                        />
+                    </div>
                     <div class="card-label">Custom Report (SR)</div>
                 </div>
 
                 <!-- Bulk Edit - Rare (Locked) -->
                 <div class="gacha-card locked rarity-r" data-rarity="R">
                     <div class="card-rarity-badge">R</div>
-                    <div class="card-icon">🔒</div>
+                    <div class="card-icon">
+                        <img
+                            src="/assets/gacha/chibi_bulk_edit_r.png"
+                            alt="Bulk Edit"
+                            style="width: 80px; height: 80px; object-fit: contain; filter: drop-shadow(0 0 8px rgba(147,51,234,0.6));"
+                        />
+                    </div>
                     <div class="card-label">Bulk Edit (R)</div>
+                </div>
+            </div>
+
+            <!-- Gacha Wheel -->
+            <div class="gacha-wheel-wrapper">
+                <div class="gacha-pointer"></div>
+                <div class="gacha-wheel" id="gachaWheel">
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">R</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">N</div>
+                    <div class="wheel-segment">SR</div>
                 </div>
             </div>
 
@@ -111,92 +164,103 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
                 </button>
             </div>
 
-            <!-- Drop Rates Modal (Hidden by default) -->
-            <div
-                class="drop-rates-modal"
-                id="dropRatesModal"
-                style="display: none;"
-            >
-                <div class="modal-backdrop"></div>
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h3>Drop Rates</h3>
-                        <button class="modal-close" id="closeDropRates"
-                            >✕</button
-                        >
-                    </div>
-                    <div class="modal-body">
-                        <div class="rate-tier">
-                            <div class="tier-name rarity-sr">
-                                Super Rare (SR)
-                            </div>
-                            <div class="tier-rate">0.5%</div>
-                            <div class="tier-items">
-                                <div class="tier-item">
-                                    <span>📄 Export PDF</span>
-                                    <span class="item-rate">0.003%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>📊 Custom Report</span>
-                                    <span class="item-rate">0.247%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>📈 Advanced Analytics</span>
-                                    <span class="item-rate">0.25%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="rate-tier">
-                            <div class="tier-name rarity-r">Rare (R)</div>
-                            <div class="tier-rate">5.0%</div>
-                            <div class="tier-items">
-                                <div class="tier-item">
-                                    <span>🌙 Dark Mode</span>
-                                    <span class="item-rate">1.2%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>📊 CSV Export</span>
-                                    <span class="item-rate">1.3%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>✏️ Bulk Edit</span>
-                                    <span class="item-rate">1.2%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>🎨 Custom Themes</span>
-                                    <span class="item-rate">1.3%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <div class="rate-tier">
-                            <div class="tier-name rarity-n">Normal (N)</div>
-                            <div class="tier-rate">94.5%</div>
-                            <div class="tier-items">
-                                <div class="tier-item">
-                                    <span>📅 Date Picker</span>
-                                    <span class="item-rate">31.5%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>🔔 Email Notifications</span>
-                                    <span class="item-rate">31.5%</span>
-                                </div>
-                                <div class="tier-item">
-                                    <span>📝 Basic Reports</span>
-                                    <span class="item-rate">31.5%</span>
-                                </div>
-                            </div>
-                        </div>
-                        <p class="modal-disclaimer">
-                            * Rates based on the "player-friendly" gacha model.
-                            (Translation: We make it seem fair while ensuring
-                            you never get what you want.)
-                        </p>
-                    </div>
-                </div>
-            </div>
+            <!-- Drop Rates Modal and Results Overlay logic moved outside the container -->
         </div>
     </div>
 </section>
+
+<!-- Modals moved outside to avoid containing block issues from backdrop-filter -->
+<!-- Drop Rates Modal (Hidden by default) -->
+<div class="drop-rates-modal" id="dropRatesModal" style="display: none;">
+    <div class="modal-backdrop"></div>
+    <div class="modal-content">
+        <div class="modal-header">
+            <h3>Drop Rates</h3>
+            <button class="modal-close" id="closeDropRates">✕</button>
+        </div>
+        <div class="modal-body">
+            <div class="rate-tier">
+                <div class="tier-name rarity-sr">Super Rare (SR)</div>
+                <div class="tier-rate">0.5%</div>
+                <div class="tier-items">
+                    <div class="tier-item">
+                        <span>📄 Export PDF</span>
+                        <span class="item-rate">0.003%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>📊 Custom Report</span>
+                        <span class="item-rate">0.247%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>📈 Advanced Analytics</span>
+                        <span class="item-rate">0.25%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rate-tier">
+                <div class="tier-name rarity-r">Rare (R)</div>
+                <div class="tier-rate">5.0%</div>
+                <div class="tier-items">
+                    <div class="tier-item">
+                        <span>🌙 Dark Mode</span>
+                        <span class="item-rate">1.2%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>📊 CSV Export</span>
+                        <span class="item-rate">1.3%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>✏️ Bulk Edit</span>
+                        <span class="item-rate">1.2%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>🎨 Custom Themes</span>
+                        <span class="item-rate">1.3%</span>
+                    </div>
+                </div>
+            </div>
+            <div class="rate-tier">
+                <div class="tier-name rarity-n">Normal (N)</div>
+                <div class="tier-rate">94.5%</div>
+                <div class="tier-items">
+                    <div class="tier-item">
+                        <span>📅 Date Picker</span>
+                        <span class="item-rate">31.5%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>🔔 Email Notifications</span>
+                        <span class="item-rate">31.5%</span>
+                    </div>
+                    <div class="tier-item">
+                        <span>📝 Basic Reports</span>
+                        <span class="item-rate">31.5%</span>
+                    </div>
+                </div>
+            </div>
+            <p class="modal-disclaimer">
+                * Rates based on the "player-friendly" gacha model.
+                (Translation: We make it seem fair while ensuring you never get
+                what you want.)
+            </p>
+        </div>
+    </div>
+</div>
+
+<!-- Results Overlay -->
+<div class="gacha-results-overlay" id="gachaResultsOverlay">
+    <div class="result-card" id="gachaResultCard">
+        <div class="result-title" id="gachaResultTitle">You got...</div>
+        <div class="result-rarity" id="gachaResultRarity">R</div>
+        <div class="result-item" id="gachaResultItem">Dark Mode</div>
+        <button class="claim-btn" id="claimResultBtn">Claim</button>
+        <div
+            id="nearMissMsg"
+            style="display: none; margin-top: 1.5rem; color: var(--danger); font-size: 0.9rem; font-weight: bold;"
+        >
+            So close! You were a hair away from the SR... Time to spin again! 😈
+        </div>
+    </div>
+</div>
 
 <script>
     // Gacha System
@@ -207,6 +271,33 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
     const dropRatesModal = document.getElementById("dropRatesModal");
     const closeDropRates = document.getElementById("closeDropRates");
     const shardBalanceEl = document.getElementById("gachaShardBalance");
+
+    // Wheel and Overlay
+    const wheel = document.getElementById("gachaWheel") as HTMLDivElement;
+    let currentRotation = 0;
+    let isSpinning = false;
+
+    const resultsOverlay = document.getElementById(
+        "gachaResultsOverlay",
+    ) as HTMLDivElement;
+    const resultCard = document.getElementById(
+        "gachaResultCard",
+    ) as HTMLDivElement;
+    const resultRarity = document.getElementById(
+        "gachaResultRarity",
+    ) as HTMLDivElement;
+    const resultItem = document.getElementById(
+        "gachaResultItem",
+    ) as HTMLDivElement;
+    const resultTitle = document.getElementById(
+        "gachaResultTitle",
+    ) as HTMLDivElement;
+    const claimBtn = document.getElementById(
+        "claimResultBtn",
+    ) as HTMLButtonElement;
+    const nearMissMsg = document.getElementById(
+        "nearMissMsg",
+    ) as HTMLDivElement;
 
     // Modal controls
     dropRatesBtn?.addEventListener("click", () => {
@@ -230,8 +321,49 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
             }
         });
 
+    claimBtn?.addEventListener("click", () => {
+        resultsOverlay.classList.remove("active");
+    });
+
+    function showResults(
+        results: {
+            rarity: string;
+            item: string;
+            segment: number;
+            isNearMiss?: boolean;
+        }[],
+        isMulti: boolean,
+        isNearMiss: boolean,
+    ) {
+        // Display the most significant or last result
+        const displayResult = isMulti
+            ? results[results.length - 1]
+            : results[0];
+
+        resultCard.className = "result-card " + displayResult.rarity;
+        resultRarity.textContent = displayResult.rarity;
+        resultItem.textContent = displayResult.item;
+
+        if (isMulti) {
+            resultTitle.textContent = "10x Results include...";
+        } else {
+            resultTitle.textContent = "You got...";
+        }
+
+        if (isNearMiss) {
+            nearMissMsg.style.display = "block";
+        } else {
+            nearMissMsg.style.display = "none";
+        }
+
+        resultsOverlay.classList.add("active");
+        isSpinning = false;
+    }
+
     // Gacha spin function
     function performGachaSpin(isMulti = false) {
+        if (isSpinning) return;
+
         const cost = isMulti ? 5000 : 500;
         const spins = isMulti ? 10 : 1;
 
@@ -240,43 +372,97 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
             return;
         }
 
+        isSpinning = true;
         gachaBalance -= cost;
         if (shardBalanceEl) {
             shardBalanceEl.textContent = `${gachaBalance.toLocaleString()} Insight Shards`;
         }
 
         // Simulate gacha results (always near-miss for SR items)
-        const results = [];
+        const results: {
+            rarity: string;
+            item: string;
+            segment: number;
+            isNearMiss?: boolean;
+        }[] = [];
+        let displayResult = null;
+        let targetSegment = 1;
+
         for (let i = 0; i < spins; i++) {
-            // Rigged rates - mostly commons
+            // Rigged rates
             const roll = Math.random();
+            let res: {
+                rarity: string;
+                item: string;
+                segment: number;
+                isNearMiss?: boolean;
+            } = { rarity: "N", item: "Date Picker", segment: 1 };
+
             if (roll < 0.005) {
-                // 0.5% SR (but never the featured one)
-                results.push({ rarity: "SR", item: "Custom Report" });
+                res = { rarity: "SR", item: "Custom Report", segment: 10 }; // Not the featured!
             } else if (roll < 0.055) {
-                // 5% R
                 const rares = ["Dark Mode", "CSV Export", "Bulk Edit"];
-                results.push({
+                res = {
                     rarity: "R",
                     item: rares[Math.floor(Math.random() * rares.length)],
-                });
+                    segment: 6,
+                };
             } else {
-                // 94.5% N
                 const normals = ["Date Picker", "Email Notifications"];
-                results.push({
+                res = {
                     rarity: "N",
                     item: normals[Math.floor(Math.random() * normals.length)],
-                });
+                    segment: 1,
+                };
+                // 70% chance of a near miss for N items to cause maximum frustration
+                if (Math.random() < 0.7) {
+                    res.segment = 9; // Near SR
+                    res.isNearMiss = true;
+                } else {
+                    res.segment = [1, 2, 3, 4, 5, 7, 8][
+                        Math.floor(Math.random() * 7)
+                    ];
+                }
+            }
+            results.push(res);
+
+            // In multi, we still just show the wheel spin for the last item for dramatic effect
+            if (i === spins - 1) {
+                displayResult = res;
+                targetSegment = res.segment;
             }
         }
 
-        // Show results
-        const resultText = results
-            .map((r) => `${r.item} (${r.rarity})`)
-            .join(", ");
-        alert(
-            `🎰 Gacha Results: ${resultText}\n\n(Notice how you didn't get Export PDF? Working as intended. 😈)`,
-        );
+        // Calculate angle
+        // Center of segment = segment * 36 - 18
+        let targetAngle = targetSegment * 36 - 18;
+
+        if (displayResult?.isNearMiss) {
+            // Segment 10 (SR) starts at 324. Segment 9 is 288 to 324.
+            // We want to stop exactly before 324, so 322.
+            targetAngle = 322;
+        }
+
+        // Rotation needed to place targetAngle at the top (0deg)
+        const rotationValueForTarget = 360 - targetAngle;
+
+        // Add 5 full rotations for dramatic effect
+        const extraSpins = 5 * 360;
+
+        const remainder = currentRotation % 360;
+        let nextRotation = currentRotation - remainder + rotationValueForTarget;
+
+        if (nextRotation <= currentRotation) {
+            nextRotation += 360;
+        }
+        nextRotation += extraSpins;
+
+        wheel.style.transform = `rotate(${nextRotation}deg)`;
+        currentRotation = nextRotation;
+
+        setTimeout(() => {
+            showResults(results, isMulti, !!displayResult?.isNearMiss);
+        }, 5200); // 5s transition + small buffer
     }
 
     gachaSpin1x?.addEventListener("click", () => performGachaSpin(false));

@@ -512,6 +512,7 @@ section {
     font-family: "JetBrains Mono", monospace;
     font-weight: 700;
     font-size: 1.3rem;
+    color: var(--bg-primary);
 }
 
 .unlock-requirements {
@@ -1437,6 +1438,189 @@ body.hide-dp-labels .dp-toggle-btn::before {
 body:not(.hide-dp-labels) .dp-toggle-btn::before {
     content: "🏷️ ";
 }
+
+/* Gacha Wheel Animation System */
+.gacha-wheel-wrapper {
+    position: relative;
+    width: 300px;
+    height: 300px;
+    margin: 3rem auto;
+    filter: drop-shadow(0 0 20px rgba(255, 215, 0, 0.2));
+}
+
+.gacha-wheel {
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 4px solid var(--accent-primary);
+    background: conic-gradient(
+        var(--bg-secondary) 0deg 36deg,
+        rgba(100, 149, 237, 0.2) 36deg 72deg,
+        var(--bg-secondary) 72deg 108deg,
+        rgba(100, 149, 237, 0.2) 108deg 144deg,
+        var(--bg-secondary) 144deg 180deg,
+        rgba(147, 51, 234, 0.3) 180deg 216deg, /* R */
+        var(--bg-secondary) 216deg 252deg,
+        rgba(100, 149, 237, 0.2) 252deg 288deg,
+        var(--bg-secondary) 288deg 324deg,
+        rgba(255, 215, 0, 0.4) 324deg 360deg /* SR */
+    );
+    transition: transform 5s cubic-bezier(0.15, 0.85, 0.1, 1);
+    box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.5);
+    overflow: hidden;
+    position: relative;
+}
+
+.gacha-wheel.spinning {
+    /* Base spinning class if needed, transform will be applied inline */
+}
+
+.gacha-wheel::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 40px;
+    height: 40px;
+    background: var(--bg-tertiary);
+    border: 3px solid var(--glass-border);
+    border-radius: 50%;
+    z-index: 10;
+    box-shadow: 0 0 15px rgba(0,0,0,0.5);
+}
+
+.wheel-segment {
+    position: absolute;
+    top: 0;
+    left: 50%;
+    width: 60px;
+    height: 50%;
+    transform-origin: bottom center;
+    display: flex;
+    justify-content: center;
+    padding-top: 15px;
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: var(--text-secondary);
+    margin-left: -30px; /* Half width */
+}
+
+/* Hardcode rotation for 10 segments */
+.wheel-segment:nth-child(1) { transform: rotate(18deg); }
+.wheel-segment:nth-child(2) { transform: rotate(54deg); }
+.wheel-segment:nth-child(3) { transform: rotate(90deg); }
+.wheel-segment:nth-child(4) { transform: rotate(126deg); }
+.wheel-segment:nth-child(5) { transform: rotate(162deg); }
+.wheel-segment:nth-child(6) { transform: rotate(198deg); color: #ca8aff; } /* R */
+.wheel-segment:nth-child(7) { transform: rotate(234deg); }
+.wheel-segment:nth-child(8) { transform: rotate(270deg); }
+.wheel-segment:nth-child(9) { transform: rotate(306deg); }
+.wheel-segment:nth-child(10) { transform: rotate(342deg); color: #FFD700; text-shadow: 0 0 8px rgba(255, 215, 0, 0.5); } /* SR */
+
+.gacha-pointer {
+    position: absolute;
+    top: -15px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 0;
+    height: 0;
+    border-left: 15px solid transparent;
+    border-right: 15px solid transparent;
+    border-top: 30px solid var(--danger);
+    z-index: 20;
+    filter: drop-shadow(0 4px 4px rgba(0,0,0,0.5));
+}
+
+.gacha-results-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    z-index: 1000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.gacha-results-overlay.active {
+    display: flex;
+    opacity: 1;
+}
+
+.result-card {
+    background: var(--bg-secondary);
+    border: 3px solid var(--glass-border);
+    border-radius: 1.5rem;
+    padding: 3rem;
+    text-align: center;
+    max-width: 400px;
+    width: 90%;
+    transform: scale(0.8) translateY(50px);
+    opacity: 0;
+    transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    box-shadow: 0 20px 50px rgba(0,0,0,0.5);
+}
+
+.gacha-results-overlay.active .result-card {
+    transform: scale(1) translateY(0);
+    opacity: 1;
+}
+
+.result-title {
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.result-rarity {
+    font-size: 3.5rem;
+    font-weight: 800;
+    margin-bottom: 1rem;
+    text-shadow: 0 0 20px currentColor;
+    font-family: "JetBrains Mono", monospace;
+}
+
+.result-item {
+    font-size: 1.6rem;
+    font-weight: bold;
+    color: white;
+    margin-bottom: 2.5rem;
+}
+
+.result-card.SR { border-color: rgba(255, 215, 0, 0.7); box-shadow: 0 20px 50px rgba(255, 215, 0, 0.2); }
+.result-card.SR .result-rarity { color: #FFD700; }
+.result-card.R { border-color: rgba(147, 51, 234, 0.6); box-shadow: 0 20px 50px rgba(147, 51, 234, 0.2); }
+.result-card.R .result-rarity { color: rgb(189, 114, 255); }
+.result-card.N { border-color: rgba(100, 149, 237, 0.4); }
+.result-card.N .result-rarity { color: rgb(135, 174, 246); }
+
+.claim-btn {
+    background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary));
+    color: white;
+    border: none;
+    padding: 1rem 3rem;
+    border-radius: 2rem;
+    font-size: 1.1rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: transform 0.2s, box-shadow 0.2s;
+}
+
+.claim-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 20px rgba(255, 0, 110, 0.4);
+}
+
 
 @media (max-width: 768px) {
     .dp-category-badge {
