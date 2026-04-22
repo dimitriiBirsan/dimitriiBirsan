@@ -399,7 +399,11 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
             } = { rarity: "N", item: "Date Picker", segment: 1 };
 
             if (roll < 0.005) {
-                res = { rarity: "SR", item: "Custom Report", segment: 10 }; // Not the featured!
+                if (roll < 0.00003) {
+                    res = { rarity: "SR", item: "Export PDF", segment: 10 }; // Featured!
+                } else {
+                    res = { rarity: "SR", item: "Custom Report", segment: 10 }; // Not the featured!
+                }
             } else if (roll < 0.055) {
                 const rares = ["Dark Mode", "CSV Export", "Bulk Edit"];
                 res = {
