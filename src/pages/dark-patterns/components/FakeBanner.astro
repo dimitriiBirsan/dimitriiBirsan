@@ -3,6 +3,7 @@
 import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
+<section aria-label="Dark pattern demo: Deceptive Cookie Consent">
 <div class="dark-pattern-card">
     <div class="card-header">
         <h2>🍪 Deceptive Cookie Consent</h2>
@@ -10,6 +11,16 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
             categories={["Interface Interference", "Sneaking"]}
             tooltip="Interface Interference + Sneaking: Manipulative consent with pre-selected options"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Default to the most privacy-preserving option — only necessary cookies pre-selected, everything else opt-in.</li>
+                    <li>Make "Reject All" as visually prominent as "Accept All"; hiding or graying it out is a GDPR violation in many jurisdictions.</li>
+                    <li>Use plain language for cookie categories — "Behavioral Advertising" not "Enhanced User Experience".</li>
+                </ul>
+            </div>
+        </details>
     </div>
 
     <!-- The Actual Fake Cookie Banner -->
@@ -206,6 +217,7 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
         </div>
     </div>
 </div>
+</section>
 
 <style>
     /* Fake Cookie Banner - reusing variables from globals/index.css and overload.css */

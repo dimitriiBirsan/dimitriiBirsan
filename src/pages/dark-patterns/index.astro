@@ -1,0 +1,204 @@
+---
+import BaseHead from "../../components/BaseHead.astro";
+import { SITE_TITLE } from "../../consts";
+import "../../styles/globals/index.css";
+import "../../styles/elements/overload.css";
+
+const patterns = [
+    {
+        id: "daily-streak",
+        title: "Daily Login Streak Engine",
+        category: "Nagging",
+        badgeClass: "dp-nagging",
+        description: "Persistent countdown timers and loss-aversion messaging designed to force daily engagement.",
+    },
+    {
+        id: "action-points",
+        title: "Action Point (AP) System",
+        category: "Forced Action",
+        badgeClass: "dp-forced-action",
+        description: "Artificial resource gating that requires users to pay or wait to access basic functionality.",
+    },
+    {
+        id: "artificial-loading",
+        title: "Artificial Processing Delays",
+        category: "Interface Interference",
+        badgeClass: "dp-interface-interference",
+        description: "Fake loading spinners added to make trivial operations feel complex and valuable.",
+    },
+    {
+        id: "shadow-progress",
+        title: "The Shadow Progress Bar",
+        category: "Obstruction",
+        badgeClass: "dp-obstruction",
+        description: "A progress bar permanently stuck at 98%, hiding requirements the user can never realistically complete.",
+    },
+    {
+        id: "gacha-system",
+        title: "The Analytics Gacha",
+        category: "Sneaking",
+        badgeClass: "dp-sneaking",
+        description: "Standard product features like CSV export locked behind a rigged probability spin mechanic.",
+    },
+    {
+        id: "currency-confusion",
+        title: "Multi-Currency Layering",
+        category: "Sneaking",
+        badgeClass: "dp-sneaking",
+        description: "Three abstract currencies with opaque conversion rates designed to obscure real costs.",
+    },
+    {
+        id: "confirm-shaming",
+        title: "Shame-Based Opt-Outs",
+        category: "Social Engineering",
+        badgeClass: "dp-social-engineering",
+        description: "Guilt-inducing decline copy that makes users feel bad for choosing not to subscribe.",
+    },
+    {
+        id: "social-proof",
+        title: "Social Proof Fabricator",
+        category: "Social Engineering",
+        badgeClass: "dp-social-engineering",
+        description: "An infinite ticker of entirely fabricated user activity designed to manufacture FOMO.",
+    },
+    {
+        id: "fake-banner",
+        title: "Deceptive Cookie Consent",
+        category: "Interface Interference",
+        badgeClass: "dp-interface-interference",
+        description: "A cookie banner where every action — including 'Reject' and 'Customize' — accepts everything.",
+    },
+    {
+        id: "actual-unsubscribe",
+        title: "Hidden Unsubscribe",
+        category: "Obstruction",
+        badgeClass: "dp-obstruction",
+        description: "An unsubscribe link buried in dense low-contrast text, gated behind a paid-tier requirement.",
+    },
+];
+---
+
+<!doctype html>
+<html lang="en">
+    <head>
+        <BaseHead
+            title={`Dark Patterns Index — ${SITE_TITLE}`}
+            description="A catalogue of 10 working dark pattern demos: gacha mechanics, fake social proof, shame-based opt-outs, and more."
+        />
+    </head>
+    <body>
+        <div class="background-gradient"></div>
+
+        <div class="container" style="padding-top: 4rem; padding-bottom: 4rem;">
+            <div style="margin-bottom: 3rem;">
+                <a
+                    href="/"
+                    style="color: var(--text-muted); font-size: 0.875rem; text-decoration: none; display: inline-flex; align-items: center; gap: 0.4rem; margin-bottom: 2rem;"
+                >
+                    ← Back to site
+                </a>
+                <div
+                    class="cynical-badge"
+                    style="display: inline-block; margin-bottom: 1.5rem;"
+                >
+                    ⚠️ Satirical Exposure
+                </div>
+                <h1
+                    style="font-size: clamp(2rem, 5vw, 3.5rem); font-weight: 800; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary), var(--accent-tertiary)); -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text; margin-bottom: 1rem; line-height: 1.15;"
+                >
+                    Dark Patterns Index
+                </h1>
+                <p style="color: var(--text-muted); font-size: 1rem; max-width: 580px; line-height: 1.7;">
+                    Ten working demonstrations of manipulative UX patterns commonly used in SaaS products.
+                    Each demo shows the dark pattern in action, labels which category it belongs to, and
+                    explains what ethical UX looks like instead.
+                </p>
+                <a
+                    href="/dark-patterns/overload"
+                    style="display: inline-block; margin-top: 1.5rem; padding: 0.65rem 1.5rem; background: linear-gradient(135deg, var(--accent-primary), var(--accent-secondary)); color: white; border-radius: 50px; font-size: 0.875rem; font-weight: 600; text-decoration: none;"
+                >
+                    View Full Demo Page →
+                </a>
+            </div>
+
+            <div
+                style="display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.25rem;"
+            >
+                {
+                    patterns.map((p) => (
+                        <a
+                            href={`/dark-patterns/overload#${p.id}`}
+                            class="dp-index-card"
+                        >
+                            <div class="dp-index-card-header">
+                                <span
+                                    class={`dp-category-badge ${p.badgeClass}`}
+                                >
+                                    {p.category}
+                                </span>
+                            </div>
+                            <h2 class="dp-index-card-title">{p.title}</h2>
+                            <p class="dp-index-card-desc">{p.description}</p>
+                            <span class="dp-index-card-cta">See the demo →</span>
+                        </a>
+                    ))
+                }
+            </div>
+
+            <p
+                style="color: var(--text-muted); font-size: 0.8rem; margin-top: 3rem; text-align: center; font-style: italic;"
+            >
+                All patterns are satirical demonstrations. Don't build this.
+                Build better.
+            </p>
+        </div>
+    </body>
+</html>
+
+<style>
+    .dp-index-card {
+        display: flex;
+        flex-direction: column;
+        gap: 0.6rem;
+        background: var(--glass-bg);
+        border: 1px solid var(--glass-border);
+        border-radius: 0.875rem;
+        padding: 1.5rem;
+        text-decoration: none;
+        transition: all 0.25s ease;
+        backdrop-filter: blur(10px);
+    }
+
+    .dp-index-card:hover {
+        border-color: var(--accent-primary);
+        transform: translateY(-3px);
+        box-shadow: 0 8px 32px rgba(127, 0, 255, 0.2);
+    }
+
+    .dp-index-card-header {
+        margin-bottom: 0.25rem;
+    }
+
+    .dp-index-card-title {
+        font-size: 1.05rem;
+        font-weight: 700;
+        color: var(--text-primary);
+        line-height: 1.3;
+        margin: 0;
+    }
+
+    .dp-index-card-desc {
+        font-size: 0.875rem;
+        color: var(--text-muted);
+        line-height: 1.55;
+        flex: 1;
+        margin: 0;
+    }
+
+    .dp-index-card-cta {
+        font-size: 0.8rem;
+        font-weight: 600;
+        color: var(--accent-primary);
+        margin-top: 0.25rem;
+    }
+</style>

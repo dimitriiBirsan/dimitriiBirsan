@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Unsubscribe section -->
-<section>
+<section aria-label="Dark pattern demo: Hidden Unsubscribe">
     <div class="glass-card" style="position: relative; overflow: hidden;">
         <h2 class="section-title">Special Offers & Updates</h2>
         <DarkPatternLabel
             categories={["Obstruction"]}
             tooltip="Obstruction: Making cancellation intentionally difficult"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>The unsubscribe link should be a single, visible click — place it prominently in the email footer, not hidden in prose.</li>
+                    <li>Honor unsubscribe requests immediately and without friction; no confirmation steps, no "are you sure?" loops.</li>
+                    <li>Never charge for unsubscribing or gate it behind a paid plan — it's both an ethical baseline and a legal requirement (CAN-SPAM, GDPR).</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">Stay connected with exclusive content!</p>
 
         <div style="padding: 2rem 0;">
@@ -31,10 +41,10 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 
             <!-- The "hidden" unsubscribe -->
             <div
-                style="margin-top: 4rem; text-align: center; opacity: 0.15; transition: opacity 0.3s;"
+                style="margin-top: 4rem; text-align: center; opacity: 0.2; transition: opacity 0.3s;"
             >
                 <p
-                    style="font-size: 0.85rem; color: #333; letter-spacing: -0.5px; line-height: 1.1;"
+                    style="font-size: 0.85rem; color: var(--text-primary); letter-spacing: -0.5px; line-height: 1.1;"
                 >
                     If you no longer wish to receive our absolutely essential
                     daily emails about features you'll never use, limited-time

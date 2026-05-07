@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Action Points -->
-<section>
+<section aria-label="Dark pattern demo: Action Point System">
     <div class="glass-card">
         <h2 class="section-title">Action Point (AP) System</h2>
         <DarkPatternLabel
             categories={["Forced Action"]}
             tooltip="Forced Action: Artificial limitations requiring payment or waiting"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Don't gate core features behind internal resource systems — if you need rate-limiting, be transparent and offer free alternatives.</li>
+                    <li>If tiers exist, publish clear, predictable quotas upfront so users can plan rather than discover limits mid-task.</li>
+                    <li>Never tie basic utility (viewing a report) to currency a user must earn or purchase.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Want to view data? That'll cost you. Literally.
         </p>

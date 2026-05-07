@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Currency Confusion -->
-<section>
+<section aria-label="Dark pattern demo: Multi-Currency Layering">
     <div class="glass-card">
         <h2 class="section-title">Multi-Currency Layering</h2>
         <DarkPatternLabel
             categories={["Sneaking"]}
             tooltip="Sneaking: Obscuring real costs through currency layers"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Use a single currency — ideally real money, or a simple earned credit with a clearly-stated dollar equivalent.</li>
+                    <li>Always display the real price in the user's currency at the point of purchase, not in abstract tokens.</li>
+                    <li>If virtual currencies exist, make the conversion rate visible and constant — no time-limited exchange rates.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Because one currency would be too simple.
         </p>

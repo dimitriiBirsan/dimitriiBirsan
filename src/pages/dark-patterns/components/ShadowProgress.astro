@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Shadow Progress -->
-<section>
+<section aria-label="Dark pattern demo: Shadow Progress Bar">
     <div class="glass-card">
         <h2 class="section-title">The "Shadow" Progress Bar</h2>
         <DarkPatternLabel
             categories={["Obstruction"]}
             tooltip="Obstruction: Hiding real requirements behind progress illusion"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Use progress bars only for genuinely completable tasks — never show a bar that will never reach 100%.</li>
+                    <li>List only steps the user actually needs to complete, in plain language, upfront.</li>
+                    <li>If profile completion matters, celebrate reaching 100% and make sure all requirements are achievable without a paid plan.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">So close, yet so far. Forever.</p>
 
         <div class="progress-container">
