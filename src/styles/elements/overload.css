@@ -1289,6 +1289,55 @@ section {
     margin-bottom: 2rem;
 }
 
+/* Dark Pattern Legend */
+.dp-legend {
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    backdrop-filter: blur(10px);
+    border-radius: 1rem;
+    padding: 1.75rem 2rem;
+    margin-bottom: 2.5rem;
+}
+
+.dp-legend-heading {
+    font-size: 0.8rem;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    color: var(--text-muted);
+    margin-bottom: 0.4rem;
+}
+
+.dp-legend-subtext {
+    font-size: 0.9rem;
+    color: var(--text-muted);
+    margin-bottom: 1.25rem;
+}
+
+.dp-legend-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.75rem 2rem;
+}
+
+.dp-legend-row {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+}
+
+.dp-legend-desc {
+    font-size: 0.85rem;
+    color: var(--text-muted);
+    line-height: 1.4;
+}
+
+@media (max-width: 768px) {
+    .dp-legend-grid {
+        grid-template-columns: 1fr;
+    }
+}
+
 /* Dark Pattern Labels and Tooltips */
 .dp-label-container {
     position: relative;

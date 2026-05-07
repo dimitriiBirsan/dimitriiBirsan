@@ -1,0 +1,52 @@
+---
+const categories = [
+    {
+        name: "Nagging",
+        cls: "dp-nagging",
+        desc: "Persistent reminders that pressure repeated engagement",
+    },
+    {
+        name: "Forced Action",
+        cls: "dp-forced-action",
+        desc: "Artificial barriers requiring payment or waiting to proceed",
+    },
+    {
+        name: "Interface Interference",
+        cls: "dp-interface-interference",
+        desc: "UI designed to mislead or manipulate user interaction",
+    },
+    {
+        name: "Obstruction",
+        cls: "dp-obstruction",
+        desc: "Making desired actions (e.g. cancelling) intentionally difficult",
+    },
+    {
+        name: "Sneaking",
+        cls: "dp-sneaking",
+        desc: "Hidden costs or options buried in confusing mechanics",
+    },
+    {
+        name: "Social Engineering",
+        cls: "dp-social-engineering",
+        desc: "Guilt, FOMO, or fake social proof to manipulate choices",
+    },
+];
+---
+
+<div class="dp-legend">
+    <p class="dp-legend-heading">How to read this page</p>
+    <p class="dp-legend-subtext">
+        Each section is tagged with the dark pattern category it demonstrates.
+        Hover or Tap a tag for more detail.
+    </p>
+    <div class="dp-legend-grid">
+        {
+            categories.map((c) => (
+                <div class="dp-legend-row">
+                    <span class={`dp-category-badge ${c.cls}`}>{c.name}</span>
+                    <span class="dp-legend-desc">{c.desc}</span>
+                </div>
+            ))
+        }
+    </div>
+</div>
