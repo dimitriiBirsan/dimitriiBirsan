@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Confirmshaming -->
-<section>
+<section aria-label="Dark pattern demo: Shame-Based Opt-Outs">
     <div class="glass-card">
         <h2 class="section-title">Shame-Based Opt-Outs</h2>
         <DarkPatternLabel
             categories={["Social Engineering"]}
             tooltip="Social Engineering: Guilt-based manipulation of user choice"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Use neutral, non-judgmental opt-out copy — "No thanks" is perfectly valid and respects the user's autonomy.</li>
+                    <li>Never use the decline button as an opportunity to shame, guilt, or predict consequences for the user.</li>
+                    <li>Both options should be visually balanced — the user declining is not a lesser choice than them accepting.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Guilt you into compliance. It's surprisingly effective.
         </p>

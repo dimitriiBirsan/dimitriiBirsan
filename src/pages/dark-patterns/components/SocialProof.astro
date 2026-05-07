@@ -12,13 +12,23 @@ const tickerItems = [
 ---
 
 <!-- Social Proof -->
-<section>
+<section aria-label="Dark pattern demo: Social Proof Fabricator">
     <div class="glass-card">
         <h2 class="section-title">Social Proof Fabricator</h2>
         <DarkPatternLabel
             categories={["Social Engineering", "Sneaking"]}
             tooltip="Social Engineering: Fabricated testimonials to create FOMO"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Only show real activity — fabricated social proof destroys trust permanently when users discover it.</li>
+                    <li>If using live notifications, throttle and verify them; showing one per minute of real activity is more credible than a firehose of fake ones.</li>
+                    <li>Silence is better than fiction — no ticker beats a lying ticker every time.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Everyone's upgrading! (Except they're not.)
         </p>

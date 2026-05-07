@@ -51,55 +51,158 @@ const tickerItems = [
                 >
                     Every "feature" below is a working demonstration of real
                     dark patterns used to maximize Time In-App (TIA) and Average
-                    Revenue Per User (ARPU). Because who needs ethics when you
-                    have engagement metrics?
+                    Revenue Per User (ARPU). Click any label to mark it as
+                    spotted — or switch to Demo Mode to experience them raw.
                 </p>
             </div>
             <DarkPatternLegend />
-            <DailyStreak />
+            <div id="daily-streak"><DailyStreak /></div>
+            <div id="action-points"><ActionPoints /></div>
+            <div id="artificial-loading"><ArtificialLoading /></div>
+            <div id="shadow-progress"><ShadowProgress /></div>
+            <div id="gacha-system"><GachaSystem /></div>
+            <div id="currency-confusion"><CurrencyConfusion /></div>
+            <div id="confirm-shaming"><ConfirmShaming /></div>
+            <div id="social-proof"><SocialProof /></div>
+            <div id="fake-banner"><FakeBanner /></div>
+            <div id="ethical-disclaimer"><EthicalDisclaimer /></div>
+            <div id="actual-unsubscribe"><ActualUnsubscribe /></div>
 
-            <ActionPoints />
-            <ArtificialLoading />
-
-            <ShadowProgress />
-            <GachaSystem />
-
-            <CurrencyConfusion />
-
-            <ConfirmShaming />
-
-            <SocialProof />
-
-            <FakeBanner />
-
-            <EthicalDisclaimer />
-
-            <ActualUnsubscribe />
-
-            <footer
-                style="text-align: center; padding: 4rem 0; color: var(--text-muted);"
-            >
-                <p>
-                    Made with cynicism and a deep understanding of behavioral
-                    psychology
+            <footer class="dp-outro">
+                <div class="dp-outro-cta">
+                    <h3>Build Better</h3>
+                    <p>You've seen the exploitation playbook. Now help close the loop.</p>
+                    <div class="dp-outro-links">
+                        <a href="/dark-patterns/" class="dp-outro-btn dp-outro-btn-primary">Dark Patterns Index</a>
+                        <a href="/blog/" class="dp-outro-btn dp-outro-btn-secondary">Read the Blog</a>
+                    </div>
+                </div>
+                <p style="color: var(--text-muted); font-size: 0.85rem; margin-top: 2rem;">
+                    Made with cynicism and a deep understanding of behavioral psychology
                 </p>
-                <p style="font-size: 0.85rem; margin-top: 0.5rem;">
-                    © 2026 Dumitru Birsan. All rights reserved. (And we mean ALL
-                    of them.)
+                <p style="color: var(--text-muted); font-size: 0.8rem; margin-top: 0.5rem;">
+                    © 2026 Dumitru Birsan. All rights reserved. (And we mean ALL of them.)
                 </p>
             </footer>
         </div>
 
-        <!-- Dark Pattern Label Toggle -->
-        <button class="dp-toggle-btn" id="dpToggleBtn"> Toggle Labels </button>
+        <!-- Floating Control Bar -->
+        <div class="dp-control-bar" role="toolbar" aria-label="Dark pattern education controls">
+            <span class="dp-mode-label" id="dpModeLabel">📖 Learn Mode</span>
+            <div class="dp-mode-btns">
+                <button class="dp-mode-btn active" id="dpLearnBtn" aria-pressed="true">📖 Learn</button>
+                <button class="dp-mode-btn" id="dpDemoBtn" aria-pressed="false">🎭 Demo</button>
+            </div>
+            <div class="dp-scoreboard" aria-label="Pattern discovery progress">
+                <span class="dp-score-label">Spotted:</span>
+                <span class="dp-score-count" id="dpScoreCount">0</span>
+                <span class="dp-score-total">/ <span id="dpScoreTotal">0</span></span>
+            </div>
+        </div>
+
+        <div class="dp-toast" id="dpToast" role="status" aria-live="polite"></div>
 
         <script>
-            // Toggle dark pattern labels visibility
-            const toggleBtn = document.getElementById("dpToggleBtn");
+            // Mode toggle
+            const learnBtn = document.getElementById("dpLearnBtn");
+            const demoBtn = document.getElementById("dpDemoBtn");
+            const modeLabel = document.getElementById("dpModeLabel");
 
-            toggleBtn?.addEventListener("click", () => {
-                document.body.classList.toggle("hide-dp-labels");
+            learnBtn?.addEventListener("click", () => {
+                document.body.classList.remove("hide-dp-labels");
+                learnBtn.classList.add("active");
+                learnBtn.setAttribute("aria-pressed", "true");
+                demoBtn?.classList.remove("active");
+                demoBtn?.setAttribute("aria-pressed", "false");
+                if (modeLabel) modeLabel.textContent = "📖 Learn Mode";
             });
+
+            demoBtn?.addEventListener("click", () => {
+                document.body.classList.add("hide-dp-labels");
+                demoBtn.classList.add("active");
+                demoBtn.setAttribute("aria-pressed", "true");
+                learnBtn?.classList.remove("active");
+                learnBtn?.setAttribute("aria-pressed", "false");
+                if (modeLabel) modeLabel.textContent = "🎭 Demo Mode";
+            });
+
+            // Pattern discovery scoreboard
+            const STORAGE_KEY = "dp_found_patterns";
+            const scoreEl = document.getElementById("dpScoreCount");
+            const scoreTotalEl = document.getElementById("dpScoreTotal");
+            const toast = document.getElementById("dpToast");
+
+            const allLabels = Array.from(
+                document.querySelectorAll(".dp-label-container")
+            ) as HTMLElement[];
+            const TOTAL = allLabels.length;
+            if (scoreTotalEl) scoreTotalEl.textContent = String(TOTAL);
+
+            function loadFound(): Set<string> {
+                try {
+                    const stored = localStorage.getItem(STORAGE_KEY);
+                    return stored ? new Set(JSON.parse(stored) as string[]) : new Set<string>();
+                } catch {
+                    return new Set<string>();
+                }
+            }
+
+            function saveFound(found: Set<string>) {
+                try {
+                    localStorage.setItem(STORAGE_KEY, JSON.stringify([...found]));
+                } catch { /* storage unavailable */ }
+            }
+
+            function updateScore(found: Set<string>) {
+                if (!scoreEl) return;
+                scoreEl.textContent = String(found.size);
+                scoreEl.classList.remove("bump");
+                void (scoreEl as HTMLElement).offsetWidth;
+                scoreEl.classList.add("bump");
+                setTimeout(() => scoreEl.classList.remove("bump"), 300);
+            }
+
+            function showToast(message: string) {
+                if (!toast) return;
+                toast.textContent = message;
+                toast.classList.add("show");
+                setTimeout(() => toast.classList.remove("show"), 4500);
+            }
+
+            const found = loadFound();
+
+            // Assign IDs, restore found states, and attach click handlers
+            allLabels.forEach((container, i) => {
+                if (!container.dataset.patternId) container.dataset.patternId = String(i);
+                const id = container.dataset.patternId;
+                if (found.has(id)) container.classList.add("dp-found");
+                container.style.cursor = "pointer";
+                container.setAttribute("role", "button");
+                container.setAttribute("tabindex", "0");
+                container.title = found.has(id) ? "Already spotted" : "Click to mark as spotted";
+
+                const markFound = () => {
+                    if (found.has(id)) return;
+                    found.add(id);
+                    saveFound(found);
+                    container.classList.add("dp-found");
+                    container.title = "Already spotted";
+                    updateScore(found);
+                    if (found.size === TOTAL) {
+                        showToast("🎉 You spotted every dark pattern on this page!");
+                    }
+                };
+
+                container.addEventListener("click", markFound);
+                container.addEventListener("keydown", (e) => {
+                    if ((e as KeyboardEvent).key === "Enter" || (e as KeyboardEvent).key === " ") {
+                        e.preventDefault();
+                        markFound();
+                    }
+                });
+            });
+
+            updateScore(found);
         </script>
     </body>
 </html>

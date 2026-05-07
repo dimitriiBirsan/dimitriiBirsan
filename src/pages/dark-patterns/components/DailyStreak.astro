@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Daily Streak -->
-<section>
+<section aria-label="Dark pattern demo: Daily Login Streak">
     <div class="glass-card">
         <h2 class="section-title">Daily Login Streak Engine</h2>
         <DarkPatternLabel
             categories={["Nagging", "Forced Action"]}
             tooltip="Nagging + Forced Action: Persistent reminders that pressure daily engagement"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Show streaks as a positive milestone, never as a threat — frame it as "you're on a roll" not "don't lose everything".</li>
+                    <li>Make losing a streak consequence-free or offer an easy recovery — sunk cost pressure is manipulation, not motivation.</li>
+                    <li>Reminders should be opt-in and sent at a frequency the user controls.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Miss one day? Start over. We don't make the rules. (Actually, we
             do.)

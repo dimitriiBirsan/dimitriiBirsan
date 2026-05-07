@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Gacha System -->
-<section>
+<section aria-label="Dark pattern demo: Analytics Gacha System">
     <div class="glass-card">
         <h2 class="section-title">The Analytics Gacha</h2>
         <DarkPatternLabel
             categories={["Sneaking", "Interface Interference"]}
             tooltip="Sneaking + Interface Interference: Hidden costs via confusing gacha mechanics"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Don't lock standard product features behind probability mechanics — CSV export is a utility, not a prize.</li>
+                    <li>Use transparent, direct pricing: a clearly-labelled tier or one-time purchase beats a randomised spin every time.</li>
+                    <li>If you want a "store," price items directly and show users exactly what they get for their money before they pay.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Spin to unlock basic features! (Yes, basic features.)
         </p>
@@ -171,7 +181,7 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 
 <!-- Modals moved outside to avoid containing block issues from backdrop-filter -->
 <!-- Drop Rates Modal (Hidden by default) -->
-<div class="drop-rates-modal" id="dropRatesModal" style="display: none;">
+<div class="drop-rates-modal" id="dropRatesModal" style="display: none;" role="dialog" aria-modal="true" aria-label="Drop rates information">
     <div class="modal-backdrop"></div>
     <div class="modal-content">
         <div class="modal-header">
@@ -299,26 +309,64 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
         "nearMissMsg",
     ) as HTMLDivElement;
 
-    // Modal controls
-    dropRatesBtn?.addEventListener("click", () => {
-        if (dropRatesModal) {
-            dropRatesModal.style.display = "flex";
+    function openModal() {
+        if (!dropRatesModal) return;
+        dropRatesModal.style.display = "flex";
+        // Move focus into modal
+        const firstFocusable = dropRatesModal.querySelector<HTMLElement>(
+            'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+        );
+        firstFocusable?.focus();
+    }
+
+    function closeModal() {
+        if (!dropRatesModal) return;
+        dropRatesModal.style.display = "none";
+        // Return focus to trigger button
+        dropRatesBtn?.focus();
+    }
+
+    // Trap Tab focus within modal
+    dropRatesModal?.addEventListener("keydown", (e) => {
+        const ke = e as KeyboardEvent;
+        if (!dropRatesModal || dropRatesModal.style.display === "none") return;
+
+        if (ke.key === "Escape") {
+            closeModal();
+            return;
+        }
+
+        if (ke.key !== "Tab") return;
+        const focusable = Array.from(
+            dropRatesModal.querySelectorAll<HTMLElement>(
+                'button, [href], input, select, textarea, [tabindex]:not([tabindex="-1"])'
+            )
+        ).filter((el) => !el.hasAttribute("disabled"));
+        const first = focusable[0];
+        const last = focusable[focusable.length - 1];
+        if (!ke.shiftKey && document.activeElement === last) {
+            ke.preventDefault();
+            first?.focus();
+        } else if (ke.shiftKey && document.activeElement === first) {
+            ke.preventDefault();
+            last?.focus();
         }
     });
 
+    // Modal controls
+    dropRatesBtn?.addEventListener("click", () => {
+        openModal();
+    });
+
     closeDropRates?.addEventListener("click", () => {
-        if (dropRatesModal) {
-            dropRatesModal.style.display = "none";
-        }
+        closeModal();
     });
 
     // Click backdrop to close
     dropRatesModal
         ?.querySelector(".modal-backdrop")
         ?.addEventListener("click", () => {
-            if (dropRatesModal) {
-                dropRatesModal.style.display = "none";
-            }
+            closeModal();
         });
 
     claimBtn?.addEventListener("click", () => {

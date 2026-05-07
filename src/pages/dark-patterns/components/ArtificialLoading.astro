@@ -3,13 +3,23 @@ import DarkPatternLabel from "./DarkPatternLabel.astro";
 ---
 
 <!-- Artificial Loading -->
-<section>
+<section aria-label="Dark pattern demo: Artificial Processing Delays">
     <div class="glass-card">
         <h2 class="section-title">Artificial Processing Delays</h2>
         <DarkPatternLabel
             categories={["Interface Interference"]}
             tooltip="Interface Interference: Fake delays to simulate complexity"
         />
+        <details class="dp-fix">
+            <summary>What good UX looks like</summary>
+            <div class="dp-fix-content">
+                <ul>
+                    <li>Never add artificial delays — users notice, and it erodes trust faster than any latency would.</li>
+                    <li>When real processing happens, show a genuine progress indicator with meaningful feedback about what's actually happening.</li>
+                    <li>Instant or near-instant responses build more perceived value than theatrical waits.</li>
+                </ul>
+            </div>
+        </details>
         <p class="section-subtitle">
             Making you wait so you think it's valuable.
         </p>
