@@ -22,7 +22,7 @@ jobs:
           port: 22
           script: |
             # 1. Navigate to your app directory (change 'my-app' to your folder name)
-            cd /home/opc/dimitriiBirsan 
+            cd /home/runner/work/dimitriiBirsan/dimitriiBirsan
 
             # 2. Force Git to overwrite local changes (like package-lock.json)
             git fetch origin main
