@@ -1,19 +1,4 @@
-name: Deploy to Oracle Cloud
-
-on:
-  push:
-    branches:
-      - main 
-
-jobs:
-  deploy:
-    runs-on: ubuntu-latest
-
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v4
-
-      - name: Deploy via SSH
+- name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
           host: ${{ secrets.OCI_HOST }}
@@ -21,5 +6,12 @@ jobs:
           key: ${{ secrets.OCI_KEY }}
           port: 22
           script: |
-            echo "Starting deployment"
+            # 1. Navigate to your app directory (change 'my-app' to your folder name)
+            cd /home/opc/dimitriiBirsan 
+
+            # 2. Force Git to overwrite local changes (like package-lock.json)
+            git fetch origin main
+            git reset --hard origin/main
+
+            # 3. Now run your existing deployment script
             /home/opc/deploy.sh
