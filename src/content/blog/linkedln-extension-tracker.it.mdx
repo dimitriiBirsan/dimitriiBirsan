@@ -1,0 +1,202 @@
+---
+title: "LinkedIn Legge la Tua Libreria di Estensioni: Un'Analisi Dettagliata"
+description: "Il feed di LinkedIn utilizza uno scanner nascosto per rilevare le estensioni del browser, raccogliendo dettagli sulle estensioni installate senza consenso."
+pubDate: "May 16 2026"
+heroImage: "../../content/blog/linkedln/scanner.png"
+tags: ["LinkedIn", "Fingerprinting", "Privacy"]
+lang: "it"
+---
+
+# LinkedIn Legge la Tua Libreria di Estensioni: Un'Analisi Dettagliata
+
+> *"Se le persone capissero davvero quanto sappiamo su di loro, sarebbero davvero preoccupate."*
+> — la celebre battuta da cena, diventata leggenda, che si racconta sia stata la scintilla del movimento per i diritti alla privacy in California.
+
+Questo è un articolo di accompagnamento al mio intervento sui dark pattern. È un'analisi tecnica dettagliata, non un verdetto. Vi mostrerò, riga per riga, cosa spedisce il feed di LinkedIn nel vostro browser, cosa ci fa, e come riprodurre ogni passaggio da soli. Lascerò parlare il codice. Mi riservo però il diritto di prendere in giro LinkedIn, perché — e ci arriveremo — LinkedIn ha *precedenti*.
+
+Per contestualizzare: nell'ottobre 2024 la Irish Data Protection Commission ha annunciato la sua decisione definitiva contro LinkedIn Ireland, inclusa una diffida, un ordine di adeguamento del trattamento e sanzioni amministrative per un totale di €310 milioni. È stata, all'epoca, una delle multe più alte mai comminate dal regolatore irlandese in base al GDPR, e riguardava il trattamento dei dati personali da parte di LinkedIn per l'analisi comportamentale e la pubblicità mirata dei propri membri. Quindi, quando andiamo a ficcare il naso in quello che il feed fa al vostro browser, sappiate che non stiamo arrivando sulla scena del crimine senza precedenti.
+
+---
+
+## Passo 0: Riprodurre tutto da soli
+
+Vi serve un browser Chromium (Chrome, Edge, Brave — qualsiasi cosa che parli `chrome-extension://`). Aprite `linkedin.com/feed`, cliccate con il tasto destro ovunque, premete **Ispeziona**, e guardate la **Console**. Vedrete una generosa parete di rosso — richieste fallite, una dopo l'altra, tutte verso indirizzi che assomigliano a:
+
+```
+GET chrome-extension://invalid/   net::ERR_FAILED
+GET chrome-extension://<32-char-id>/<some-file>   net::ERR_FAILED
+```
+
+La riga `chrome-extension://invalid/` è la spia. È una sonda deliberata verso un'estensione garantita inesistente — un colpo di calibrazione. Tutto ciò che segue è lo stesso meccanismo puntato verso ID di estensioni reali. (Vedere screenshot: lo stack di chiamate della richiesta fallita è `window.fetch` → una funzione anonima → `await in (anonymous)` → `d`. Tenetevi questo `d`; è il protagonista.)
+
+---
+
+## Passo 1: Conoscere lo scanner
+
+Aprite una delle richieste fallite, guardate l'**Initiator**, e seguitelo fino alla funzione che svolge il lavoro. Ripulita dalla zuppa del minifier, è questa:
+
+```js
+async function l(e) {
+    let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}
+      , n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}
+    if (!a() || !s())
+        return
+    const {useRequestIdleCallback: i=!1, timeout: r=2e3, staggerDetectionMs: l=0} = n
+      , d = async () => {
+        const n = l > 0 ? await async function(e) {
+            const t = []
+            for (const {id: n, file: i} of o) {
+                try {
+                    await fetch(`chrome-extension://${n}/${i}`) && t.push(n)
+                } catch (e) {}
+                e > 0 && await new Promise((t => setTimeout(t, e)))
+            }
+            return t
+        }(l) : await c()
+        Array.isArray(n) && n.length > 0 && e.fireTrackingPayload("AedEvent", {
+            browserExtensionIds: n,
+            ...t
+        })
+    }
+    i && "function" == typeof window.requestIdleCallback ? window.requestIdleCallback(d, {
+        timeout: r
+    }) : await d()
+}
+```
+
+Tre cose meritano una spiegazione in parole semplici:
+
+1. **Il ciclo.** Itera su un array `o`, destrutturando `{id, file}` da ogni elemento. Per ogni elemento esegue ``await fetch(`chrome-extension://${n}/${i}`)`` e, se il risultato è truthy, aggiunge l'`id` a una lista di risultati `t`. C'è un ritardo opzionale con `setTimeout` (`staggerDetectionMs`) così la scansione può essere distribuita invece di essere lanciata tutta in una volta — una cortesia verso l'event loop, non verso di voi.
+
+2. **Il cancello.** `if (!a() || !s()) return` — due funzioni predicato decidono se eseguire o meno. La scansione è condizionale, non incondizionata. Cosa verificano `a()` e `s()` è lasciato come esercizio; il punto è che lo scanner è *controllato da feature flag*.
+
+3. **L'esfiltrazione.** Quando il ciclo trova qualcosa, chiama `e.fireTrackingPayload("AedEvent", { browserExtensionIds: n, ...t })`. Gli ID rilevati non vengono registrati per il vostro beneficio. Vengono confezionati in un evento di tracciamento chiamato `AedEvent` e spediti a casa.
+
+Poco più sopra, l'array `o` su cui itera. Un piccolo estratto:
+
+```js
+{ id: "ppkpmdanppmnndopfcnpjaefkkjjiljc", file: "linkedin-overlay.95bad065.css" },
+{ id: "pplkiigdcpbacikbalacopmaklichaod", file: "logo16.png" },
+{ id: "pplplkmiajmkgdhjhpcibkkfkmofmcdp", file: "icons/favicon.png" },
+{ id: "ppmjcikinhahlcldpndeakomkfpfedno", file: "slide-lab.html" },
+{ id: "pppndnondekehijelkdnlihcfehjacfe", file: "jc.98ee31a0.css" }
+```
+
+Ogni `id` è un ID reale del Chrome Web Store. Incollatene uno qualsiasi dopo `https://chromewebstore.google.com/detail/` e atterrerete sulla pagina dell'estensione. L'estratto sopra è di cinque elementi. L'array completo — basandosi sul tempo che la scansione impiega a finire — supera i quattromila.
+
+> LinkedIn enumererà quattromila estensioni del browser prima di lasciarvi disattivare "persone che potresti conoscere." Priorità.
+
+---
+
+## Passo 2: L'esperimento su se stessi
+
+Questa è la parte che trasforma "array interessante" in "questo è davvero attivo." Scegliete un'estensione dalla lista che non avete, installatela, e aggiornate la pagina.
+
+Ho scorso la lista e ho riconosciuto un blocco delle distrazioni — avevo usato qualcosa di simile in precedenza (LeechBlock) per tenermi lontano da Reddit al lavoro — con l'ID `ppdjgkniggbikifojmkindmbhppmoell`. (Avvertenza standard: applicate zero-trust prima di installare qualsiasi cosa da una lista trovata nel payload di tracciamento di qualcun altro. Inclusa questa.)
+
+Installata. Feed aggiornato. La scansione riparte dall'inizio dell'array di ~4.000 elementi, quindi — essendo la voce vicino alla fine — c'è tempo per farsi un caffè. Continuate ad aggiornare e a filtrare la scheda Network per l'ID, e alla fine:
+
+```
+chrome-extension://ppdjgkniggbikifojmkindmbhppmoell/icons/icon128.png
+```
+
+appare. Aprite il suo **Initiator** e ottenete la stessa catena del Passo 0: `window.fetch` → anonima → `await in (anonymous)` → `d`, originata da `linkedin.com/feed` → un bundle di asset `static.licdn.com/aero-v1/...`. Stessa funzione. Stessa `d`. L'estensione che avevo installato personalmente, due minuti prima, ora produce una fetch riuscita dove prima c'era un fallimento — e quel successo è esattamente il segnale che `t.push(n)` sta cercando.
+
+Questo è tutto il trucco, e vale la pena affermarlo chiaramente perché è il punto tecnicamente portante:
+
+> Le estensioni possono dichiarare `web_accessible_resources` nel loro manifest — file che una pagina web è autorizzata a caricare. Se un'estensione è installata *e* un determinato file è web-accessibile, `fetch('chrome-extension://<id>/<file>')` **riesce**. Se l'estensione non è installata, **fallisce**. Successo contro fallimento è un oracolo a un bit per "questa estensione è presente," e potete interrogarlo quattromila volte. LinkedIn ha scelto, per ogni estensione, un file che sapeva essere web-accessibile (un'icona, un foglio di stile, una pagina HTML in-page) proprio perché la sonda si risolvesse correttamente.
+
+Nessuna richiesta di autorizzazione. Nessuna API `chrome.management` (quella richiederebbe un permesso dichiarato e comparirebbe nella finestra di installazione). Solo il modesto `fetch()`, usato come campanello, suonato una volta per estensione, per vedere quali luci sono accese nel vostro browser.
+
+---
+
+## Passo 3: Mentre siamo qui — l'altro passeggero
+
+Le estensioni non sono l'unica cosa misurata. Filtrate la scheda Network per `msft`:
+
+```
+Request URL: https://collector-pxdojv695v.protechts.net/api/v2/msft
+```
+
+Inviato periodicamente via POST da un bundle di terze parti (`main.min.js`). I domini a cui si connette sono configurati in questa funzione:
+
+```js
+function Fu() {
+    try { var t = ["protechts.net"];                Fv(t) && (Fn[mr] = t) } catch (t) {}
+    try { var n = ["/api/v2/msft"];                 Fv(n) && (Fn[ms] = n) } catch (t) {}
+    try { var e = ["px-client.net", "px-cdn.net"];  Fv(e) && (Fn[mt] = e) } catch (t) {}
+    try { var r = ["/assets/js/bundle", "/res/uc"]; Fv(r) && (Fn[mu] = r) } catch (t) {}
+    try { var h = ["/b/c"];                         Fv(h) && (Fn[mv] = h) } catch (t) {}
+}
+```
+
+`px-client.net`, `px-cdn.net`, e la forma del sottodominio `collector-<appid>` non sono misteriosi. Quei domini collector — px-cdn.net, pxchk.net, px-client.net — appartengono a PerimeterX, ora parte di HUMAN Security, un fornitore anti-bot, e gli hostname documentati seguono esattamente questo schema client / captcha / collector. PerimeterX stessa descrive lo script come una raccolta di informazioni comportamentali anonimizzate per valutare se un visitatore è umano o un bot. Segnalo l'identità del fornitore come un fatto e mi fermo qui — a cosa servono i dati è una domanda per chi ha potere di subpoena, non per un blog.
+
+L'impronta digitale viene assemblata da `Cp(t)`. È offuscata attraverso una tabella di stringhe (`hR(n)`) e chiavi base64 (`jc(...)`), ma non è necessario decodificare ogni chiave per leggerne l'intento:
+
+```js
+function Cp(t) {
+    var n = (function(){ try { return hT[hR(511)] && hT[hR(511)][jc("bWVtb3J5")] } catch (t) {} })();
+    n && (t["BFAxGkIwMSE="] = n[jc(hR(806))],
+          t[hR(807)] = n[jc("anNIZWFwU2l6ZUxpbWl0")],   // "jsHeapSizeLimit"
+          t[hR(808)] = n[jc(hR(809))]);
+    try {
+        t[hR(812)] = !!hT.Buffer,
+        t[hR(813)] = hT.orientation,
+        t["W0suQR0oJHc="] = !!hT.v8Locale,
+        t["KDRdPm5ZXg4="] = !!hT.ActiveXObject,
+        t[hR(822)] = kA(hT.openDatabase),
+        t[hR(827)] = hT[hR(151)]("ontouchstart") || "ontouchstart" in hT,
+        t[hR(828)] = kA(hT.BatteryManager) || kA(hV[hR(829)]) || kA(hV.getBattery),
+        t[hR(830)] = hT[hR(511)] && hT[hR(511)].navigation && hT[hR(511)][hR(831)].type,
+        // ...media query pointer:fine, font tramite jU(), e ~30 altri
+    } catch (t) {}
+}
+```
+
+Decodificate un paio delle stringhe base64 e l'elegante offuscamento cade: `jc("bWVtb3J5")` è `"memory"`, `jc("anNIZWFwU2l6ZUxpbWl0")` è `"jsHeapSizeLimit"`. Quindi `n` è `performance.memory`, e la funzione sta leggendo i limiti dell'heap JS, più `!!window.Buffer`, `window.orientation`, `v8Locale`, `ActiveXObject`, `openDatabase`, la Battery API, il tipo di navigazione, `matchMedia("(pointer:fine)")`, `ontouchstart`, e una scansione dei font installati. Il classico kit di avviamento per il fingerprinting del dispositivo.
+
+Ho messo in pausa il debugger prima che il POST venisse inviato e ho catturato un payload assemblato. Chiavi offuscate, valori no (ridotti):
+
+```json
+{
+  "ts": 1778962041611,
+  "dydCbTFGQ14=": 1778962040859,
+  "BFAxGkIwMSE=": 8096937,
+  "FwdiDVFnZTo=": 4294967296,
+  "EwNmCVVuZzg=": 12762493,
+  "JnZTfGAbVU4=": "Sat May 16 2026 22:07:26 GMT+0200 (Central European Summer Time)",
+  "DXl4M0gfeQQ=": true,
+  "eEQNDj4iCzU=": "hidden",
+  "MDxFNnVYQgQ=": 1280,
+  "JxcSHWF0FS4=": 752,
+  "GUVsT18oaHo=": "missing",
+  "IxMWGWZyFyo=": 2
+}
+```
+
+`4294967296` è un tetto heap di 4 GiB. `8096937` e `12762493` sono heap usato/totale. La stringa `Date` completa si premura di fornire il fuso orario e la locale in un colpo solo (*"Central European Summer Time"* — saluti da una fetta specifica del pianeta). `1280`/`752` sono le dimensioni del viewport. Nessuno di questi dati è identificativo da solo. Messi insieme, formano un'impronta digitale ragionevolmente precisa, che è appunto il senso di combinarli.
+
+---
+
+## Una breve, noiosa digressione sul *perché il trucco delle estensioni funziona*
+
+Perché qualcuno lo chiede sempre. Le estensioni del browser includono un `manifest.json`. Se contiene `web_accessible_resources`, i file elencati possono essere caricati da pagine web ordinarie tramite lo schema `chrome-extension://<id>/<path>`. Le estensioni elencano queste risorse per ragioni legittime — iniettare un foglio di stile, esporre un'icona, caricare un'interfaccia in-page. L'effetto collaterale è un oracolo di presenza: richiedete la risorsa, osservate successo o fallimento, imparate un bit. Ripetete su una lista curata di ID e dei loro file noti-pubblici (che è esattamente l'array `o`), e avrete enumerato un profilo delle estensioni installate senza `chrome.management`, senza una richiesta di autorizzazione, e senza nulla nell'interfaccia che suggerisca che sia avvenuto. Questa non è un'invenzione di LinkedIn; è una tecnica nota con articoli accademici e una lunga storia documentata. Il contributo di LinkedIn è la lista della spesa da quattromila voci e l'`AedEvent` a cui viene agganciata.
+
+---
+
+## Dove ci lascia tutto questo (descrittivamente)
+
+Per riassumere senza concludere, come promesso:
+
+- Il feed di LinkedIn carica una funzione controllata da feature flag che recupera risorse `chrome-extension://` per ~4.000 ID di estensioni specifici, raccoglie quelli che si risolvono, e li spedisce in un evento di tracciamento chiamato `AedEvent`.
+- La stessa pagina esegue un sensore PerimeterX / HUMAN Security che costruisce un'impronta digitale del dispositivo tramite `Cp(t)` e la invia via POST a un endpoint `collector-*.protechts.net/api/v2/msft`.
+- Tutto questo è osservabile da DevTools senza strumenti speciali, ed è riproducibile installando un'estensione elencata e guardando la sua sonda passare da fallimento a successo.
+
+Non vi dirò cosa *significa*. Mi limito a notare che questa è la stessa azienda multata di €310 milioni dall'Irish DPC per la liceità, correttezza e trasparenza del trattamento dei dati dei membri per l'analisi comportamentale e la pubblicità mirata, a seguito di un esposto risalente al 2018 presentato dall'organizzazione non profit francese La Quadrature du Net. Collegare questi due fatti è lasciato, nella migliore tradizione di LinkedIn, come un'opportunità di thought leadership per il lettore.
+
+Esistono contromisure — profili browser separati, container dedicati, configurazioni di estensioni più rigide — ma questo è un altro discorso. Per ora: la prossima volta che LinkedIn vi chiede di "aggiungere una competenza al vostro profilo," ricordate che ha già inventariato quelle nel vostro browser. *Onorato e commosso di condividere questo aggiornamento.*
+
+---
+
+*Nota metodologica: ogni estratto di codice sopra è stato letto direttamente dal bundle client di LinkedIn in una sessione standard di DevTools; il payload di fingerprinting è stato catturato a un breakpoint del debugger prima della trasmissione. I fatti esterni (la multa della DPC; l'attribuzione dei domini PerimeterX/HUMAN) sono tratti dalla Irish DPC, dalla stampa generalista e dalla documentazione ufficiale di HUMAN Security.*
