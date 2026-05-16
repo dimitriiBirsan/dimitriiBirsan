@@ -186,6 +186,23 @@ p {
     /* Increased spacing */
 }
 
+code {
+    background-color: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    color: var(--accent-secondary);
+    padding: 0.2em 0.4em;
+    border-radius: var(--border-radius-sm);
+    font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+    font-size: 0.9em;
+}
+
+pre code {
+    background-color: transparent;
+    border: none;
+    padding: 0;
+    color: inherit;
+}
+
 /* Specific styling for italicized questions */
 .question {
     font-style: italic;
