@@ -1,4 +1,37 @@
 /* =========================================
+   Block: Blog Post Content
+   ========================================= */
+
+.blog-image {
+    max-width: 400px;
+    display: block;
+    margin: var(--space-sm) auto;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-color);
+}
+
+.blog-image-row {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-sm);
+    margin: var(--space-sm) auto;
+}
+
+.blog-image-item {
+    width: 120px;
+    height: 120px;
+    object-fit: contain;
+    border-radius: var(--border-radius);
+}
+
+.blog-image-plus {
+    width: 40px;
+    height: 40px;
+    opacity: 0.7;
+}
+
+/* =========================================
    Block: Blog Grid
    ========================================= */
 

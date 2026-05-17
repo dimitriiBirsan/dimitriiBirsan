@@ -6,6 +6,9 @@ heroImage: "../../content/blog/linkedln/scanner.png"
 tags: ["LinkedIn", "Fingerprinting", "Privacy"]
 lang: "en"
 ---
+import firefoxImg from '../../content/blog/linkedln/firefox.png';
+import ublockImg from '../../content/blog/linkedln/ublock.svg';
+import plusImg from '../../content/blog/linkedln/plus.svg';
 
 # LinkedIn Is Reading Your Extension Shelf: A Walkthrough
 
@@ -195,7 +198,13 @@ To summarise without concluding, because I promised:
 
 I'm not going to tell you what it *means*. I am going to note that this is the same company that was fined €310 million by the Irish DPC over the lawfulness, fairness and transparency of processing members' data for behavioural analysis and targeted advertising, following a complaint that originated back in 2018 with the French non-profit La Quadrature du Net. Connecting those two facts is left, in the finest LinkedIn tradition, as a thought-leadership opportunity for the reader.
 
-Mitigations exist — separate browser profiles, dedicated containers, hardened extension setups — but that's a different talk. For now: the next time LinkedIn asks you to "add a skill to your profile," remember it already inventoried the ones in your browser. *Humbled and honoured to share this update.*
+The number 1 mitigation is using `Firefox`: you won't see the red wall of errors and if you also use `uBlock Origin` it will automatically block calls for data collection like the one to `/sensorscollect` or `cs.ns1p.net`
+
+<div class="blog-image-row">
+  <img src={firefoxImg.src} alt="Firefox browser" class="blog-image-item" />
+  <img src={plusImg.src} alt="plus" class="blog-image-plus" />
+  <img src={ublockImg.src} alt="uBlock Origin" class="blog-image-item" />
+</div>
 
 ---
 
