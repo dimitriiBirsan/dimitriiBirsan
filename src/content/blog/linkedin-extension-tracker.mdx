@@ -9,6 +9,7 @@ lang: "en"
 import firefoxImg from '../../content/blog/linkedln/firefox.png';
 import ublockImg from '../../content/blog/linkedln/ublock.svg';
 import plusImg from '../../content/blog/linkedln/plus.svg';
+import consoleImg from '../../content/blog/linkedln/proof.png';
 
 # LinkedIn Is Reading Your Extension Shelf: A Walkthrough
 
@@ -23,15 +24,14 @@ For context: in October 2024 the Irish Data Protection Commission announced its 
 
 ## Step 0: Reproducing this yourself
 
-You need a Chromium browser (Chrome, Edge, Brave — anything that speaks `chrome-extension://`). Open `linkedin.com/feed`, right-click anywhere, hit **Inspect**, and look at the **Console**. You will see a generous wall of red — failed requests, one after another, all to addresses that look like:
+You need a Chromium browser (Chrome, Edge, Brave, or anything that speaks `chrome-extension://`). Open `linkedin.com/feed`, right-click anywhere, hit **Inspect**, and look at the **Console**. You will see a generous wall of red — failed requests, one after another, all to addresses that look like:
 
 ```
 GET chrome-extension://invalid/   net::ERR_FAILED
 GET chrome-extension://<32-char-id>/<some-file>   net::ERR_FAILED
 ```
 
-The `chrome-extension://invalid/` line is the tell. That's a deliberate probe to a guaranteed-nonexistent extension — a calibration shot. Everything after it is the same mechanism aimed at real extension IDs. (See screenshot: the failing request's call stack is `window.fetch` → an anonymous function → `await in (anonymous)` → `d`. Hold onto `d`; it's the protagonist.)
-
+The `chrome-extension://invalid/` line is the tell. That's a deliberate probe to a guaranteed-nonexistent extension — a calibration shot. Everything after it is the same mechanism aimed at real extension IDs. 
 ---
 
 ## Step 1: Meet the scanner
@@ -95,7 +95,7 @@ Each `id` is a real Chrome Web Store extension ID. Paste any of them after `http
 
 Here is the part that turns "interesting array" into "this is actually live." Pick an extension from the list that you don't have, install it, and refresh.
 
-I went down the list and recognised a distraction blocker — I'd previously run something similar (LeechBlock) to keep myself off Reddit at work — with the ID `ppdjgkniggbikifojmkindmbhppmoell`. (Standard disclaimer: apply zero-trust before installing anything off a list you found in someone else's tracking payload. Including this one.)
+I went down the list and recognised a distraction blocker. I'd previously run something similar (LeechBlock) to keep myself off Reddit at work — with the ID `ppdjgkniggbikifojmkindmbhppmoell`. (Standard disclaimer: apply zero-trust before installing anything off a list you found in someone else's tracking payload. Including this one.)
 
 Installed it. Refreshed the feed. The scan restarts from the top of the ~4,000-entry array, so — the entry being near the end — there's time to make a coffee. Keep refreshing and filtering the Network tab by the ID, and eventually:
 
@@ -103,7 +103,7 @@ Installed it. Refreshed the feed. The scan restarts from the top of the ~4,000-e
 chrome-extension://ppdjgkniggbikifojmkindmbhppmoell/icons/icon128.png
 ```
 
-appears. Open its **Initiator** and you get the same chain as Step 0: `window.fetch` → anonymous → `await in (anonymous)` → `d`, originating from `linkedin.com/feed` → a `static.licdn.com/aero-v1/...` asset bundle. Same function. Same `d`. The extension I personally installed, two minutes earlier, now produces a successful fetch where there used to be a failure — and that success is exactly the signal `t.push(n)` is looking for.
+appears. Open its **Initiator** and you get the same chain as Step 0: `window.fetch` → anonymous → `await in (anonymous)` → `d`, originating from `linkedin.com/feed` → a `static.licdn.com/aero-v1/...` asset bundle. Same function. Same `d`. The extension I personally installed, two minutes earlier, now produces a successful fetch where there used to be a failure and that success is exactly the signal `t.push(n)` is looking for.
 
 That's the whole trick, and it's worth stating cleanly because it's the technically load-bearing bit:
 
@@ -133,7 +133,7 @@ function Fu() {
 }
 ```
 
-`px-client.net`, `px-cdn.net`, and the `collector-<appid>` subdomain shape are not mysterious. Those collector domains — px-cdn.net, pxchk.net, px-client.net — belong to PerimeterX, now part of HUMAN Security, an anti-bot vendor, and the documented enforcer hostnames follow exactly this client / captcha / collector pattern. PerimeterX itself describes the script as collecting anonymized behavioural information to assess whether a visitor is human or a bot. I'm flagging the vendor identity as a fact, and stopping there — what the data is *for* is a question for someone with subpoena power, not a blog.
+`px-client.net`, `px-cdn.net`, and the `collector-<appid>` subdomain shape are not mysterious. Those collector domains: `px-cdn.net`, `pxchk.net`, `px-client.net` belong to PerimeterX, now part of HUMAN Security, an anti-bot vendor, and the documented enforcer hostnames follow exactly this client / captcha / collector pattern. PerimeterX itself describes the script as collecting anonymized behavioural information to assess whether a visitor is human or a bot. I'm flagging the vendor identity as a fact, and stopping there. What the data is *for* is a question for someone with subpoena power, not a blog.
 
 The fingerprint is assembled by `Cp(t)`. It's obfuscated through a string table (`hR(n)`) and base64 keys (`jc(...)`), but you don't need to decode every key to read its intent:
 
@@ -196,7 +196,7 @@ To summarise without concluding, because I promised:
 - The same page runs a PerimeterX / HUMAN Security sensor that builds a device fingerprint via `Cp(t)` and POSTs it to a `collector-*.protechts.net/api/v2/msft` endpoint.
 - All of this is observable from DevTools with no special tooling, and reproducible by installing a listed extension and watching its probe flip from failure to success.
 
-I'm not going to tell you what it *means*. I am going to note that this is the same company that was fined €310 million by the Irish DPC over the lawfulness, fairness and transparency of processing members' data for behavioural analysis and targeted advertising, following a complaint that originated back in 2018 with the French non-profit La Quadrature du Net. Connecting those two facts is left, in the finest LinkedIn tradition, as a thought-leadership opportunity for the reader.
+I'm not going to tell you what it means. I'll just leave you with the fact that this is the same company currently answering for its track record on 'fairness and transparency' in Europe. Connecting those two dots is left, in the finest LinkedIn tradition, as a thought-leadership opportunity for the reader.
 
 The number 1 mitigation is using `Firefox`: you won't see the red wall of errors and if you also use `uBlock Origin` it will automatically block calls for data collection like the one to `/sensorscollect` or `cs.ns1p.net`
 

@@ -6,6 +6,10 @@ heroImage: "../../content/blog/linkedln/scanner.png"
 tags: ["LinkedIn", "Fingerprinting", "Privacy"]
 lang: "it"
 ---
+import firefoxImg from '../../content/blog/linkedln/firefox.png';
+import ublockImg from '../../content/blog/linkedln/ublock.svg';
+import plusImg from '../../content/blog/linkedln/plus.svg';
+import consoleImg from '../../content/blog/linkedln/proof.png';
 
 # LinkedIn Legge la Tua Libreria di Estensioni: Un'Analisi Dettagliata
 
@@ -27,7 +31,7 @@ GET chrome-extension://invalid/   net::ERR_FAILED
 GET chrome-extension://<32-char-id>/<some-file>   net::ERR_FAILED
 ```
 
-La riga `chrome-extension://invalid/` è la spia. È una sonda deliberata verso un'estensione garantita inesistente — un colpo di calibrazione. Tutto ciò che segue è lo stesso meccanismo puntato verso ID di estensioni reali. (Vedere screenshot: lo stack di chiamate della richiesta fallita è `window.fetch` → una funzione anonima → `await in (anonymous)` → `d`. Tenetevi questo `d`; è il protagonista.)
+La riga `chrome-extension://invalid/` è la spia. È una sonda deliberata verso un'estensione garantita inesistente — un colpo di calibrazione. Tutto ciò che segue è lo stesso meccanismo puntato verso ID di estensioni reali.
 
 ---
 
@@ -193,7 +197,7 @@ Per riassumere senza concludere, come promesso:
 - La stessa pagina esegue un sensore PerimeterX / HUMAN Security che costruisce un'impronta digitale del dispositivo tramite `Cp(t)` e la invia via POST a un endpoint `collector-*.protechts.net/api/v2/msft`.
 - Tutto questo è osservabile da DevTools senza strumenti speciali, ed è riproducibile installando un'estensione elencata e guardando la sua sonda passare da fallimento a successo.
 
-Non vi dirò cosa *significa*. Mi limito a notare che questa è la stessa azienda multata di €310 milioni dall'Irish DPC per la liceità, correttezza e trasparenza del trattamento dei dati dei membri per l'analisi comportamentale e la pubblicità mirata, a seguito di un esposto risalente al 2018 presentato dall'organizzazione non profit francese La Quadrature du Net. Collegare questi due fatti è lasciato, nella migliore tradizione di LinkedIn, come un'opportunità di thought leadership per il lettore.
+Non vi dirò cosa *significa*. Mi limito a lasciarvi con il fatto che questa è la stessa azienda che sta attualmente rispondendo del proprio operato in materia di "correttezza e trasparenza" in Europa. Collegare questi due fatti è lasciato, nella migliore tradizione di LinkedIn, come un'opportunità di thought leadership per il lettore.
 
 La contromisura numero uno è usare `Firefox`: non vedrete il muro rosso di errori e, se usate anche `uBlock Origin`, bloccherà automaticamente le chiamate di raccolta dati come quella verso `/sensorscollect` e `cs.ns1p.net`
 
