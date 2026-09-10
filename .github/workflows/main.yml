@@ -53,27 +53,27 @@ jobs:
           cache-from: type=gha
           cache-to: type=gha,mode=max
 
-  deploy:
-    name: Deploy to Server
-    needs: build-and-push
-    runs-on: ubuntu-latest
-    if: ${{ secrets.OCI_HOST != '' }}
+  # deploy:
+  #   name: Deploy to Server
+  #   needs: build-and-push
+  #   runs-on: ubuntu-latest
+  #   if: ${{ secrets.OCI_HOST != '' }}
 
-    steps:
-      - name: Deploy via SSH
-        uses: appleboy/ssh-action@v1.0.3
-        with:
-          host: ${{ secrets.OCI_HOST }}
-          username: ${{ secrets.OCI_USERNAME }}
-          key: ${{ secrets.OCI_KEY }}
-          port: 22
-          script: |
-            # Navigate to the folder containing docker-compose.yml on your server
-            # Update this path if different on your server:
-            cd ~/dimitriiBirsan || cd /home/opc/dimitriiBirsan || true
+    # steps:
+    #   - name: Deploy via SSH
+    #     uses: appleboy/ssh-action@v1.0.3
+    #     with:
+    #       host: ${{ secrets.OCI_HOST }}
+    #       username: ${{ secrets.OCI_USERNAME }}
+    #       key: ${{ secrets.OCI_KEY }}
+    #       port: 22
+    #       script: |
+    #         # Navigate to the folder containing docker-compose.yml on your server
+    #         # Update this path if different on your server:
+    #         cd ~/dimitriiBirsan || cd /home/opc/dimitriiBirsan || true
 
-            # Pull the latest image from GHCR
-            docker compose pull
+    #         # Pull the latest image from GHCR
+    #         docker compose pull
 
-            # Recreate containers with zero downtime
-            docker compose up -d --remove-orphans
+    #         # Recreate containers with zero downtime
+    #         docker compose up -d --remove-orphans
