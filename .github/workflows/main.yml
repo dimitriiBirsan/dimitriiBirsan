@@ -1,18 +1,64 @@
-name: Deploy to Oracle Cloud
+name: Build, Publish & Deploy
 
 on:
   push:
     branches:
-      - main 
+      - main
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
 
 jobs:
-  deploy:
+  build-and-push:
+    name: Build & Push Docker Image
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
 
     steps:
-      - name: Checkout code
+      - name: Checkout repository
         uses: actions/checkout@v4
 
+      - name: Log in to GitHub Container Registry
+        uses: docker/login-action@v3
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Set up Docker Buildx
+        uses: docker/setup-buildx-action@v3
+
+      - name: Extract metadata (tags, labels)
+        id: meta
+        uses: docker/metadata-action@v5
+        with:
+          images: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}
+          flavor: |
+            latest=true
+          tags: |
+            type=sha,prefix=
+            type=raw,value=latest,enable=true
+
+      - name: Build and push Docker image
+        uses: docker/build-push-action@v5
+        with:
+          context: .
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
+
+  deploy:
+    name: Deploy to Server
+    needs: build-and-push
+    runs-on: ubuntu-latest
+    if: ${{ secrets.OCI_HOST != '' }}
+
+    steps:
       - name: Deploy via SSH
         uses: appleboy/ssh-action@v1.0.3
         with:
@@ -21,12 +67,12 @@ jobs:
           key: ${{ secrets.OCI_KEY }}
           port: 22
           script: |
-            # 1. Navigate to your app directory (change 'my-app' to your folder name)
-            cd /home/runner/work/dimitriiBirsan/dimitriiBirsan
+            # Navigate to the folder containing docker-compose.yml on your server
+            # Update this path if different on your server:
+            cd ~/dimitriiBirsan || cd /home/opc/dimitriiBirsan || true
 
-            # 2. Force Git to overwrite local changes (like package-lock.json)
-            git fetch origin main
-            git reset --hard origin/main
+            # Pull the latest image from GHCR
+            docker compose pull
 
-            # 3. Now run your existing deployment script
-            /home/opc/deploy.sh
+            # Recreate containers with zero downtime
+            docker compose up -d --remove-orphans
