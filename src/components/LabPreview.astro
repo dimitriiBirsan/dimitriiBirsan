@@ -1,0 +1,14 @@
+---
+import TalkGachaCard from './TalkGachaCard.svelte';
+import { featuredTalk } from '../data/featured-talk';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+  heading?: 'h2' | 'h3';
+  hydration?: 'visible' | 'idle';
+}
+const { language, heading = 'h3', hydration = 'visible' } = Astro.props;
+const talk = { ...featuredTalk(language), headingLevel: heading === 'h2' ? (2 as const) : (3 as const) };
+---
+
+{hydration === 'idle' ? <TalkGachaCard client:idle {...talk} /> : <TalkGachaCard client:visible {...talk} />}

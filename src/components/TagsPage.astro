@@ -1,0 +1,55 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ArticleCard from './ArticleCard.astro';
+import { getPosts, tagSlug } from '../utils/content';
+import { getLocalizedPathname } from '../utils/i18n';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+  tag?: string;
+}
+const { language, tag } = Astro.props;
+const it = language === 'it';
+const posts = await getPosts(language);
+const title = tag ? `${it ? 'Articoli su' : 'Writing on'} ${tag}` : it ? 'Argomenti' : 'Topics';
+const tags = [...new Set(posts.flatMap((post) => post.data.tags))].sort();
+---
+
+<SiteLayout
+  title={`${title} — Dumitru Birsan`}
+  description={
+    tag
+      ? `${it ? 'Articoli e appunti su' : 'Articles and notes about'} ${tag}.`
+      : it
+        ? 'Esplora gli articoli per argomento.'
+        : 'Browse writing by topic.'
+  }
+>
+  <div class="page-heading">
+    <p class="meta">
+      <a href={getLocalizedPathname('/blog', language)}>{it ? 'Articoli' : 'Writing'}</a>
+    </p>
+    <h1>{title}</h1>
+  </div>
+  <div class="prose reading">
+    {tag ? (
+      <ul class="article-list">
+        {posts
+          .filter((post) => post.data.tags.includes(tag))
+          .map((post) => (
+            <li>
+              <ArticleCard post={post} heading="h2" />
+            </li>
+          ))}
+      </ul>
+    ) : (
+      <ul>
+        {tags.map((topic) => (
+          <li>
+            <a href={getLocalizedPathname(`/tags/${tagSlug(topic)}`, language)}>{topic}</a>
+          </li>
+        ))}
+      </ul>
+    )}
+  </div>
+</SiteLayout>

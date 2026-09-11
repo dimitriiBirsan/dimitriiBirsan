@@ -1,0 +1,5 @@
+/* No Preflight: this island must not reset the surrounding Astro site. */
+@layer theme, utilities;
+@import 'tailwindcss/theme.css' layer(theme) prefix(tw);
+@import 'tailwindcss/utilities.css' layer(utilities) prefix(tw) source(none) important;
+@source '../components/TalkGachaCard.svelte';

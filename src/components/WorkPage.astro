@@ -1,0 +1,44 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ProjectCard from './ProjectCard.astro';
+import { getProjects } from '../utils/content';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+const projects = await getProjects(language);
+---
+
+<SiteLayout
+  title={`${it ? 'Progetti' : 'Work'} — Dumitru Birsan`}
+  description={
+    it
+      ? 'Progetti e contributi su deployment cloud, microfrontend React, test E2E e automazione industriale.'
+      : 'Selected engineering work in cloud deployment, React microfrontends, E2E testing, and industrial automation.'
+  }
+>
+  <div class="page-heading">
+    <h1>{it ? 'Progetti' : 'Work'}</h1>
+    <p class="lead">
+      {it
+        ? 'Cosa c’era da costruire, dove si complicavano le cose e quale parte ho seguito io.'
+        : 'What needed building, where it got complicated, and the part I worked on.'}
+    </p>
+  </div>
+  <section class="section" aria-labelledby="selected">
+    <div class="section-label">
+      <h2 id="selected">{it ? 'Progetti selezionati' : 'Selected work'}</h2>
+    </div>
+    <div class="section-body">
+      <ol class="work-list">
+        {projects.map((project) => (
+          <li>
+            <ProjectCard project={project} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+</SiteLayout>

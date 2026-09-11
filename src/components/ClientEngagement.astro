@@ -1,0 +1,24 @@
+---
+import type { ClientEngagement } from '../data/experience';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  client: ClientEngagement;
+  language: SupportedLanguage;
+  expanded?: boolean;
+}
+const { client, language, expanded = false } = Astro.props;
+---
+
+<div class="engagement">
+  <h3>{client.name}</h3>
+  <p class="focus">{expanded ? client.role : client.focus}</p>
+  {expanded ? (
+    <ul>
+      {client.responsibilities[language].map((item) => (
+        <li>{item}</li>
+      ))}
+    </ul>
+  ) : (
+    <p>{client.summary[language]}</p>
+  )}
+</div>

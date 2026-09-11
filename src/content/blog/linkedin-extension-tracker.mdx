@@ -1,82 +1,75 @@
 ---
-title: "LinkedIn Is Reading Your Extension Shelf: A Walkthrough"
-description: "LinkedIn's feed uses a hidden 'extension shelf' scanner to fingerprint your browser, collecting details about your installed extensions without permission."
-pubDate: "May 16 2026"
-heroImage: "../../content/blog/linkedln/scanner.png"
-tags: ["LinkedIn", "Fingerprinting", "Privacy"]
-lang: "en"
----
-import firefoxImg from '../../content/blog/linkedln/firefox.png';
-import ublockImg from '../../content/blog/linkedln/ublock.svg';
-import plusImg from '../../content/blog/linkedln/plus.svg';
-import heroImage from '../../content/blog/linkedln/scanner.png';
-import ImageCarousel from '../../components/ImageCarousel.astro';
-
-<ImageCarousel images={[heroImage ]} />
-
-> *"If people just understood how much we knew about them, they'd be really worried."*
-> — the now-folkloric dinner-party remark, recounted as the spark behind California's privacy-rights movement.
-
-This is a companion piece to my talk on dark patterns. It is a technical walkthrough, not a verdict. I'll show you, line by line, what LinkedIn's feed ships to your browser, what it does with it, and how to reproduce every step yourself. I'll let the code talk. I will, however, reserve the right to make fun of LinkedIn, because — and we'll get to this — LinkedIn has *previous form*.
-
-For context: in October 2024 the Irish Data Protection Commission announced its final decision against LinkedIn Ireland, including a reprimand, an order to bring processing into compliance, and administrative fines totalling €310 million. It was, at the time, one of the largest fines the Irish regulator had issued under GDPR, and it concerned LinkedIn's processing of personal data for behavioural analysis and targeted advertising of its members. So when we go poking at what the feed does to your browser, just know we are not arriving at a crime scene with no priors.
-
+title: 'Inspecting extension probes in LinkedIn’s browser code'
+description: 'A browser investigation of extension resource probes, tracking payloads, and the limits of what the code proves.'
+pubDate: '2026-05-16'
+updatedDate: '2026-09-10'
+heroImage: './linkedln/scanner.png'
+heroAlt: 'Illustration of a person inspecting browser tracking on a laptop'
+showHero: false
+tags: [Privacy, LinkedIn, Fingerprinting]
+lang: en
+translationKey: linkedin-extension-tracker
 ---
 
-## Step 0: Reproducing this yourself
+This investigation started with some odd-looking requests in the browser’s developer tools: why was LinkedIn trying to load resources from Chrome extensions?
 
-You need a Chromium browser (Chrome, Edge, Brave, or anything that speaks `chrome-extension://`). Open `linkedin.com/feed`, right-click anywhere, hit **Inspect**, and look at the **Console**. You will see a generous wall of red — failed requests, one after another, all to addresses that look like:
+I followed the requests back to the code that made them. These are my notes from that browser session on 16 May 2026, written as a companion to my talk on dark patterns. They show what I found in that session; they don’t tell us what every visitor receives or what happens to the data afterwards.
+
+## Reproducing the observation
+
+In a Chromium browser, I opened the developer tools on `linkedin.com/feed` and inspected requests to extension resources. Failed requests included:
 
 ```
 GET chrome-extension://invalid/   net::ERR_FAILED
 GET chrome-extension://<32-char-id>/<some-file>   net::ERR_FAILED
 ```
 
-The `chrome-extension://invalid/` line is the tell. That's a deliberate probe to a guaranteed-nonexistent extension — a calibration shot. Everything after it is the same mechanism aimed at real extension IDs. 
----
+Following a request’s **Initiator** led to the code making the probe. A failed request alone is not proof of a particular extension being installed. The interesting evidence is the combination of the resource list, the probing function, and what it does with resolved requests.
 
-## Step 1: Meet the scanner
+## The probing function
 
-Open one of the failing requests, look at the **Initiator**, and follow it to the function doing the work. Stripped of minifier soup, it is this:
+The function below is an excerpt from the client bundle I inspected:
 
 ```js
 async function l(e) {
-    let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {}
-      , n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {}
-    if (!a() || !s())
-        return
-    const {useRequestIdleCallback: i=!1, timeout: r=2e3, staggerDetectionMs: l=0} = n
-      , d = async () => {
-        const n = l > 0 ? await async function(e) {
-            const t = []
-            for (const {id: n, file: i} of o) {
+  let t = arguments.length > 1 && void 0 !== arguments[1] ? arguments[1] : {},
+    n = arguments.length > 2 && void 0 !== arguments[2] ? arguments[2] : {};
+  if (!a() || !s()) return;
+  const { useRequestIdleCallback: i = !1, timeout: r = 2e3, staggerDetectionMs: l = 0 } = n,
+    d = async () => {
+      const n =
+        l > 0
+          ? await (async function (e) {
+              const t = [];
+              for (const { id: n, file: i } of o) {
                 try {
-                    await fetch(`chrome-extension://${n}/${i}`) && t.push(n)
+                  (await fetch(`chrome-extension://${n}/${i}`)) && t.push(n);
                 } catch (e) {}
-                e > 0 && await new Promise((t => setTimeout(t, e)))
-            }
-            return t
-        }(l) : await c()
-        Array.isArray(n) && n.length > 0 && e.fireTrackingPayload("AedEvent", {
-            browserExtensionIds: n,
-            ...t
-        })
-    }
-    i && "function" == typeof window.requestIdleCallback ? window.requestIdleCallback(d, {
-        timeout: r
-    }) : await d()
+                e > 0 && (await new Promise((t) => setTimeout(t, e)));
+              }
+              return t;
+            })(l)
+          : await c();
+      Array.isArray(n) &&
+        n.length > 0 &&
+        e.fireTrackingPayload('AedEvent', {
+          browserExtensionIds: n,
+          ...t,
+        });
+    };
+  i && 'function' == typeof window.requestIdleCallback
+    ? window.requestIdleCallback(d, {
+        timeout: r,
+      })
+    : await d();
 }
 ```
 
-Three things are worth narrating in plain English:
+The loop reads `{ id, file }` entries and calls `fetch()` on a `chrome-extension://` URL. Resolved fetches add an ID to a results array. An optional delay spaces out requests. Two predicates, `a()` and `s()`, determine whether the function runs; their meaning is not established by this excerpt.
 
-1. **The loop.** It iterates over an array `o`, destructuring `{id, file}` out of each entry. For every entry it does ``await fetch(`chrome-extension://${n}/${i}`)`` and, if that resolves truthy, pushes the `id` into a results list `t`. There's an optional `setTimeout` stagger (`staggerDetectionMs`) so the scan can be drip-fed instead of fired in one burst — politeness toward the event loop, not toward you.
+When the results array is non-empty, the code calls `fireTrackingPayload()` with an event named `AedEvent` and a `browserExtensionIds` field. This shows how the function packages detected identifiers. It does not, by itself, explain the subsequent processing or retention of those identifiers.
 
-2. **The gate.** `if (!a() || !s()) return` — two predicate functions decide whether to run at all. The scan is conditional, not unconditional. What `a()` and `s()` check is left as an exercise; the point is the scanner is *feature-flagged*.
-
-3. **The exfil.** When the loop finds anything, it calls `e.fireTrackingPayload("AedEvent", { browserExtensionIds: n, ...t })`. The detected IDs are not logged for your benefit. They're packaged into a tracking event named `AedEvent` and sent home.
-
-A few lines above, the array `o` it loops over. A small slice:
+The input array contained entries in this form:
 
 ```js
 { id: "ppkpmdanppmnndopfcnpjaefkkjjiljc", file: "linkedin-overlay.95bad065.css" },
@@ -86,57 +79,60 @@ A few lines above, the array `o` it loops over. A small slice:
 { id: "pppndnondekehijelkdnlihcfehjacfe", file: "jc.98ee31a0.css" }
 ```
 
-Each `id` is a real Chrome Web Store extension ID. Paste any of them after `https://chromewebstore.google.com/detail/` and you'll land on the listing. The slice above is five entries. The full array — based on how long the scan takes to grind through — is north of four thousand.
+Each entry pairs an extension ID with a resource path. A file path can become stale when an extension changes, so a failed probe is not conclusive evidence that an extension is absent.
 
-> LinkedIn will enumerate four thousand browser extensions before it will let you turn off "people you may know." Priorities.
+## Testing one listed extension
 
----
-
-## Step 2: The self-experiment
-
-Here is the part that turns "interesting array" into "this is actually live." Pick an extension from the list that you don't have, install it, and refresh.
-
-I went down the list and recognised a distraction blocker. I'd previously run something similar (LeechBlock) to keep myself off Reddit at work — with the ID `ppdjgkniggbikifojmkindmbhppmoell`. (Standard disclaimer: apply zero-trust before installing anything off a list you found in someone else's tracking payload. Including this one.)
-
-Installed it. Refreshed the feed. The scan restarts from the top of the ~4,000-entry array, so — the entry being near the end — there's time to make a coffee. Keep refreshing and filtering the Network tab by the ID, and eventually:
+I selected a listed distraction-blocking extension, installed it, and refreshed the feed. The corresponding resource request then resolved where it had previously failed:
 
 ```
 chrome-extension://ppdjgkniggbikifojmkindmbhppmoell/icons/icon128.png
 ```
 
-appears. Open its **Initiator** and you get the same chain as Step 0: `window.fetch` → anonymous → `await in (anonymous)` → `d`, originating from `linkedin.com/feed` → a `static.licdn.com/aero-v1/...` asset bundle. Same function. Same `d`. The extension I personally installed, two minutes earlier, now produces a successful fetch where there used to be a failure and that success is exactly the signal `t.push(n)` is looking for.
+The initiator chain returned to the same probing function in a LinkedIn asset bundle. That change supported the interpretation that the code was testing whether a known extension resource was reachable.
 
-That's the whole trick, and it's worth stating cleanly because it's the technically load-bearing bit:
+The mechanism depends on the extension exposing a resource to the requesting page. Chrome extensions can declare `web_accessible_resources`, with rules controlling which origins can load them. Browser behaviour, the manifest, the allowed origins, and the resource path all matter.
 
-> Extensions can declare `web_accessible_resources` in their manifest — files a web page is allowed to load. If an extension is installed *and* a given file is web-accessible, `fetch('chrome-extension://<id>/<file>')` **succeeds**. If the extension isn't installed, it **fails**. Success vs. failure is a one-bit oracle for "is this extension present," and you can ask it four thousand times. LinkedIn picked, per extension, a file it knew to be web-accessible (an icon, a stylesheet, an overlay HTML page) precisely so the probe would resolve cleanly.
+[Chrome’s documentation on web-accessible resources](https://developer.chrome.com/docs/extensions/reference/manifest/web-accessible-resources) explains those rules. The probe uses resource requests rather than the permission-gated `chrome.management` API.
 
-No permission prompt. No `chrome.management` API (that one would require a declared permission and show up in the install dialog). Just the humble `fetch()`, used as a doorbell, rung once per extension, to see which lights are on inside your browser.
+## A separate collection endpoint
 
----
-
-## Step 3: While we're in here — the other passenger
-
-Extensions aren't the only thing being measured. Filter the Network tab for `msft`:
+The same session also included requests to this endpoint:
 
 ```
 Request URL: https://collector-pxdojv695v.protechts.net/api/v2/msft
 ```
 
-POSTed periodically from a third-party bundle (`main.min.js`). The domains it talks to are configured in this function:
+A separate bundle configured its domains through the following function:
 
 ```js
 function Fu() {
-    try { var t = ["protechts.net"];                Fv(t) && (Fn[mr] = t) } catch (t) {}
-    try { var n = ["/api/v2/msft"];                 Fv(n) && (Fn[ms] = n) } catch (t) {}
-    try { var e = ["px-client.net", "px-cdn.net"];  Fv(e) && (Fn[mt] = e) } catch (t) {}
-    try { var r = ["/assets/js/bundle", "/res/uc"]; Fv(r) && (Fn[mu] = r) } catch (t) {}
-    try { var h = ["/b/c"];                         Fv(h) && (Fn[mv] = h) } catch (t) {}
+  try {
+    var t = ['protechts.net'];
+    Fv(t) && (Fn[mr] = t);
+  } catch (t) {}
+  try {
+    var n = ['/api/v2/msft'];
+    Fv(n) && (Fn[ms] = n);
+  } catch (t) {}
+  try {
+    var e = ['px-client.net', 'px-cdn.net'];
+    Fv(e) && (Fn[mt] = e);
+  } catch (t) {}
+  try {
+    var r = ['/assets/js/bundle', '/res/uc'];
+    Fv(r) && (Fn[mu] = r);
+  } catch (t) {}
+  try {
+    var h = ['/b/c'];
+    Fv(h) && (Fn[mv] = h);
+  } catch (t) {}
 }
 ```
 
-`px-client.net`, `px-cdn.net`, and the `collector-<appid>` subdomain shape are not mysterious. Those collector domains: `px-cdn.net`, `pxchk.net`, `px-client.net` belong to PerimeterX, now part of HUMAN Security, an anti-bot vendor, and the documented enforcer hostnames follow exactly this client / captcha / collector pattern. PerimeterX itself describes the script as collecting anonymized behavioural information to assess whether a visitor is human or a bot. I'm flagging the vendor identity as a fact, and stopping there. What the data is *for* is a question for someone with subpoena power, not a blog.
+The names and endpoint shape are consistent with the HUMAN / PerimeterX sensor infrastructure. This is a separate observation from the extension probes; the code excerpts do not establish a shared purpose for the two mechanisms.
 
-The fingerprint is assembled by `Cp(t)`. It's obfuscated through a string table (`hR(n)`) and base64 keys (`jc(...)`), but you don't need to decode every key to read its intent:
+The function below assembled browser and device properties:
 
 ```js
 function Cp(t) {
@@ -158,9 +154,7 @@ function Cp(t) {
 }
 ```
 
-Decode a couple of the base64 strings and the polite obfuscation falls away: `jc("bWVtb3J5")` is `"memory"`, `jc("anNIZWFwU2l6ZUxpbWl0")` is `"jsHeapSizeLimit"`. So `n` is `performance.memory`, and the function is reading your JS heap limits, plus `!!window.Buffer`, `window.orientation`, `v8Locale`, `ActiveXObject`, `openDatabase`, the Battery API, navigation type, `matchMedia("(pointer:fine)")`, `ontouchstart`, and an installed-font sweep. The classic device-fingerprint starter kit.
-
-I paused the debugger before the POST went out and grabbed one assembled payload. Keys obfuscated, values not (trimmed):
+Decoded keys include `memory` and `jsHeapSizeLimit`. The code also checks browser capabilities, touch support, navigation properties, and other environment signals. I paused execution before a request was transmitted and inspected this partial payload:
 
 ```json
 {
@@ -179,34 +173,15 @@ I paused the debugger before the POST went out and grabbed one assembled payload
 }
 ```
 
-`4294967296` is a 4 GiB heap ceiling. `8096937` and `12762493` are used/total heap. The full `Date` string helpfully volunteers your timezone and locale in one go (*"Central European Summer Time"* — hello from a specific slice of the planet). `1280`/`752` are viewport dimensions. None of these is identifying alone. Stacked, they are a reasonably narrow fingerprint, which is rather the point of stacking them.
+These values describe the captured session, including memory properties, a timestamp with a time zone, visibility, and viewport dimensions. A collection of such signals can contribute to fingerprinting. This sample does not measure whether the combination uniquely identifies a person.
 
----
+## What the evidence supports
 
-## A short, dull sidebar on *why the extension trick works*
+- The inspected bundle contains a conditional function that probes known extension resource URLs.
+- It packages identifiers from resolved requests into an `AedEvent` payload.
+- Installing one listed extension changed the observed response to its resource probe.
+- A separate sensor assembled browser and device properties in the same session.
 
-Because someone always asks. Browser extensions ship a `manifest.json`. If it contains `web_accessible_resources`, listed files can be loaded by ordinary web pages over the `chrome-extension://<id>/<path>` scheme. Extensions list these resources for legitimate reasons — injecting a stylesheet, exposing an icon, loading an in-page UI. The side effect is a presence oracle: request the resource, observe success or failure, learn one bit. Repeat across a curated list of IDs and their known-public files (which is exactly what array `o` is), and you've enumerated an installed-extension profile without `chrome.management`, without a permission prompt, and without anything in the UI to suggest it happened. This is not a LinkedIn invention; it's a known technique with academic papers and a long paper trail. LinkedIn's contribution is the four-thousand-entry shopping list and the `AedEvent` it gets stapled to.
+Those observations are narrower than a claim about all LinkedIn users, all browser extensions, or every use of the resulting data. Browser code changes, so a later reproduction may differ.
 
----
-
-## Where this leaves us (descriptively)
-
-To summarise without concluding, because I promised:
-
-- LinkedIn's feed loads a feature-gated function that fetches `chrome-extension://` resources for ~4,000 specific extension IDs, collects the ones that resolve, and ships them in a tracking event called `AedEvent`.
-- The same page runs a PerimeterX / HUMAN Security sensor that builds a device fingerprint via `Cp(t)` and POSTs it to a `collector-*.protechts.net/api/v2/msft` endpoint.
-- All of this is observable from DevTools with no special tooling, and reproducible by installing a listed extension and watching its probe flip from failure to success.
-
-I'm not going to tell you what it means. I'll just leave you with the fact that this is the same company currently answering for its track record on 'fairness and transparency' in Europe. Connecting those two dots is left, in the finest LinkedIn tradition, as a thought-leadership opportunity for the reader.
-
-The number 1 mitigation is using `Firefox`: you won't see the red wall of errors and if you also use `uBlock Origin` it will automatically block calls for data collection like the one to `/sensorscollect` or `cs.ns1p.net`
-
-<div class="blog-image-row">
-  <img src={firefoxImg.src} alt="Firefox browser" class="blog-image-item" />
-  <img src={plusImg.src} alt="plus" class="blog-image-plus" />
-  <img src={ublockImg.src} alt="uBlock Origin" class="blog-image-item" />
-</div>
-
----
-
-*Methodology note: every code excerpt above was read out of LinkedIn's own client bundle in a standard browser DevTools session; the fingerprint payload was captured at a debugger breakpoint before transmission. External facts (the DPC fine; the PerimeterX/HUMAN domain attribution) are sourced from the Irish DPC, mainstream press, and HUMAN Security's own documentation.*
+The code excerpts and payload above are retained from my original inspection. They are presented as evidence to examine, rather than code to run on another person’s browser.

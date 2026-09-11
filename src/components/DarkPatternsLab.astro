@@ -1,0 +1,144 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import FeatureLottery from './FeatureLottery.astro';
+import { patterns } from '../data/patterns';
+import { getLocalizedPathname } from '../utils/i18n';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+const otherPatterns = patterns.filter((pattern) => pattern.id !== 'gacha-system');
+---
+
+<SiteLayout
+  title={`Dark Patterns Lab — ${it ? 'Interfacce e scelte' : 'Interfaces & choices'} | Dumitru Birsan`}
+  description={
+    it
+      ? 'Dieci dimostrazioni interattive di dark pattern, con spiegazioni e alternative etiche.'
+      : 'Ten interactive dark pattern demonstrations, with explanations and ethical alternatives.'
+  }
+>
+  <div class="page-heading">
+    <p class="meta">
+      <a href={getLocalizedPathname('/lab', language)}>Lab</a> /{' '}
+      {it ? 'Interfacce e scelte' : 'Interfaces & choices'}
+    </p>
+    <h1>Dark Patterns Lab</h1>
+    <p class="lead">
+      {it
+        ? 'Interfacce costruite per farti perdere la pazienza. Questa volta, di proposito.'
+        : 'Interfaces designed to test your patience. This time, on purpose.'}
+    </p>
+    <p>
+      {it
+        ? 'Prova a esportare un CSV, poi confronta le due versioni. Tutto qui è una simulazione: i crediti sono fittizi e le scelte restano nel browser. Puoi sbirciare il trucco in qualsiasi momento.'
+        : 'Try to export a CSV, then compare the two versions. Everything here is a simulation: the credits are pretend and your choices stay in the browser. You can peek at the trick whenever you like.'}
+    </p>
+  </div>
+  <nav class="pattern-nav" aria-label={it ? 'Indice degli esempi' : 'Pattern index'}>
+    <a href="#gacha-system">{it ? 'La lotteria delle funzionalità' : 'The feature lottery'}</a>
+    {otherPatterns.map((pattern) => (
+      <a href={`#${pattern.id}`}>{pattern.name[language]}</a>
+    ))}
+  </nav>
+  <section id="gacha-system" class="section" aria-labelledby="lottery-title">
+    <div class="section-label">
+      <p class="meta">01 / Gacha</p>
+    </div>
+    <div class="section-body">
+      <h2 id="lottery-title">{it ? 'La lotteria delle funzionalità' : 'The feature lottery'}</h2>
+      <FeatureLottery language={language} />
+    </div>
+  </section>
+  {otherPatterns.map((pattern, index) => (
+    <section id={pattern.id} class="section pattern" aria-labelledby={`title-${pattern.id}`}>
+      <div class="section-label">
+        <p class="meta">
+          {String(index + 2).padStart(2, '0')} / {pattern.category}
+        </p>
+      </div>
+      <div class="section-body">
+        <h2 id={`title-${pattern.id}`}>{pattern.name[language]}</h2>
+        <p>{pattern.explanation[language]}</p>
+        <div class="demo-panel">
+          <p class="meta">{it ? 'Esempio simulato' : 'Simulated example'}</p>
+          <p>{pattern.demo[language]}</p>
+          <button
+            class="button secondary demo-action"
+            type="button"
+            hidden
+            data-result={pattern.result[language]}
+            aria-controls={`result-${pattern.id}`}
+          >
+            {pattern.action[language]}
+          </button>
+          <p class="demo-result" id={`result-${pattern.id}`} role="status" aria-live="polite"></p>
+        </div>
+        <details>
+          <summary>{it ? 'Come funziona' : 'How it works'}</summary>
+          <p>{pattern.result[language]}</p>
+        </details>
+        <div class="ethical">
+          <h3>{it ? 'Un’alternativa etica' : 'An ethical alternative'}</h3>
+          <p>{pattern.ethical[language]}</p>
+        </div>
+      </div>
+    </section>
+  ))}
+</SiteLayout>
+<style>
+  .pattern-nav {
+    gap: var(--space-2) var(--space-5);
+    padding-bottom: var(--space-7);
+  }
+  .pattern-nav a {
+    text-decoration: underline;
+  }
+  .pattern h2 {
+    margin-bottom: var(--space-4);
+  }
+  .demo-panel {
+    border: 1px solid var(--color-border);
+    background: var(--color-surface);
+    padding: var(--space-5);
+    margin-block: var(--space-5);
+  }
+  .demo-result:not(:empty) {
+    margin-top: var(--space-5);
+  }
+  .demo-result {
+    margin-bottom: 0;
+  }
+  summary {
+    cursor: pointer;
+    padding-block: var(--space-3);
+    color: var(--color-accent);
+    min-height: 44px;
+  }
+  details p {
+    margin-top: var(--space-3);
+  }
+  .ethical {
+    margin-top: var(--space-5);
+    border-left: 2px solid var(--color-accent);
+    padding-left: var(--space-5);
+  }
+  .ethical h3 {
+    font-size: 1rem;
+    margin-bottom: var(--space-2);
+  }
+  .ethical p {
+    margin-bottom: 0;
+  }
+</style>
+<script>
+  document.querySelectorAll<HTMLButtonElement>('.demo-action').forEach((button) => {
+    button.hidden = false;
+    button.addEventListener('click', () => {
+      const output = document.getElementById(button.getAttribute('aria-controls') ?? '');
+      if (output) output.textContent = button.dataset.result ?? '';
+    });
+  });
+</script>

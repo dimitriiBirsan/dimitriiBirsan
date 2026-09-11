@@ -1,0 +1,53 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { capabilities } from '../data/skills';
+import { getLocalizedPathname } from '../utils/i18n';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+---
+
+<SiteLayout
+  title={`${it ? 'Competenze tecniche' : 'Technical Expertise'} — Dumitru Birsan`}
+  description={
+    it
+      ? 'Competenze in cloud e DevOps, sistemi frontend React, test Cypress e integrazione di software industriale.'
+      : 'Capabilities in cloud infrastructure and DevOps, React frontend systems, Cypress testing, and industrial software integration.'
+  }
+>
+  <div class="page-heading">
+    <p class="meta">
+      <a href={getLocalizedPathname('/about', language)}>{it ? 'Chi sono' : 'About'}</a>
+    </p>
+    <h1>{it ? 'Competenze tecniche' : 'Technical Expertise'}</h1>
+    <p class="lead">
+      {it
+        ? 'Gli strumenti che uso per collegare un’interfaccia ai servizi, portare una modifica in produzione e capire perché qualcosa non funziona.'
+        : 'The tools I reach for to connect an interface to its services, get a change into production, and work out why something isn’t behaving.'}
+    </p>
+  </div>
+  {capabilities.map((capability, index) => (
+    <section class="section" aria-labelledby={`capability-${index}`}>
+      <div class="section-label">
+        <h2 id={`capability-${index}`}>{capability.title[language]}</h2>
+      </div>
+      <div class="section-body">
+        <p>{capability.description[language]}</p>
+        <ul class="labels" aria-label={it ? 'Strumenti e tecnologie' : 'Tools and technologies'}>
+          {capability.tools.map((tool) => (
+            <li>{tool}</li>
+          ))}
+        </ul>
+        {capability.supporting && <p class="meta supporting">{capability.supporting[language]}</p>}
+      </div>
+    </section>
+  ))}
+</SiteLayout>
+<style>
+  .supporting {
+    margin-top: var(--space-5);
+  }
+</style>

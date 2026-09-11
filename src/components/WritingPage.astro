@@ -1,0 +1,45 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ArticleCard from './ArticleCard.astro';
+import { getPosts } from '../utils/content';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+const posts = await getPosts(language);
+---
+
+<SiteLayout
+  title={`${it ? 'Articoli' : 'Writing'} — Dumitru Birsan`}
+  description={
+    it
+      ? 'Appunti su architetture software, sistemi web, privacy e comunità di sviluppatori.'
+      : 'Notes on software architecture, web systems, privacy, and developer communities.'
+  }
+>
+  <div class="page-heading">
+    <h1>{it ? 'Articoli' : 'Writing'}</h1>
+    <p class="lead">
+      {it
+        ? 'Bug che mi hanno fatto fermare, scelte tecniche su cui ho cambiato idea e conversazioni che mi sono rimaste in testa.'
+        : 'Bugs that made me stop and look, technical choices I’ve reconsidered, and conversations that stayed with me.'}
+    </p>
+  </div>
+  <section class="section" aria-label={it ? 'Tutti gli articoli' : 'All writing'}>
+    <div class="section-label">
+      <p class="meta">{it ? 'Dal più recente' : 'Latest first'}</p>
+      <a href={it ? '/it/rss.xml' : '/rss.xml'}>RSS</a>
+    </div>
+    <div class="section-body">
+      <ul class="article-list">
+        {posts.map((post) => (
+          <li>
+            <ArticleCard post={post} heading="h2" />
+          </li>
+        ))}
+      </ul>
+    </div>
+  </section>
+</SiteLayout>

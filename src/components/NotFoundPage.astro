@@ -1,0 +1,33 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import { getLocalizedPathname } from '../utils/i18n';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+---
+
+<SiteLayout
+  title={`${it ? 'Pagina non trovata' : 'Page not found'} — Dumitru Birsan`}
+  description={it ? 'La pagina richiesta non è disponibile.' : 'The page you requested could not be found.'}
+  noindex
+>
+  <div class="page-heading">
+    <p class="meta">404</p>
+    <h1>{it ? 'Pagina non trovata' : 'Page not found'}</h1>
+    <p class="lead">
+      {it
+        ? 'Questo indirizzo non corrisponde a una pagina. Potrebbe essere stata spostata oppure il link contiene un errore.'
+        : 'There’s no page at this address. It may have moved, or the link may contain a typo.'}
+    </p>
+    <div class="actions">
+      <a class="button" href={getLocalizedPathname('/', language)}>
+        Home
+      </a>
+      <a href={getLocalizedPathname('/work', language)}>{it ? 'Esplora i progetti' : 'Explore my work'} →</a>
+      <a href={getLocalizedPathname('/blog', language)}>{it ? 'Articoli' : 'Writing'} →</a>
+    </div>
+  </div>
+</SiteLayout>

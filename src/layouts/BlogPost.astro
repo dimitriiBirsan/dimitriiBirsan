@@ -1,134 +1,82 @@
 ---
-import type { CollectionEntry } from "astro:content";
-import BaseHead from "../components/BaseHead.astro";
-import Footer from "../components/Footer.astro";
-import FormattedDate from "../components/FormattedDate.astro";
-import Header from "../components/Header.astro";
-import { getLocalizedPathname } from "../utils/i18n";
-import type { SupportedLanguage } from "../types/i18n";
-import "../styles/elements/blog.css";
-
-type Props = CollectionEntry<"blog">["data"] & {
-	language?: SupportedLanguage;
+import type { CollectionEntry } from 'astro:content';
+import { Image, getImage } from 'astro:assets';
+import SiteLayout from './SiteLayout.astro';
+import { SITE_URL } from '../consts';
+import { formatDate, getLocalizedPathname } from '../utils/i18n';
+import { postHref, tagSlug } from '../utils/content';
+interface Props {
+  post: CollectionEntry<'blog'>;
+}
+const { post } = Astro.props;
+const { title, description, pubDate, updatedDate, heroImage, heroAlt, lang, tags } = post.data;
+const social = heroImage
+  ? await getImage({ src: heroImage, width: Math.min(heroImage.width, 1200), format: 'jpeg' })
+  : undefined;
+const structuredData = {
+  '@context': 'https://schema.org',
+  '@type': 'BlogPosting',
+  headline: title,
+  description,
+  datePublished: pubDate.toISOString(),
+  ...(updatedDate ? { dateModified: updatedDate.toISOString() } : {}),
+  mainEntityOfPage: new URL(postHref(post), SITE_URL).href,
+  url: new URL(postHref(post), SITE_URL).href,
+  inLanguage: lang,
+  author: { '@type': 'Person', '@id': `${SITE_URL}/#person`, name: 'Dumitru Birsan', url: SITE_URL },
+  ...(social ? { image: new URL(social.src, SITE_URL).href } : {}),
 };
-
-const {
-	title,
-	description,
-	pubDate,
-	updatedDate,
-	heroImage,
-	tags,
-	language = "en",
-} = Astro.props;
-
-const getTagHref = (tag: string) =>
-	getLocalizedPathname(`/tags/${tag.toLowerCase()}/`, language);
 ---
 
-<html lang={language}>
-	<head>
-		<BaseHead title={title} description={description} />
-		<style>
-			main {
-				width: calc(100% - 2em);
-				max-width: 100%;
-				margin: 0;
-			}
-			.prose {
-				width: 720px;
-				max-width: calc(100% - 2em);
-				margin: auto;
-				padding: 1em;
-				color: rgb(var(--gray-dark));
-			}
-			.title {
-				margin-bottom: 1em;
-				padding: 1em 0;
-				text-align: center;
-				line-height: 1;
-			}
-			.title h1 {
-				margin: 0 0 0.5em 0;
-			}
-			.date {
-				margin-bottom: 0.5em;
-				color: var(--text-secondary);
-				font-size: 0.9rem;
-			}
-			.last-updated-on {
-				font-style: italic;
-				font-size: 0.9rem;
-				opacity: 0.8;
-			}
-			.tag-badge:hover {
-				background: var(--accent-primary);
-				border-color: var(--accent-primary);
-				transform: translateY(-2px);
-				color: white;
-			}
-
-			@media (max-width: 480px) {
-				main {
-					width: 100%;
-					margin: 0;
-				}
-				.prose {
-					max-width: 100%;
-					padding: 1rem;
-				}
-				.title {
-					padding: 0.75em 0;
-				}
-				.title h1 {
-					font-size: 1.5rem;
-					line-height: 1.25;
-				}
-			}
-		</style>
-	</head>
-
-	<body>
-		<Header language={language} />
-		<main>
-			<article>
-				<div class="hero-image"></div>
-				<div class="prose">
-					<div class="title">
-						<div class="date">
-							<FormattedDate date={pubDate} />
-							{
-								updatedDate && (
-									<div class="last-updated-on">
-										{language === "it"
-											? "Ultimo aggiornamento"
-											: "Last updated on"}{" "}
-										<FormattedDate date={updatedDate} />
-									</div>
-								)
-							}
-						</div>
-						<h1>{title}</h1>
-						{
-							tags && tags.length > 0 && (
-								<div class="tag-list">
-									{tags.map((tag: string) => (
-										<a
-											href={getTagHref(tag)}
-											class="tag-badge"
-										>
-											{tag}
-										</a>
-									))}
-								</div>
-							)
-						}
-						<hr />
-					</div>
-					<slot />
-				</div>
-			</article>
-		</main>
-		<Footer language={language} />
-	</body>
-</html>
+<SiteLayout
+  title={`${title} — Dumitru Birsan`}
+  description={description}
+  image={heroImage}
+  imageAlt={heroAlt}
+  type="article"
+  structuredData={structuredData}
+>
+  <Fragment slot="head">
+    <meta property="article:published_time" content={pubDate.toISOString()} />
+    {updatedDate && <meta property="article:modified_time" content={updatedDate.toISOString()} />}
+  </Fragment>
+  <article class="reading">
+    <header class="page-heading">
+      <p class="meta">
+        <a href={getLocalizedPathname('/blog', lang)}>{lang === 'it' ? 'Articoli' : 'Writing'}</a>
+      </p>
+      <h1>{title}</h1>
+      <p class="lead">{description}</p>
+      <div class="article-meta meta">
+        <time datetime={pubDate.toISOString()}>{formatDate(pubDate, lang, 'long')}</time>
+        {updatedDate && (
+          <span>
+            {lang === 'it' ? 'Aggiornato:' : 'Updated:'}{' '}
+            <time datetime={updatedDate.toISOString()}>{formatDate(updatedDate, lang)}</time>
+          </span>
+        )}
+      </div>
+      <ul class="labels">
+        {tags.map((tag) => (
+          <li>
+            <a href={getLocalizedPathname(`/tags/${tagSlug(tag)}`, lang)}>{tag}</a>
+          </li>
+        ))}
+      </ul>
+    </header>
+    {heroImage && post.data.showHero && (
+      <Image
+        src={heroImage}
+        alt={heroAlt}
+        widths={[400, 720, 1000]}
+        sizes="(max-width: 760px) calc(100vw - 32px), 720px"
+        width={720}
+        format="webp"
+        loading="eager"
+      />
+    )}
+    <div class="prose">
+      <slot />
+    </div>
+  </article>
+</SiteLayout>

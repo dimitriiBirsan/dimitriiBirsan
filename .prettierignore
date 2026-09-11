@@ -1,0 +1,9 @@
+node_modules/
+dist/
+.astro/
+package-lock.json
+public/
+test-results/
+playwright-report/
+docker-compose.yml
+.vscode/

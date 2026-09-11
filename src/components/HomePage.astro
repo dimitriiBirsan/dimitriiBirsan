@@ -1,0 +1,182 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ClientEngagement from './ClientEngagement.astro';
+import ProjectCard from './ProjectCard.astro';
+import ArticleCard from './ArticleCard.astro';
+import LabPreview from './LabPreview.astro';
+import { Image } from 'astro:assets';
+import portrait from '../assets/avatar.jpg';
+import { currentExperience, currentPeriod } from '../data/experience';
+import { getPosts, getProjects } from '../utils/content';
+import { getLocalizedPathname } from '../utils/i18n';
+import { CONTACT, SITE_DESCRIPTION, SITE_URL } from '../consts';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+const local = (path: string) => getLocalizedPathname(path, language);
+const posts = (await getPosts(language)).slice(0, 3);
+const projects = (await getProjects(language)).filter((project) => project.data.featured);
+const period = currentPeriod(language);
+const person = {
+  '@context': 'https://schema.org',
+  '@type': 'Person',
+  '@id': `${SITE_URL}/#person`,
+  name: 'Dumitru Birsan',
+  url: SITE_URL,
+  jobTitle: currentExperience.title,
+  description: SITE_DESCRIPTION,
+  sameAs: [CONTACT.github, CONTACT.linkedin],
+  knowsAbout: ['Azure', 'DevOps', 'CI/CD', 'React', 'Microfrontends', 'Cypress', 'Industrial IoT'],
+};
+---
+
+<SiteLayout
+  title={
+    it
+      ? 'Dumitru Birsan — Software Engineer freelance | Cloud, DevOps e Frontend'
+      : 'Dumitru Birsan — Software Engineer | Cloud, DevOps & Frontend'
+  }
+  description={
+    it
+      ? 'Software engineer freelance: Azure, DevOps, CI/CD, microfrontend React, test automatizzati e software industriale.'
+      : SITE_DESCRIPTION
+  }
+  structuredData={person}
+>
+  <section class="hero" aria-labelledby="hero-title">
+    <div class="hero-copy">
+      <p class="greeting">{it ? 'Ciao, sono' : 'Hi, I’m'}</p>
+      <h1 id="hero-title">Dumitru Birsan</h1>
+      <p class="hero-descriptor">Software Engineer — Cloud, DevOps & Frontend</p>
+      <p class="hero-summary">
+        {it
+          ? 'Sviluppo frontend React, lavoro su infrastrutture Azure e Hetzner e scrivo pipeline e test Cypress per portare le modifiche in produzione. Il mio percorso passa anche dal software che comunica direttamente con i macchinari industriali.'
+          : 'I build React frontends, work on Azure and Hetzner infrastructure, and write pipelines and Cypress tests to get changes into production. My background also includes software that talks directly to industrial equipment.'}
+      </p>
+      <div class="actions">
+        <a class="button" href={local('/work')}>
+          {it ? 'Esplora i progetti' : 'View my work'} <span aria-hidden="true">&nbsp;↗</span>
+        </a>
+        <a class="button secondary" href={local('/blog')}>
+          {it ? 'Leggi gli articoli' : 'Read my writing'}
+        </a>
+      </div>
+    </div>
+    <figure class="hero-portrait">
+      <Image
+        src={portrait}
+        alt="Dumitru Birsan"
+        width={224}
+        height={280}
+        widths={[112, 224, 448]}
+        sizes="(max-width: 760px) 112px, 224px"
+        format="webp"
+        fit="cover"
+        quality={90}
+        loading="eager"
+      />
+      <figcaption>
+        {it ? 'Dalla Moldova all’Italia, passando per la Romania.' : 'Moldova → Romania → Italy.'}
+      </figcaption>
+    </figure>
+  </section>
+  <section class="section" aria-labelledby="current-work">
+    <div class="section-label">
+      <h2 id="current-work">{it ? 'Collaborazioni attuali' : 'Current work'}</h2>
+    </div>
+    <div class="section-body">
+      <div class="section-title-row">
+        <h3>{currentExperience.title}</h3>
+        <span class="meta">{period}</span>
+      </div>
+      <p class="section-intro">
+        {it
+          ? 'Oggi il mio lavoro si divide tra queste due collaborazioni: infrastrutture e deployment da una parte, frontend e test dall’altra.'
+          : 'These two client engagements make up my current work: infrastructure and deployments on one side, frontend functionality and testing on the other.'}
+      </p>
+      <p class="meta">{it ? 'Clienti' : 'Client engagements'}</p>
+      <div class="engagements">
+        {currentExperience.clients.map((client) => (
+          <ClientEngagement client={client} language={language} />
+        ))}
+      </div>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="selected-work">
+    <div class="section-label">
+      <h2 id="selected-work">{it ? 'Progetti selezionati' : 'Selected work'}</h2>
+    </div>
+    <div class="section-body">
+      <ol class="work-list">
+        {projects.map((project) => (
+          <li>
+            <ProjectCard project={project} />
+          </li>
+        ))}
+      </ol>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="lab">
+    <div class="section-label">
+      <h2 id="lab">Lab</h2>
+    </div>
+    <div class="section-body">
+      <LabPreview language={language} />
+    </div>
+  </section>
+  <section class="section" aria-labelledby="writing">
+    <div class="section-label">
+      <h2 id="writing">{it ? 'Articoli' : 'Writing'}</h2>
+    </div>
+    <div class="section-body">
+      <ul class="article-list">
+        {posts.map((post) => (
+          <li>
+            <ArticleCard post={post} />
+          </li>
+        ))}
+      </ul>
+      <a class="section-more" href={local('/blog')}>
+        {it ? 'Tutti gli articoli' : 'View all writing'} →
+      </a>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="about">
+    <div class="section-label">
+      <h2 id="about">{it ? 'Chi sono' : 'About'}</h2>
+    </div>
+    <div class="section-body">
+      <p>
+        {it
+          ? 'Prima dei deployment cloud e dei microfrontend, c’erano macchinari da collegare, gateway Node.js e dati da mostrare in tempo reale. Quell’esperienza mi accompagna ancora quando lavoro su un’interfaccia o una pipeline.'
+          : 'Before the cloud deployments and microfrontends, there were machines to connect, Node.js gateways, and data to bring into real-time interfaces. That experience still informs how I work on a frontend or a pipeline.'}
+      </p>
+      <p>
+        {it
+          ? 'Sono cresciuto in Moldova, ho vissuto in Romania e ora sono in Italia. Mi trovi anche ai meetup locali, sui sentieri degli Appennini o alle prese con un action RPG.'
+          : 'I grew up in Moldova, lived in Romania, and now call Italy home. You’ll also find me at local meetups, on an Apennine trail, or getting into an action RPG.'}
+      </p>
+      <a href={local('/about')}>{it ? 'Il mio percorso' : 'More about me'} →</a>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="contact">
+    <div class="section-label">
+      <h2 id="contact">{it ? 'Contatti' : 'Contact'}</h2>
+    </div>
+    <div class="section-body">
+      <p>
+        {it
+          ? 'Hai un progetto su cloud, frontend o software industriale? Scrivimi: raccontami cosa stai costruendo e dove ti serve una mano. Sono disponibile per collaborazioni freelance.'
+          : 'Have a cloud, frontend, or industrial software project in mind? Tell me what you’re building and where you could use a hand. I’m open to freelance collaborations.'}
+      </p>
+      <div class="inline-links">
+        <a href={`mailto:${CONTACT.email}`}>{CONTACT.email}</a>
+        <a href={CONTACT.linkedin}>LinkedIn</a>
+        <a href={CONTACT.github}>GitHub</a>
+      </div>
+    </div>
+  </section>
+</SiteLayout>

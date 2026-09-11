@@ -1,0 +1,23 @@
+---
+import BaseHead from '../components/BaseHead.astro';
+import Header from '../components/Header.astro';
+import Footer from '../components/Footer.astro';
+import type { ComponentProps } from 'astro/types';
+import { getLanguageFromURL } from '../utils/i18n';
+type Props = ComponentProps<typeof BaseHead>;
+---
+
+<!doctype html>
+<html lang={getLanguageFromURL(Astro.url.pathname)}>
+  <head>
+    <BaseHead {...Astro.props} />
+    <slot name="head" />
+  </head>
+  <body>
+    <Header />
+    <main id="main" class="container" tabindex="-1">
+      <slot />
+    </main>
+    <Footer />
+  </body>
+</html>

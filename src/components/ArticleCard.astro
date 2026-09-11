@@ -1,0 +1,21 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { postHref } from '../utils/content';
+import { formatDate } from '../utils/i18n';
+interface Props {
+  post: CollectionEntry<'blog'>;
+  heading?: 'h2' | 'h3';
+}
+const { post, heading: Heading = 'h3' } = Astro.props;
+---
+
+<article class="article-item">
+  <Heading>
+    <a href={postHref(post)}>{post.data.title}</a>
+  </Heading>
+  <p>{post.data.description}</p>
+  <div class="article-meta meta">
+    <time datetime={post.data.pubDate.toISOString()}>{formatDate(post.data.pubDate, post.data.lang)}</time>
+    <span>{post.data.tags[0]}</span>
+  </div>
+</article>

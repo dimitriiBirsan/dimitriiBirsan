@@ -1,0 +1,27 @@
+---
+import type { CollectionEntry } from 'astro:content';
+import { projectHref } from '../utils/content';
+interface Props {
+  project: CollectionEntry<'projects'>;
+}
+const { project } = Astro.props;
+---
+
+<article class="project">
+  <span class="number meta" aria-hidden="true">
+    {String(project.data.order).padStart(2, '0')}
+  </span>
+  <div>
+    <h3>
+      <a href={projectHref(project)}>
+        {project.data.title} <span aria-hidden="true">↗</span>
+      </a>
+    </h3>
+    <p>{project.data.description}</p>
+    <ul class="labels" aria-label={project.data.lang === 'it' ? 'Tecnologie' : 'Technologies'}>
+      {project.data.technologies.map((technology) => (
+        <li>{technology}</li>
+      ))}
+    </ul>
+  </div>
+</article>

@@ -1,68 +1,49 @@
 ---
-import { SITE_TITLE } from "../consts";
-import Hamburger from "./Hamburger.astro";
-import Navigation from "./Navigation.astro";
-import ThemeSwitcher from "./ThemeSwitcher.astro";
-import LanguageSwitcher from "./LanguageSwitcher.astro";
-import { getLocalizedPathname, getLanguageFromURL } from "../utils/i18n";
-import type { SupportedLanguage } from "../types/i18n";
-
-interface Props {
-	language?: SupportedLanguage;
-}
-
-const { language } = Astro.props;
-const currentPath = Astro.url.pathname;
-const currentLang = language ?? getLanguageFromURL(currentPath);
-const homeHref = getLocalizedPathname("/", currentLang);
+import { getLanguageFromURL, getLocalizedPathname } from '../utils/i18n';
+const language = getLanguageFromURL(Astro.url.pathname);
+const local = (path: string) => getLocalizedPathname(path, language);
+const links = [
+  { path: '/work', label: language === 'it' ? 'Progetti' : 'Work' },
+  { path: '/blog', label: language === 'it' ? 'Articoli' : 'Writing' },
+  { path: '/about', label: language === 'it' ? 'Chi sono' : 'About' },
+];
 ---
 
-<header>
-	<nav>
-		<Hamburger />
-		<h2><a href={homeHref}>{SITE_TITLE}</a></h2>
-		<Navigation language={currentLang} />
-		<section class="switchers">
-			<LanguageSwitcher currentPath={currentPath} />
-			<ThemeSwitcher />
-		</section>
-	</nav>
+<a class="skip-link" href="#main">
+  {language === 'it' ? 'Vai al contenuto' : 'Skip to content'}
+</a>
+<header class="site-header container">
+  <a class="site-logo" href={local('/')}>
+    Dumitru Birsan<span aria-hidden="true">.</span>
+  </a>
+  <div class="header-navigation">
+    <nav aria-label={language === 'it' ? 'Navigazione principale' : 'Main navigation'}>
+      {links.map(({ path, label }) => (
+        <a href={local(path)} aria-current={Astro.url.pathname.startsWith(local(path)) ? 'page' : undefined}>
+          {label}
+        </a>
+      ))}
+    </nav>
+    <nav class="languages" aria-label={language === 'it' ? 'Lingua' : 'Language'}>
+      <a
+        href={getLocalizedPathname(Astro.url.pathname, 'en')}
+        lang="en"
+        hreflang="en"
+        aria-label="English"
+        aria-current={language === 'en' ? 'true' : undefined}
+      >
+        EN
+      </a>
+      <span aria-hidden="true">/</span>
+      <a
+        href={getLocalizedPathname(Astro.url.pathname, 'it')}
+        lang="it"
+        hreflang="it"
+        aria-label="Italiano"
+        aria-current={language === 'it' ? 'true' : undefined}
+      >
+        IT
+      </a>
+    </nav>
+  </div>
 </header>
-<style>
-	header {
-		margin: 0;
-		padding: 0 1em;
-		box-shadow: var(--shadow-sm);
-		position: relative;
-	}
-	h2 {
-		margin: 0;
-		font-size: 1em;
-	}
-
-	h2 a,
-	h2 a.active {
-		text-decoration: none;
-	}
-	nav {
-		display: flex;
-		align-items: center;
-		justify-content: space-between;
-	}
-	nav a {
-		padding: 1em 0.5em;
-		color: var(--black);
-		border-bottom: 4px solid transparent;
-		text-decoration: none;
-	}
-	nav a.active {
-		text-decoration: none;
-		border-bottom-color: var(--accent);
-	}
-
-	.switchers {
-		display: flex;
-		align-items: center;
-		gap: 0.5rem;
-	}
-</style>

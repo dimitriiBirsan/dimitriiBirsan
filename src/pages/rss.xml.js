@@ -1,16 +1,18 @@
-import { getCollection } from 'astro:content';
 import rss from '@astrojs/rss';
-import { SITE_DESCRIPTION, SITE_TITLE } from '../consts';
+import { getPosts, postHref } from '../utils/content';
+import { SITE_URL } from '../consts';
 
-export async function GET(context) {
-	const posts = await getCollection('blog');
-	return rss({
-		title: SITE_TITLE,
-		description: SITE_DESCRIPTION,
-		site: context.site,
-		items: posts.map((post) => ({
-			...post.data,
-			link: `/blog/${post.id}/`,
-		})),
-	});
+export async function GET() {
+  return rss({
+    title: 'Dumitru Birsan — Writing',
+    description: 'Notes on software engineering and developer communities.',
+    site: SITE_URL,
+    customData: '<language>en</language>',
+    items: (await getPosts('en')).map((post) => ({
+      title: post.data.title,
+      description: post.data.description,
+      pubDate: post.data.pubDate,
+      link: postHref(post),
+    })),
+  });
 }

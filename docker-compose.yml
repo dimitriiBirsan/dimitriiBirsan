@@ -1,5 +1,6 @@
 services:
   website:
+    ports: [ "9023:80" ]
     image: ghcr.io/dimitriibirsan/dimitriibirsan:latest
     build:
       context: .
@@ -10,13 +11,22 @@ services:
       - traefik-net
     labels:
       - "traefik.enable=true"
-      
+
       # Routers for HTTPS (websecure)
       - "traefik.http.routers.dimitrii-website.rule=Host(`${DOMAIN:-dimitrii.dev}`) || Host(`www.${DOMAIN:-dimitrii.dev}`)"
       - "traefik.http.routers.dimitrii-website.entrypoints=websecure"
       - "traefik.http.routers.dimitrii-website.tls=true"
       - "traefik.http.routers.dimitrii-website.tls.certresolver=${CERT_RESOLVER:-letsencrypt}"
-      
+      - "traefik.http.routers.dimitrii-website.middlewares=dimitrii-canonical"
+      - "traefik.http.middlewares.dimitrii-canonical.redirectregex.regex=^https?://www\\.(.*)"
+      - "traefik.http.middlewares.dimitrii-canonical.redirectregex.replacement=https://$${1}"
+      - "traefik.http.middlewares.dimitrii-canonical.redirectregex.permanent=true"
+      - "traefik.http.routers.dimitrii-http.rule=Host(`${DOMAIN:-dimitrii.dev}`) || Host(`www.${DOMAIN:-dimitrii.dev}`)"
+      - "traefik.http.routers.dimitrii-http.entrypoints=web"
+      - "traefik.http.routers.dimitrii-http.middlewares=dimitrii-https"
+      - "traefik.http.middlewares.dimitrii-https.redirectscheme.scheme=https"
+      - "traefik.http.middlewares.dimitrii-https.redirectscheme.permanent=true"
+
       # Internal service port (Nginx runs on port 80 inside the container)
       - "traefik.http.services.dimitrii-website.loadbalancer.server.port=80"
 

@@ -1,0 +1,36 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import LabPreview from './LabPreview.astro';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+---
+
+<SiteLayout
+  title={`Lab — Dumitru Birsan${it ? ' · Esperimenti' : ''}`}
+  description={
+    it
+      ? 'Esperimenti sulle interfacce: Dark Patterns Lab esplora scelte manipolative e alternative rispettose delle persone.'
+      : 'Interface experiments: Dark Patterns Lab examines manipulative design choices and more ethical alternatives.'
+  }
+>
+  <div class="page-heading">
+    <h1>Lab</h1>
+    <p class="lead">
+      {it
+        ? 'Qui posso prendere un’idea e vedere fin dove arriva. In questo caso, decisamente troppo lontano.'
+        : 'A place to take an idea and see how far it goes. In this case, probably too far.'}
+    </p>
+  </div>
+  <section class="section" aria-label="Dark Patterns Lab">
+    <div class="section-label">
+      <p class="meta">{it ? 'Talk & esperimenti' : 'Talk & experiments'}</p>
+    </div>
+    <div class="section-body">
+      <LabPreview language={language} heading="h2" hydration="idle" />
+    </div>
+  </section>
+</SiteLayout>

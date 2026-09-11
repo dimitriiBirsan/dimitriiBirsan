@@ -1,0 +1,139 @@
+---
+import SiteLayout from '../layouts/SiteLayout.astro';
+import ClientEngagement from './ClientEngagement.astro';
+import {
+  currentExperience,
+  previousExperience,
+  education,
+  careerDate,
+  currentPeriod,
+} from '../data/experience';
+import { getLocalizedPathname } from '../utils/i18n';
+import type { SupportedLanguage } from '../types/i18n';
+interface Props {
+  language: SupportedLanguage;
+}
+const { language } = Astro.props;
+const it = language === 'it';
+---
+
+<SiteLayout
+  title={`${it ? 'Chi sono' : 'About'} — Dumitru Birsan`}
+  description={
+    it
+      ? 'Il mio percorso tra frontend, infrastrutture cloud, DevOps e software industriale, e le mie attuali collaborazioni freelance.'
+      : 'My background in frontend engineering, cloud infrastructure, DevOps, and industrial software, and my current freelance client work.'
+  }
+>
+  <div class="page-heading">
+    <h1>{it ? 'Chi sono' : 'About'}</h1>
+    <p class="lead">
+      {it
+        ? 'Sono Dumitru Birsan, un software engineer con base in Italia.'
+        : 'I’m Dumitru Birsan, a software engineer based in Italy.'}
+    </p>
+    <p>
+      {it
+        ? 'Lavoro tra frontend engineering, infrastrutture cloud, DevOps e software industriale. Ho sviluppato sistemi che vanno dalle interfacce React e dai servizi backend fino all’infrastruttura Azure e al software che comunica direttamente con i macchinari.'
+        : 'My work sits across frontend engineering, cloud infrastructure, DevOps, and industrial software. I’ve worked on systems ranging from React interfaces and backend services to Azure infrastructure and software communicating directly with industrial equipment.'}
+    </p>
+  </div>
+  <section class="section" aria-labelledby="focus">
+    <div class="section-label">
+      <h2 id="focus">{it ? 'Di cosa mi occupo' : 'What I work on'}</h2>
+    </div>
+    <div class="section-body">
+      <p>
+        {it
+          ? 'Una parte del mio lavoro può iniziare da un cavo seriale e arrivare fino a un’interfaccia React, passando per un gateway Node.js e il cloud. Mi piace seguire quel percorso e capire cosa succede quando i pezzi devono comunicare. Oggi lo faccio soprattutto con infrastrutture cloud, microfrontend e test automatizzati.'
+          : 'Some of my work starts with a serial cable and ends at a React interface, with a Node.js gateway and the cloud in between. I enjoy following that path and figuring out what happens when the pieces have to talk to each other. These days, I mostly do that through cloud infrastructure, microfrontends, and automated tests.'}
+      </p>
+      <a href={getLocalizedPathname('/skills', language)}>
+        {it ? 'Competenze tecniche' : 'Technical expertise'} →
+      </a>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="freelance">
+    <div class="section-label">
+      <h2 id="freelance">{it ? 'Lavoro freelance' : 'Current freelance work'}</h2>
+      <p class="meta">{currentPeriod(language)}</p>
+    </div>
+    <div class="section-body">
+      <h2>{currentExperience.title}</h2>
+      <p class="section-intro">
+        {it
+          ? 'Collaboro con più clienti come professionista indipendente.'
+          : 'I work independently with multiple clients.'}
+      </p>
+      <p class="meta">{it ? 'Collaborazioni con clienti' : 'Client engagements'}</p>
+      {currentExperience.clients.map((client) => (
+        <div class="timeline-entry">
+          <ClientEngagement client={client} language={language} expanded />
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="section" aria-labelledby="previous">
+    <div class="section-label">
+      <h2 id="previous">{it ? 'Esperienze precedenti' : 'Previous experience'}</h2>
+    </div>
+    <div class="section-body">
+      {previousExperience.map((experience) => (
+        <div class="timeline-entry">
+          <p class="meta">
+            <time datetime={experience.start}>{careerDate(experience.start, language)}</time> —{' '}
+            <time datetime={experience.end}>{careerDate(experience.end, language)}</time>
+          </p>
+          <h3>{experience.title}</h3>
+          <p>{experience.company}</p>
+          <p class="muted">{experience.description[language]}</p>
+        </div>
+      ))}
+    </div>
+  </section>
+  <section class="section" aria-labelledby="education">
+    <div class="section-label">
+      <h2 id="education">{it ? 'Formazione' : 'Education'}</h2>
+    </div>
+    <div class="section-body">
+      <h3>{education.qualification[language]}</h3>
+      <p>{education.institution}</p>
+      <p class="meta">
+        <time datetime={education.start}>{careerDate(education.start, language)}</time> —{' '}
+        <time datetime={education.end}>{careerDate(education.end, language)}</time>
+      </p>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="community">
+    <div class="section-label">
+      <h2 id="community">Community</h2>
+    </div>
+    <div class="section-body">
+      <p>
+        {it
+          ? 'A DevFest Modena 2025 ho vissuto la conferenza anche dall’altra parte, facendo parte dello staff. Ricordo il lavoro dietro le quinte e la soddisfazione alla fine dell’evento. Ho contribuito ai siti di DevFest e Women Techmakers Modena con Hugo e SCSS. Partecipo anche agli incontri di Reggio Emilia Fullstack, Modena Fullstack e Bologna JS: alcune conversazioni continuano ben oltre il talk.'
+          : 'At DevFest Modena 2025, I got to see the conference from the other side as part of the staff. I remember the work behind the scenes and the satisfaction when it was all done. I contributed to the DevFest and Women Techmakers Modena websites with Hugo and SCSS. I also take part in Reggio Emilia Fullstack, Modena Fullstack, and Bologna JS meetups, where some conversations outlast the talks.'}
+      </p>
+      <a href={getLocalizedPathname('/blog/devfest-2025', language)}>
+        {it ? 'La mia esperienza a DevFest' : 'My experience at DevFest'} →
+      </a>
+    </div>
+  </section>
+  <section class="section" aria-labelledby="personal">
+    <div class="section-label">
+      <h2 id="personal">{it ? 'Fuori dal lavoro' : 'A little more about me'}</h2>
+    </div>
+    <div class="section-body">
+      <p>
+        {it
+          ? 'Sono cresciuto ad Anenii Noi, in Moldova. Poi sono arrivati la Romania e l’Italia. Cambiare paese ha voluto dire imparare lingue, abitudini e modi diversi di lavorare. Parlo rumeno, italiano e inglese; so cosa significa essere quello che deve fare domande per orientarsi.'
+          : 'I grew up in Anenii Noi, Moldova. Romania came next, then Italy. Moving countries meant learning languages, habits, and different ways of working. I speak Romanian, Italian, and English; I know what it’s like to be the person asking questions to find their bearings.'}
+      </p>
+      <p>
+        {it
+          ? 'Nel tempo libero mi piace camminare sugli Appennini, praticare yoga e giocare ai videogiochi, soprattutto agli action RPG.'
+          : 'Outside work, I enjoy hiking in the Apennines, practising yoga, and playing games, especially action RPGs.'}
+      </p>
+    </div>
+  </section>
+</SiteLayout>
