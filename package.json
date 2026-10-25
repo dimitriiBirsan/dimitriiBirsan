@@ -37,7 +37,7 @@
     "svelte-check": "^4.7.6",
     "tailwindcss": "^4.3.3",
     "typescript": "^5.9.3",
-    "vitest": "^4.0.15"
+    "vitest": "^4.1.12"
   },
   "engines": {
     "node": ">=24.16.0"
